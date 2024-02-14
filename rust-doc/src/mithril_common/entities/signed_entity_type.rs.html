@@ -162,7 +162,7 @@
 /// variants.
 </span><span class="attr">#[derive(Display, Debug, Clone, PartialEq, Eq, Serialize, Deserialize, EnumDiscriminants)]
 #[strum(serialize_all = <span class="string">"PascalCase"</span>)]
-#[strum_discriminants(derive(EnumString, AsRefStr))]
+#[strum_discriminants(derive(EnumString, AsRefStr, Serialize, Deserialize, PartialOrd, Ord))]
 </span><span class="kw">pub enum </span>SignedEntityType {
     <span class="doccomment">/// Mithril stake distribution
     </span>MithrilStakeDistribution(Epoch),
