@@ -551,11 +551,24 @@
 <a href="#550" id="550">550</a>
 <a href="#551" id="551">551</a>
 <a href="#552" id="552">552</a>
+<a href="#553" id="553">553</a>
+<a href="#554" id="554">554</a>
+<a href="#555" id="555">555</a>
+<a href="#556" id="556">556</a>
+<a href="#557" id="557">557</a>
+<a href="#558" id="558">558</a>
+<a href="#559" id="559">559</a>
+<a href="#560" id="560">560</a>
+<a href="#561" id="561">561</a>
+<a href="#562" id="562">562</a>
+<a href="#563" id="563">563</a>
+<a href="#564" id="564">564</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>anyhow::anyhow;
 <span class="kw">use </span>config::{ConfigError, Map, Source, Value, ValueKind};
 <span class="kw">use </span>mithril_common::chain_observer::ChainObserverType;
 <span class="kw">use </span>mithril_common::crypto_helper::ProtocolGenesisSigner;
 <span class="kw">use </span>mithril_common::era::adapters::EraReaderAdapterType;
+<span class="kw">use </span>mithril_doc::{Documenter, DocumenterDefault, StructDoc};
 <span class="kw">use </span>serde::{Deserialize, Serialize};
 <span class="kw">use </span>std::path::PathBuf;
 <span class="kw">use </span>std::str::FromStr;
@@ -592,16 +605,18 @@
 }
 
 <span class="doccomment">/// Aggregator configuration
-</span><span class="attr">#[derive(Debug, Clone, Serialize, Deserialize)]
+</span><span class="attr">#[derive(Debug, Clone, Serialize, Deserialize, Documenter)]
 </span><span class="kw">pub struct </span>Configuration {
     <span class="doccomment">/// What kind of runtime environment the configuration is meant to.
     </span><span class="kw">pub </span>environment: ExecutionEnvironment,
 
     <span class="doccomment">/// Cardano CLI tool path
+    </span><span class="attr">#[example = <span class="string">"`cardano-cli`"</span>]
     </span><span class="kw">pub </span>cardano_cli_path: PathBuf,
 
     <span class="doccomment">/// Path of the socket used by the Cardano CLI tool
     /// to communicate with the Cardano node
+    </span><span class="attr">#[example = <span class="string">"`/tmp/cardano.sock`"</span>]
     </span><span class="kw">pub </span>cardano_node_socket_path: PathBuf,
 
     <span class="doccomment">/// Cardano node version.
@@ -614,18 +629,22 @@
     <span class="doccomment">/// Cardano Network Magic number
     ///
     /// useful for TestNet &amp; DevNet
+    </span><span class="attr">#[example = <span class="string">"`1097911063` or `42`"</span>]
     </span><span class="kw">pub </span>network_magic: <span class="prelude-ty">Option</span>&lt;u64&gt;,
 
     <span class="doccomment">/// Cardano network
+    </span><span class="attr">#[example = <span class="string">"`testnet` or `mainnet` or `devnet`"</span>]
     </span><span class="kw">pub </span>network: String,
 
     <span class="doccomment">/// Cardano chain observer type
     </span><span class="kw">pub </span>chain_observer_type: ChainObserverType,
 
     <span class="doccomment">/// Protocol parameters
+    </span><span class="attr">#[example = <span class="string">"`{ k: 5, m: 100, phi_f: 0.65 }`"</span>]
     </span><span class="kw">pub </span>protocol_parameters: ProtocolParameters,
 
     <span class="doccomment">/// Type of snapshot uploader to use
+    </span><span class="attr">#[example = <span class="string">"`gcp` or `local`"</span>]
     </span><span class="kw">pub </span>snapshot_uploader_type: SnapshotUploaderType,
 
     <span class="doccomment">/// Bucket name where the snapshots are stored if snapshot_uploader_type is Gcp
@@ -641,6 +660,7 @@
     </span><span class="kw">pub </span>server_port: u16,
 
     <span class="doccomment">/// Run Interval is the interval between two runtime cycles in ms
+    </span><span class="attr">#[example = <span class="string">"`60000`"</span>]
     </span><span class="kw">pub </span>run_interval: u64,
 
     <span class="doccomment">/// Directory of the Cardano node store.
@@ -650,6 +670,7 @@
     </span><span class="kw">pub </span>snapshot_directory: PathBuf,
 
     <span class="doccomment">/// Directory to store aggregator data (Certificates, Snapshots, Protocol Parameters, ...)
+    </span><span class="attr">#[example = <span class="string">"`./mithril-aggregator/stores`"</span>]
     </span><span class="kw">pub </span>data_stores_directory: PathBuf,
 
     <span class="doccomment">/// Genesis verification key
@@ -673,14 +694,17 @@
     <span class="doccomment">/// Era reader adapter parameters
     </span><span class="kw">pub </span>era_reader_adapter_params: <span class="prelude-ty">Option</span>&lt;String&gt;,
 
-    <span class="doccomment">/// Signed entity types parameters (discriminants names in an ordered comma separated list).
+    <span class="doccomment">/// Signed entity types parameters (discriminants names in an ordered comma separated list).    
+    </span><span class="attr">#[example = <span class="string">"`MithrilStakeDistribution,CardanoImmutableFilesFull,CardanoStakeDistribution`"</span>]
     </span><span class="kw">pub </span>signed_entity_types: <span class="prelude-ty">Option</span>&lt;String&gt;,
 
     <span class="doccomment">/// Compression algorithm used for the snapshot archive artifacts.
+    </span><span class="attr">#[example = <span class="string">"`gzip` or `zstandard`"</span>]
     </span><span class="kw">pub </span>snapshot_compression_algorithm: CompressionAlgorithm,
 
     <span class="doccomment">/// Specific parameters when [snapshot_compression_algorithm][Self::snapshot_compression_algorithm]
     /// is set to [zstandard][CompressionAlgorithm::Zstandard].
+    </span><span class="attr">#[example = <span class="string">"`{ level: 9, number_of_workers: 4 }`"</span>]
     </span><span class="kw">pub </span>zstandard_parameters: <span class="prelude-ty">Option</span>&lt;ZstandardCompressionParameters&gt;,
 
     <span class="doccomment">/// Url to CExplorer list of pools to import as signer in the database.
@@ -837,9 +861,8 @@
         <span class="prelude-val">Ok</span>(signed_entity_types)
     }
 }
-
 <span class="doccomment">/// Default configuration with all the default values for configurations.
-</span><span class="attr">#[derive(Debug, Clone)]
+</span><span class="attr">#[derive(Debug, Clone, DocumenterDefault)]
 </span><span class="kw">pub struct </span>DefaultConfiguration {
     <span class="doccomment">/// Execution environment
     </span><span class="kw">pub </span>environment: ExecutionEnvironment,
@@ -857,6 +880,7 @@
     </span><span class="kw">pub </span>snapshot_directory: String,
 
     <span class="doccomment">/// Type of snapshot store to use
+    </span><span class="attr">#[example = <span class="string">"`gcp` or `local`"</span>]
     </span><span class="kw">pub </span>snapshot_store_type: String,
 
     <span class="doccomment">/// Type of snapshot uploader to use

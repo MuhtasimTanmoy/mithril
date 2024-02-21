@@ -110,19 +110,33 @@
 <a href="#109" id="109">109</a>
 <a href="#110" id="110">110</a>
 <a href="#111" id="111">111</a>
+<a href="#112" id="112">112</a>
+<a href="#113" id="113">113</a>
+<a href="#114" id="114">114</a>
+<a href="#115" id="115">115</a>
+<a href="#116" id="116">116</a>
+<a href="#117" id="117">117</a>
+<a href="#118" id="118">118</a>
+<a href="#119" id="119">119</a>
+<a href="#120" id="120">120</a>
+<a href="#121" id="121">121</a>
+<a href="#122" id="122">122</a>
 </pre></div><pre class="rust"><code><span class="kw">mod </span>era_command;
 <span class="kw">mod </span>genesis_command;
 <span class="kw">mod </span>serve_command;
 <span class="kw">mod </span>tools_command;
 
-<span class="kw">use </span>clap::{Parser, Subcommand};
+<span class="kw">use </span>anyhow::anyhow;
+<span class="kw">use </span>clap::{CommandFactory, Parser, Subcommand};
 <span class="kw">use </span>config::{builder::DefaultState, ConfigBuilder, Map, Source, Value, ValueKind};
 <span class="kw">use </span>mithril_common::StdResult;
+<span class="kw">use </span>mithril_doc::{Documenter, DocumenterDefault, StructDoc};
 <span class="kw">use </span>slog::Level;
 <span class="kw">use </span>slog_scope::debug;
 <span class="kw">use </span>std::path::PathBuf;
 
-<span class="kw">use </span><span class="kw">crate</span>::DefaultConfiguration;
+<span class="kw">use crate</span>::{Configuration, DefaultConfiguration};
+<span class="kw">use </span>mithril_doc::GenerateDocCommands;
 
 <span class="doccomment">/// Main command selector
 </span><span class="attr">#[derive(Debug, Clone, Subcommand)]
@@ -131,6 +145,8 @@
     Era(era_command::EraCommand),
     Serve(serve_command::ServeCommand),
     Tools(tools_command::ToolsCommand),
+    <span class="attr">#[clap(alias(<span class="string">"doc"</span>), hide(<span class="bool-val">true</span>))]
+    </span>GenerateDoc(GenerateDocCommands),
 }
 
 <span class="kw">impl </span>MainCommand {
@@ -140,12 +156,17 @@
             <span class="self">Self</span>::Era(cmd) =&gt; cmd.execute(config_builder).<span class="kw">await</span>,
             <span class="self">Self</span>::Serve(cmd) =&gt; cmd.execute(config_builder).<span class="kw">await</span>,
             <span class="self">Self</span>::Tools(cmd) =&gt; cmd.execute(config_builder).<span class="kw">await</span>,
+            <span class="self">Self</span>::GenerateDoc(cmd) =&gt; {
+                <span class="kw">let </span>config_infos = <span class="macro">vec!</span>[Configuration::extract(), DefaultConfiguration::extract()];
+                cmd.execute_with_configurations(<span class="kw-2">&amp;mut </span>MainOpts::command(), <span class="kw-2">&amp;</span>config_infos)
+                    .map_err(|message| <span class="macro">anyhow!</span>(message))
+            }
         }
     }
 }
 
 <span class="doccomment">/// Mithril Aggregator Node
-</span><span class="attr">#[derive(Parser, Debug, Clone)]
+</span><span class="attr">#[derive(Documenter, Parser, Debug, Clone)]
 #[command(version)]
 </span><span class="kw">pub struct </span>MainOpts {
     <span class="doccomment">/// application main command
@@ -158,6 +179,7 @@
 
     <span class="doccomment">/// Verbosity level
     </span><span class="attr">#[clap(short, long, action = clap::ArgAction::Count)]
+    #[example = <span class="string">"Parsed from the number of occurrences: `-v` for `Warning`, `-vv` for `Info`, `-vvv` for `Debug` and `-vvvv` for `Trace`"</span>]
     </span><span class="kw">pub </span>verbose: u8,
 
     <span class="doccomment">/// Directory of the Cardano node files

@@ -185,8 +185,18 @@
 <a href="#184" id="184">184</a>
 <a href="#185" id="185">185</a>
 <a href="#186" id="186">186</a>
+<a href="#187" id="187">187</a>
+<a href="#188" id="188">188</a>
+<a href="#189" id="189">189</a>
+<a href="#190" id="190">190</a>
+<a href="#191" id="191">191</a>
+<a href="#192" id="192">192</a>
+<a href="#193" id="193">193</a>
+<a href="#194" id="194">194</a>
+<a href="#195" id="195">195</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>anyhow::Context;
 <span class="kw">use </span>config::{ConfigError, Map, Source, Value, ValueKind};
+<span class="kw">use </span>mithril_doc::{Documenter, DocumenterDefault, StructDoc};
 <span class="kw">use </span>serde::{Deserialize, Serialize};
 <span class="kw">use </span>std::{path::PathBuf, sync::Arc};
 
@@ -202,23 +212,28 @@
 };
 
 <span class="doccomment">/// Client configuration
-</span><span class="attr">#[derive(Debug, Clone, Serialize, Deserialize)]
+</span><span class="attr">#[derive(Debug, Clone, Serialize, Deserialize, Documenter)]
 </span><span class="kw">pub struct </span>Configuration {
     <span class="doccomment">/// Cardano CLI tool path
+    </span><span class="attr">#[example = <span class="string">"`cardano-cli`"</span>]
     </span><span class="kw">pub </span>cardano_cli_path: PathBuf,
 
     <span class="doccomment">/// Path of the socket used by the Cardano CLI tool
     /// to communicate with the Cardano node
+    </span><span class="attr">#[example = <span class="string">"`/tmp/cardano.sock`"</span>]
     </span><span class="kw">pub </span>cardano_node_socket_path: PathBuf,
 
     <span class="doccomment">/// Cardano Network Magic number
     /// useful for TestNet &amp; DevNet
+    </span><span class="attr">#[example = <span class="string">"`1097911063` or `42`"</span>]
     </span><span class="kw">pub </span>network_magic: <span class="prelude-ty">Option</span>&lt;u64&gt;,
 
     <span class="doccomment">/// Cardano network
+    </span><span class="attr">#[example = <span class="string">"`testnet` or `mainnet` or `devnet`"</span>]
     </span><span class="kw">pub </span>network: String,
 
     <span class="doccomment">/// Aggregator endpoint
+    </span><span class="attr">#[example = <span class="string">"`https://aggregator.pre-release-preview.api.mithril.network/aggregator`"</span>]
     </span><span class="kw">pub </span>aggregator_endpoint: String,
 
     <span class="doccomment">/// Relay endpoint
@@ -226,15 +241,18 @@
 
     <span class="doccomment">/// Party Id
     </span><span class="comment">// TODO: Field should be removed once the signer certification is fully deployed
+    </span><span class="attr">#[example = <span class="string">"`pool1pxaqe80sqpde7902er5kf6v0c7y0sv6d5g676766v2h829fvs3x`"</span>]
     </span><span class="kw">pub </span>party_id: <span class="prelude-ty">Option</span>&lt;PartyId&gt;,
 
     <span class="doccomment">/// Run Interval
+    </span><span class="attr">#[example = <span class="string">"`60000`"</span>]
     </span><span class="kw">pub </span>run_interval: u64,
 
     <span class="doccomment">/// Directory to snapshot
     </span><span class="kw">pub </span>db_directory: PathBuf,
 
     <span class="doccomment">/// Directory to store signer data (Stakes, Protocol initializers, ...)
+    </span><span class="attr">#[example = <span class="string">"`./mithril-signer/stores`"</span>]
     </span><span class="kw">pub </span>data_stores_directory: PathBuf,
 
     <span class="doccomment">/// Store retention limit. If set to None, no limit will be set.
@@ -336,7 +354,7 @@
 }
 
 <span class="doccomment">/// Default configuration with all the default values for configurations.
-</span><span class="attr">#[derive(Debug, Clone)]
+</span><span class="attr">#[derive(Debug, Clone, DocumenterDefault)]
 </span><span class="kw">pub struct </span>DefaultConfiguration {
     <span class="doccomment">/// Era reader adapter type
     </span><span class="kw">pub </span>era_reader_adapter_type: String,
