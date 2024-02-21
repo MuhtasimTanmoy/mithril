@@ -480,7 +480,7 @@
     }
 
     <span class="attr">#[tokio::test]
-    </span><span class="kw">async fn </span>get_cardano_transaction_commitment_list() {
+    </span><span class="kw">async fn </span>get_cardano_transactions_commitment_list() {
         <span class="kw">let </span>message = fake_messages();
         <span class="kw">let </span><span class="kw-2">mut </span>http_client = MockAggregatorHTTPClient::new();
         http_client
@@ -495,7 +495,7 @@
     }
 
     <span class="attr">#[tokio::test]
-    </span><span class="kw">async fn </span>get_cardano_transaction_commitment() {
+    </span><span class="kw">async fn </span>get_cardano_transactions_commitment() {
         <span class="kw">let </span><span class="kw-2">mut </span>http_client = MockAggregatorHTTPClient::new();
         <span class="kw">let </span>message = CardanoTransactionCommitment {
             merkle_root: <span class="string">"mk-123"</span>.to_string(),

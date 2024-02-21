@@ -227,6 +227,7 @@
 <a href="#226" id="226">226</a>
 <a href="#227" id="227">227</a>
 <a href="#228" id="228">228</a>
+<a href="#229" id="229">229</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>anyhow::{anyhow, Context};
 <span class="kw">use </span>mithril_common::api_version::APIVersionProvider;
 <span class="kw">use </span>reqwest::Url;
@@ -249,6 +250,7 @@
 <span class="doccomment">/// Structure that aggregates the available clients for each of the Mithril types of certified data.
 ///
 /// Use the [ClientBuilder] to instantiate it easily.
+</span><span class="attr">#[derive(Clone)]
 </span><span class="kw">pub struct </span>Client {
     <span class="attr">#[cfg(feature = <span class="string">"unstable"</span>)]
     </span>cardano_transaction_proof_client: Arc&lt;CardanoTransactionProofClient&gt;,

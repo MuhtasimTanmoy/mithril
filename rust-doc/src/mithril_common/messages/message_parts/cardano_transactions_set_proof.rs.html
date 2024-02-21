@@ -20,11 +20,19 @@
 <a href="#19" id="19">19</a>
 <a href="#20" id="20">20</a>
 <a href="#21" id="21">21</a>
+<a href="#22" id="22">22</a>
+<a href="#23" id="23">23</a>
+<a href="#24" id="24">24</a>
+<a href="#25" id="25">25</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span><span class="kw">crate</span>::entities::{HexEncodedKey, TransactionHash};
 <span class="kw">use </span>serde::{Deserialize, Serialize};
 
+<span class="attr">#[cfg(target_family = <span class="string">"wasm"</span>)]
+</span><span class="kw">use </span>wasm_bindgen::prelude::<span class="kw-2">*</span>;
+
 <span class="doccomment">/// A cryptographic proof of a set of Cardano transactions is included in the global Cardano transactions set
 </span><span class="attr">#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(target_family = <span class="string">"wasm"</span>, wasm_bindgen(getter_with_clone))]
 </span><span class="kw">pub struct </span>CardanoTransactionsSetProofMessagePart {
     <span class="doccomment">/// Hashes of the certified transactions
     </span><span class="kw">pub </span>transactions_hashes: Vec&lt;TransactionHash&gt;,

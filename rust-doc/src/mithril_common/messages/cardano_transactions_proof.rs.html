@@ -267,6 +267,28 @@
 <a href="#266" id="266">266</a>
 <a href="#267" id="267">267</a>
 <a href="#268" id="268">268</a>
+<a href="#269" id="269">269</a>
+<a href="#270" id="270">270</a>
+<a href="#271" id="271">271</a>
+<a href="#272" id="272">272</a>
+<a href="#273" id="273">273</a>
+<a href="#274" id="274">274</a>
+<a href="#275" id="275">275</a>
+<a href="#276" id="276">276</a>
+<a href="#277" id="277">277</a>
+<a href="#278" id="278">278</a>
+<a href="#279" id="279">279</a>
+<a href="#280" id="280">280</a>
+<a href="#281" id="281">281</a>
+<a href="#282" id="282">282</a>
+<a href="#283" id="283">283</a>
+<a href="#284" id="284">284</a>
+<a href="#285" id="285">285</a>
+<a href="#286" id="286">286</a>
+<a href="#287" id="287">287</a>
+<a href="#288" id="288">288</a>
+<a href="#289" id="289">289</a>
+<a href="#290" id="290">290</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span><span class="kw">crate</span>::entities::{
     CardanoTransactionsSetProof, ProtocolMessage, ProtocolMessagePartKey, TransactionHash,
 };
@@ -275,8 +297,15 @@
 <span class="kw">use </span>serde::{Deserialize, Serialize};
 <span class="kw">use </span>thiserror::Error;
 
+<span class="attr">#[cfg(target_family = <span class="string">"wasm"</span>)]
+</span><span class="kw">use </span>wasm_bindgen::prelude::<span class="kw-2">*</span>;
+
 <span class="doccomment">/// A cryptographic proof for a set of Cardano transactions
 </span><span class="attr">#[derive(Clone, Debug, PartialEq, Default, Serialize, Deserialize)]
+#[cfg_attr(
+    target_family = <span class="string">"wasm"</span>,
+    wasm_bindgen(getter_with_clone, js_name = <span class="string">"CardanoTransactionsProofs"</span>)
+)]
 </span><span class="kw">pub struct </span>CardanoTransactionsProofsMessage {
     <span class="doccomment">/// Hash of the certificate that validate this proof merkle root
     </span><span class="kw">pub </span>certificate_hash: String,
@@ -286,6 +315,21 @@
 
     <span class="doccomment">/// Transactions that could not be certified
     </span><span class="kw">pub </span>non_certified_transactions: Vec&lt;TransactionHash&gt;,
+}
+
+<span class="attr">#[cfg_attr(
+    target_family = <span class="string">"wasm"</span>,
+    wasm_bindgen(js_class = <span class="string">"CardanoTransactionsProofs"</span>)
+)]
+</span><span class="kw">impl </span>CardanoTransactionsProofsMessage {
+    <span class="doccomment">/// Transactions that have been certified
+    </span><span class="attr">#[cfg_attr(target_family = <span class="string">"wasm"</span>, wasm_bindgen(getter))]
+    </span><span class="kw">pub fn </span>transactions_hashes(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Vec&lt;TransactionHash&gt; {
+        <span class="self">self</span>.certified_transactions
+            .iter()
+            .flat_map(|ct| ct.transactions_hashes.clone())
+            .collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;()
+    }
 }
 
 <span class="doccomment">/// Set of transactions verified by [CardanoTransactionsProofsMessage::verify].
