@@ -42,6 +42,7 @@
 <a href="#41" id="41">41</a>
 <a href="#42" id="42">42</a>
 <a href="#43" id="43">43</a>
+<a href="#44" id="44">44</a>
 </pre></div><pre class="rust"><code><span class="doccomment">//! Messages module
 //! This module aims at providing shared structures for API communications.
 </span><span class="kw">mod </span>cardano_transaction_commitment;
@@ -67,6 +68,7 @@
 };
 <span class="kw">pub use </span>cardano_transactions_proof::{
     CardanoTransactionsProofsMessage, VerifiedCardanoTransactions,
+    VerifyCardanoTransactionsProofsError,
 };
 <span class="kw">pub use </span>certificate::CertificateMessage;
 <span class="kw">pub use </span>certificate_list::{

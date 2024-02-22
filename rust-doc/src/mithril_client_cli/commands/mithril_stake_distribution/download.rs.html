@@ -156,14 +156,57 @@
 <a href="#155" id="155">155</a>
 <a href="#156" id="156">156</a>
 <a href="#157" id="157">157</a>
+<a href="#158" id="158">158</a>
+<a href="#159" id="159">159</a>
+<a href="#160" id="160">160</a>
+<a href="#161" id="161">161</a>
+<a href="#162" id="162">162</a>
+<a href="#163" id="163">163</a>
+<a href="#164" id="164">164</a>
+<a href="#165" id="165">165</a>
+<a href="#166" id="166">166</a>
+<a href="#167" id="167">167</a>
+<a href="#168" id="168">168</a>
+<a href="#169" id="169">169</a>
+<a href="#170" id="170">170</a>
+<a href="#171" id="171">171</a>
+<a href="#172" id="172">172</a>
+<a href="#173" id="173">173</a>
+<a href="#174" id="174">174</a>
+<a href="#175" id="175">175</a>
+<a href="#176" id="176">176</a>
+<a href="#177" id="177">177</a>
+<a href="#178" id="178">178</a>
+<a href="#179" id="179">179</a>
+<a href="#180" id="180">180</a>
+<a href="#181" id="181">181</a>
+<a href="#182" id="182">182</a>
+<a href="#183" id="183">183</a>
+<a href="#184" id="184">184</a>
+<a href="#185" id="185">185</a>
+<a href="#186" id="186">186</a>
+<a href="#187" id="187">187</a>
+<a href="#188" id="188">188</a>
+<a href="#189" id="189">189</a>
+<a href="#190" id="190">190</a>
+<a href="#191" id="191">191</a>
+<a href="#192" id="192">192</a>
+<a href="#193" id="193">193</a>
+<a href="#194" id="194">194</a>
+<a href="#195" id="195">195</a>
+<a href="#196" id="196">196</a>
+<a href="#197" id="197">197</a>
+<a href="#198" id="198">198</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>anyhow::Context;
 <span class="kw">use </span>clap::Parser;
 <span class="kw">use </span>config::{builder::DefaultState, ConfigBuilder, Map, Source, Value, ValueKind};
+<span class="kw">use </span>std::sync::Arc;
 <span class="kw">use </span>std::{
     collections::HashMap,
     path::{Path, PathBuf},
 };
 
+<span class="kw">use </span><span class="kw">crate</span>::utils::{IndicatifFeedbackReceiver, ProgressOutputType, ProgressPrinter};
 <span class="kw">use crate</span>::{commands::client_builder, configuration::ConfigParameters, utils::ExpanderUtils};
 <span class="kw">use </span>mithril_client::MessageBuilder;
 <span class="kw">use </span>mithril_client::MithrilResult;
@@ -172,6 +215,10 @@
 /// verification fails, the file is not persisted.
 </span><span class="attr">#[derive(Parser, Debug, Clone)]
 </span><span class="kw">pub struct </span>MithrilStakeDistributionDownloadCommand {
+    <span class="doccomment">/// Enable JSON output.
+    </span><span class="attr">#[clap(long)]
+    </span>json: bool,
+
     <span class="doccomment">/// Hash of the Mithril Stake Distribution artifact.
     ///
     /// If `latest` is specified as artifact_hash, the command will return the latest stake distribution.
@@ -198,7 +245,18 @@
         <span class="kw">let </span>params = ConfigParameters::new(config.try_deserialize::&lt;HashMap&lt;String, String&gt;&gt;()<span class="question-mark">?</span>);
         <span class="kw">let </span>download_dir = <span class="kw-2">&amp;</span>params.require(<span class="string">"download_dir"</span>)<span class="question-mark">?</span>;
         <span class="kw">let </span>download_dir = Path::new(download_dir);
-        <span class="kw">let </span>client = client_builder(<span class="kw-2">&amp;</span>params)<span class="question-mark">?</span>.build()<span class="question-mark">?</span>;
+
+        <span class="kw">let </span>progress_output_type = <span class="kw">if </span><span class="self">self</span>.json {
+            ProgressOutputType::JsonReporter
+        } <span class="kw">else </span>{
+            ProgressOutputType::Tty
+        };
+        <span class="kw">let </span>progress_printer = ProgressPrinter::new(progress_output_type, <span class="number">4</span>);
+        <span class="kw">let </span>client = client_builder(<span class="kw-2">&amp;</span>params)<span class="question-mark">?
+            </span>.add_feedback_receiver(Arc::new(IndicatifFeedbackReceiver::new(
+                progress_output_type,
+            )))
+            .build()<span class="question-mark">?</span>;
 
         <span class="kw">let </span>get_list_of_artifact_ids = || <span class="kw">async </span>{
             <span class="kw">let </span>mithril_stake_distributions = client.mithril_stake_distribution().list().<span class="kw">await</span>.with_context(|| {
@@ -210,6 +268,13 @@
                 .map(|msd| msd.hash.to_owned())
                 .collect::&lt;Vec&lt;String&gt;&gt;())
         };
+        progress_printer.report_step(
+            <span class="number">1</span>,
+            <span class="kw-2">&amp;</span><span class="macro">format!</span>(
+                <span class="string">"Fetching Mithril stake distribution '{}' …"</span>,
+                <span class="self">self</span>.artifact_hash
+            ),
+        )<span class="question-mark">?</span>;
         <span class="kw">let </span>mithril_stake_distribution = client
             .mithril_stake_distribution()
             .get(
@@ -227,6 +292,10 @@
                 )
             })<span class="question-mark">?</span>;
 
+        progress_printer.report_step(
+            <span class="number">2</span>,
+            <span class="string">"Fetching the certificate and verifying the certificate chain…"</span>,
+        )<span class="question-mark">?</span>;
         <span class="kw">let </span>certificate = client
             .certificate()
             .verify_chain(<span class="kw-2">&amp;</span>mithril_stake_distribution.certificate_hash)
@@ -238,6 +307,10 @@
                 )
             })<span class="question-mark">?</span>;
 
+        progress_printer.report_step(
+            <span class="number">3</span>,
+            <span class="string">"Verify that the Mithril stake distribution is signed in the associated certificate"</span>,
+        )<span class="question-mark">?</span>;
         <span class="kw">let </span>message = MessageBuilder::new()
             .compute_mithril_stake_distribution_message(<span class="kw-2">&amp;</span>mithril_stake_distribution)
             .with_context(|| {
@@ -252,6 +325,7 @@
                 ));
         }
 
+        progress_printer.report_step(<span class="number">4</span>, <span class="string">"Writing fetched Mithril stake distribution to a file"</span>)<span class="question-mark">?</span>;
         <span class="kw">if </span>!download_dir.is_dir() {
             std::fs::create_dir_all(download_dir)<span class="question-mark">?</span>;
         }
@@ -269,11 +343,19 @@
             })<span class="question-mark">?</span>,
         )<span class="question-mark">?</span>;
 
-        <span class="macro">println!</span>(
-            <span class="string">"Mithril Stake Distribution '{}' has been verified and saved as '{}'."</span>,
-            <span class="self">self</span>.artifact_hash,
-            filepath.display()
-        );
+        <span class="kw">if </span><span class="self">self</span>.json {
+            <span class="macro">println!</span>(
+                <span class="string">r#"{{"mithril_stake_distribution_hash": "{}", "filepath": "{}"}}"#</span>,
+                mithril_stake_distribution.hash,
+                filepath.display()
+            );
+        } <span class="kw">else </span>{
+            <span class="macro">println!</span>(
+                <span class="string">"Mithril Stake Distribution '{}' has been verified and saved as '{}'."</span>,
+                mithril_stake_distribution.hash,
+                filepath.display()
+            );
+        }
 
         <span class="prelude-val">Ok</span>(())
     }

@@ -289,6 +289,12 @@
 <a href="#288" id="288">288</a>
 <a href="#289" id="289">289</a>
 <a href="#290" id="290">290</a>
+<a href="#291" id="291">291</a>
+<a href="#292" id="292">292</a>
+<a href="#293" id="293">293</a>
+<a href="#294" id="294">294</a>
+<a href="#295" id="295">295</a>
+<a href="#296" id="296">296</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span><span class="kw">crate</span>::entities::{
     CardanoTransactionsSetProof, ProtocolMessage, ProtocolMessagePartKey, TransactionHash,
 };
@@ -364,13 +370,16 @@
     }
 }
 
-<span class="attr">#[derive(Error, Debug)]
+<span class="doccomment">/// Error encountered or produced by the [cardano transaction proof verification][CardanoTransactionsProofsMessage::verify].
+</span><span class="attr">#[derive(Error, Debug)]
 </span><span class="kw">pub enum </span>VerifyCardanoTransactionsProofsError {
     <span class="doccomment">/// The verification of an individual [CardanoTransactionsSetProofMessagePart] failed.
     </span><span class="attr">#[error(<span class="string">"Invalid set proof for transactions hashes: {transactions_hashes:?}"</span>)]
     </span>InvalidSetProof {
-        transactions_hashes: Vec&lt;TransactionHash&gt;,
-        source: StdError,
+        <span class="doccomment">/// Hashes of the invalid transactions
+        </span>transactions_hashes: Vec&lt;TransactionHash&gt;,
+        <span class="doccomment">/// Error source
+        </span>source: StdError,
     },
 
     <span class="doccomment">/// No certified transactions set proof to verify
@@ -380,7 +389,7 @@
     <span class="doccomment">/// Not all certified transactions set proof have the same merkle root.
     ///
     /// This is problematic because all the set proof should be generated from the same
-    /// merkle tree which root is signed in the [crate::entities::Certificate][certificate].
+    /// merkle tree which root is signed in the [certificate][crate::entities::Certificate].
     </span><span class="attr">#[error(<span class="string">"All certified transactions set proofs must share the same Merkle root"</span>)]
     </span>NonMatchingMerkleRoot,
 
@@ -407,8 +416,11 @@
     <span class="doccomment">/// Verify that all the certified transactions proofs are valid
     ///
     /// The following checks will be executed:
+    ///
     /// 1 - Check that each Merkle proof is valid
+    ///
     /// 2 - Check that all proofs share the same Merkle root
+    ///
     /// 3 - Assert that there's at least one certified transaction
     ///
     /// If every check is okay, the hex encoded Merkle root of the proof will be returned.

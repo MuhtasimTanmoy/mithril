@@ -227,7 +227,6 @@
 <a href="#226" id="226">226</a>
 <a href="#227" id="227">227</a>
 <a href="#228" id="228">228</a>
-<a href="#229" id="229">229</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>anyhow::{anyhow, Context};
 <span class="kw">use </span>mithril_common::api_version::APIVersionProvider;
 <span class="kw">use </span>reqwest::Url;
@@ -236,7 +235,7 @@
 
 <span class="kw">use </span><span class="kw">crate</span>::aggregator_client::{AggregatorClient, AggregatorHTTPClient};
 <span class="attr">#[cfg(feature = <span class="string">"unstable"</span>)]
-</span><span class="kw">use </span><span class="kw">crate</span>::cardano_transaction_proof_client::CardanoTransactionProofClient;
+</span><span class="kw">use </span><span class="kw">crate</span>::cardano_transaction_client::CardanoTransactionClient;
 <span class="kw">use </span><span class="kw">crate</span>::certificate_client::{
     CertificateClient, CertificateVerifier, MithrilCertificateVerifier,
 };
@@ -253,7 +252,7 @@
 </span><span class="attr">#[derive(Clone)]
 </span><span class="kw">pub struct </span>Client {
     <span class="attr">#[cfg(feature = <span class="string">"unstable"</span>)]
-    </span>cardano_transaction_proof_client: Arc&lt;CardanoTransactionProofClient&gt;,
+    </span>cardano_transaction_client: Arc&lt;CardanoTransactionClient&gt;,
     certificate_client: Arc&lt;CertificateClient&gt;,
     mithril_stake_distribution_client: Arc&lt;MithrilStakeDistributionClient&gt;,
     snapshot_client: Arc&lt;SnapshotClient&gt;,
@@ -262,8 +261,8 @@
 <span class="kw">impl </span>Client {
     <span class="doccomment">/// Get the client that fetches and verifies Mithril Cardano transaction proof.
     </span><span class="attr">#[cfg(feature = <span class="string">"unstable"</span>)]
-    </span><span class="kw">pub fn </span>cardano_transaction_proof(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Arc&lt;CardanoTransactionProofClient&gt; {
-        <span class="self">self</span>.cardano_transaction_proof_client.clone()
+    </span><span class="kw">pub fn </span>cardano_transaction(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Arc&lt;CardanoTransactionClient&gt; {
+        <span class="self">self</span>.cardano_transaction_client.clone()
     }
 
     <span class="doccomment">/// Get the client that fetches and verifies Mithril certificates.
@@ -370,9 +369,8 @@
         };
 
         <span class="attr">#[cfg(feature = <span class="string">"unstable"</span>)]
-        </span><span class="kw">let </span>cardano_transaction_proof_client = Arc::new(CardanoTransactionProofClient::new(
-            aggregator_client.clone(),
-        ));
+        </span><span class="kw">let </span>cardano_transaction_client =
+            Arc::new(CardanoTransactionClient::new(aggregator_client.clone()));
 
         <span class="kw">let </span>certificate_verifier = <span class="kw">match </span><span class="self">self</span>.certificate_verifier {
             <span class="prelude-val">None </span>=&gt; Arc::new(
@@ -407,7 +405,7 @@
 
         <span class="prelude-val">Ok</span>(Client {
             <span class="attr">#[cfg(feature = <span class="string">"unstable"</span>)]
-            </span>cardano_transaction_proof_client,
+            </span>cardano_transaction_client,
             certificate_client,
             mithril_stake_distribution_client,
             snapshot_client,
