@@ -58,7 +58,7 @@
     <span class="kw">async fn </span>read(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; StdResult&lt;Vec&lt;EraMarker&gt;&gt; {
         <span class="prelude-val">Ok</span>(<span class="macro">vec!</span>[EraMarker::new(
             <span class="kw-2">&amp;</span>SupportedEra::eras().first().unwrap().to_string(),
-            <span class="prelude-val">Some</span>(Epoch(<span class="number">1</span>)),
+            <span class="prelude-val">Some</span>(Epoch(<span class="number">0</span>)),
         )])
     }
 }
@@ -76,7 +76,7 @@
         <span class="macro">assert_eq!</span>(
             <span class="macro">vec!</span>[EraMarker::new(
                 <span class="kw-2">&amp;</span>SupportedEra::dummy().to_string(),
-                <span class="prelude-val">Some</span>(Epoch(<span class="number">1</span>))
+                <span class="prelude-val">Some</span>(Epoch(<span class="number">0</span>))
             )],
             adapter
                 .read()

@@ -171,55 +171,14 @@
 <a href="#170" id="170">170</a>
 <a href="#171" id="171">171</a>
 <a href="#172" id="172">172</a>
-<a href="#173" id="173">173</a>
-<a href="#174" id="174">174</a>
-<a href="#175" id="175">175</a>
-<a href="#176" id="176">176</a>
-<a href="#177" id="177">177</a>
-<a href="#178" id="178">178</a>
-<a href="#179" id="179">179</a>
-<a href="#180" id="180">180</a>
-<a href="#181" id="181">181</a>
-<a href="#182" id="182">182</a>
-<a href="#183" id="183">183</a>
-<a href="#184" id="184">184</a>
-<a href="#185" id="185">185</a>
-<a href="#186" id="186">186</a>
-<a href="#187" id="187">187</a>
-<a href="#188" id="188">188</a>
-<a href="#189" id="189">189</a>
-<a href="#190" id="190">190</a>
-<a href="#191" id="191">191</a>
-<a href="#192" id="192">192</a>
-<a href="#193" id="193">193</a>
-<a href="#194" id="194">194</a>
-<a href="#195" id="195">195</a>
-<a href="#196" id="196">196</a>
-<a href="#197" id="197">197</a>
-<a href="#198" id="198">198</a>
-<a href="#199" id="199">199</a>
-<a href="#200" id="200">200</a>
-<a href="#201" id="201">201</a>
-<a href="#202" id="202">202</a>
-<a href="#203" id="203">203</a>
-<a href="#204" id="204">204</a>
-<a href="#205" id="205">205</a>
-<a href="#206" id="206">206</a>
-<a href="#207" id="207">207</a>
-<a href="#208" id="208">208</a>
-<a href="#209" id="209">209</a>
-<a href="#210" id="210">210</a>
-<a href="#211" id="211">211</a>
-<a href="#212" id="212">212</a>
-</pre></div><pre class="rust"><code><span class="kw">use </span>anyhow::Context;
+</pre></div><pre class="rust"><code><span class="kw">use </span>std::collections::HashMap;
+
 <span class="kw">use </span>async_trait::async_trait;
 <span class="kw">use </span>mithril_common::StdResult;
+<span class="kw">use </span>slog_scope::debug;
 <span class="kw">use </span>tokio::sync::RwLock;
 
 <span class="kw">use </span>mithril_common::entities::{Epoch, ProtocolParameters};
-<span class="kw">use </span>mithril_persistence::store::{adapter::StoreAdapter, StorePruner};
-
-<span class="kw">type </span>Adapter = Box&lt;<span class="kw">dyn </span>StoreAdapter&lt;Key = Epoch, Record = ProtocolParameters&gt;&gt;;
 
 <span class="doccomment">/// Store and get [protocol parameters][ProtocolParameters] for given epoch.
 </span><span class="attr">#[async_trait]
@@ -233,194 +192,155 @@
 
     <span class="doccomment">/// Get the saved `ProtocolParameter` for the given [Epoch] if any.
     </span><span class="kw">async fn </span>get_protocol_parameters(<span class="kw-2">&amp;</span><span class="self">self</span>, epoch: Epoch) -&gt; StdResult&lt;<span class="prelude-ty">Option</span>&lt;ProtocolParameters&gt;&gt;;
-}
-<span class="doccomment">/// `ProtocolParameter` store.
-</span><span class="kw">pub struct </span>ProtocolParametersStore {
-    adapter: RwLock&lt;Adapter&gt;,
-    retention_len: <span class="prelude-ty">Option</span>&lt;usize&gt;,
+
+    <span class="doccomment">/// Handle discrepancies at startup in the protocol parameters store.
+    /// In case an aggregator has been launched after some epochs of not being up or at initial startup,
+    /// the discrepancies in the protocol parameters store needs to be fixed.
+    /// The protocol parameters needs to be recorded for the working epoch and the next 2 epochs.
+    </span><span class="kw">async fn </span>handle_discrepancies_at_startup(
+        <span class="kw-2">&amp;</span><span class="self">self</span>,
+        current_epoch: Epoch,
+        configuration_protocol_parameters: <span class="kw-2">&amp;</span>ProtocolParameters,
+    ) -&gt; StdResult&lt;()&gt; {
+        <span class="kw">for </span>epoch_offset <span class="kw">in </span><span class="number">0</span>..=<span class="number">2 </span>{
+            <span class="kw">let </span>epoch = current_epoch + epoch_offset;
+            <span class="kw">if </span><span class="self">self</span>.get_protocol_parameters(epoch).<span class="kw">await</span><span class="question-mark">?</span>.is_none() {
+                <span class="macro">debug!</span>(<span class="string">"Handle discrepancies at startup of protocol parameters store, will record protocol parameters from the configuration for epoch {epoch}: {configuration_protocol_parameters:?}"</span>);
+                <span class="self">self</span>.save_protocol_parameters(epoch, configuration_protocol_parameters.clone())
+                    .<span class="kw">await</span><span class="question-mark">?</span>;
+            }
+        }
+
+        <span class="prelude-val">Ok</span>(())
+    }
 }
 
-<span class="kw">impl </span>ProtocolParametersStore {
-    <span class="doccomment">/// Create an instance of `ProtocolParameterStore`.
-    </span><span class="kw">pub fn </span>new(adapter: Adapter, retention_len: <span class="prelude-ty">Option</span>&lt;usize&gt;) -&gt; <span class="self">Self </span>{
+<span class="kw">pub struct </span>FakeProtocolParametersStorer {
+    <span class="kw">pub </span>protocol_parameters: RwLock&lt;HashMap&lt;Epoch, ProtocolParameters&gt;&gt;,
+}
+
+<span class="kw">impl </span>FakeProtocolParametersStorer {
+    <span class="attr">#[cfg(test)]
+    </span><span class="kw">pub fn </span>new(data: Vec&lt;(Epoch, ProtocolParameters)&gt;) -&gt; <span class="self">Self </span>{
+        <span class="kw">let </span>protocol_parameters = RwLock::new(data.into_iter().collect());
         <span class="self">Self </span>{
-            adapter: RwLock::new(adapter),
-            retention_len,
+            protocol_parameters,
         }
     }
 }
 
 <span class="attr">#[async_trait]
-</span><span class="kw">impl </span>StorePruner <span class="kw">for </span>ProtocolParametersStore {
-    <span class="kw">type </span>Key = Epoch;
-    <span class="kw">type </span>Record = ProtocolParameters;
-
-    <span class="kw">fn </span>get_adapter(
-        <span class="kw-2">&amp;</span><span class="self">self</span>,
-    ) -&gt; <span class="kw-2">&amp;</span>RwLock&lt;Box&lt;<span class="kw">dyn </span>StoreAdapter&lt;Key = <span class="self">Self</span>::Key, Record = <span class="self">Self</span>::Record&gt;&gt;&gt; {
-        <span class="kw-2">&amp;</span><span class="self">self</span>.adapter
-    }
-
-    <span class="kw">fn </span>get_max_records(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;usize&gt; {
-        <span class="self">self</span>.retention_len
-    }
-
-    <span class="doccomment">/// Pruning is deactivated on this store.
-    </span><span class="kw">async fn </span>prune(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; StdResult&lt;()&gt; {
-        <span class="prelude-val">Ok</span>(())
-    }
-}
-
-<span class="attr">#[async_trait]
-</span><span class="kw">impl </span>ProtocolParametersStorer <span class="kw">for </span>ProtocolParametersStore {
+</span><span class="kw">impl </span>ProtocolParametersStorer <span class="kw">for </span>FakeProtocolParametersStorer {
     <span class="kw">async fn </span>save_protocol_parameters(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         epoch: Epoch,
         protocol_parameters: ProtocolParameters,
     ) -&gt; StdResult&lt;<span class="prelude-ty">Option</span>&lt;ProtocolParameters&gt;&gt; {
-        <span class="kw">let </span>previous_protocol_parameters = <span class="self">self</span>.adapter.read().<span class="kw">await</span>.get_record(<span class="kw-2">&amp;</span>epoch).<span class="kw">await</span><span class="question-mark">?</span>;
-        <span class="self">self</span>.adapter
-            .write()
-            .<span class="kw">await
-            </span>.store_record(<span class="kw-2">&amp;</span>epoch, <span class="kw-2">&amp;</span>protocol_parameters)
-            .<span class="kw">await
-            </span>.with_context(|| <span class="macro">format!</span>(<span class="string">"Could not save protocol parameters for epoch '{epoch}'"</span>))<span class="question-mark">?</span>;
-        <span class="self">self</span>.prune().<span class="kw">await</span><span class="question-mark">?</span>;
-
-        <span class="prelude-val">Ok</span>(previous_protocol_parameters)
+        <span class="kw">let </span><span class="kw-2">mut </span>protocol_paremeters = <span class="self">self</span>.protocol_parameters.write().<span class="kw">await</span>;
+        <span class="prelude-val">Ok</span>(protocol_paremeters.insert(epoch, protocol_parameters))
     }
 
     <span class="kw">async fn </span>get_protocol_parameters(<span class="kw-2">&amp;</span><span class="self">self</span>, epoch: Epoch) -&gt; StdResult&lt;<span class="prelude-ty">Option</span>&lt;ProtocolParameters&gt;&gt; {
-        <span class="self">self</span>.adapter
-            .read()
-            .<span class="kw">await
-            </span>.get_record(<span class="kw-2">&amp;</span>epoch)
-            .<span class="kw">await
-            </span>.with_context(|| <span class="macro">format!</span>(<span class="string">"Could not get protocol parameters for epoch '{epoch}'"</span>))
+        <span class="kw">let </span>protocol_paremeters = <span class="self">self</span>.protocol_parameters.read().<span class="kw">await</span>;
+        <span class="prelude-val">Ok</span>(protocol_paremeters.get(<span class="kw-2">&amp;</span>epoch).cloned())
     }
 }
 
 <span class="attr">#[cfg(test)]
 </span><span class="kw">mod </span>tests {
-    <span class="kw">use super</span>::<span class="kw-2">*</span>;
 
     <span class="kw">use </span>mithril_common::test_utils::fake_data;
-    <span class="kw">use </span>mithril_persistence::store::adapter::MemoryAdapter;
 
-    <span class="kw">fn </span>setup_protocol_parameters(nb_epoch: u64) -&gt; Vec&lt;(Epoch, ProtocolParameters)&gt; {
-        <span class="kw">let </span><span class="kw-2">mut </span>values: Vec&lt;(Epoch, ProtocolParameters)&gt; = Vec::new();
-
-        <span class="kw">for </span>epoch <span class="kw">in </span><span class="number">1</span>..=nb_epoch {
-            <span class="kw">let </span><span class="kw-2">mut </span>protocol_parameters = fake_data::protocol_parameters();
-            protocol_parameters.k += epoch;
-            values.push((Epoch(epoch), protocol_parameters));
-        }
-        values
-    }
-
-    <span class="kw">fn </span>init_store(nb_epoch: u64, retention_len: <span class="prelude-ty">Option</span>&lt;usize&gt;) -&gt; ProtocolParametersStore {
-        <span class="kw">let </span>values = setup_protocol_parameters(nb_epoch);
-
-        <span class="kw">let </span>values = <span class="kw">if </span>!values.is_empty() {
-            <span class="prelude-val">Some</span>(values)
-        } <span class="kw">else </span>{
-            <span class="prelude-val">None
-        </span>};
-        <span class="kw">let </span>adapter: MemoryAdapter&lt;Epoch, ProtocolParameters&gt; = MemoryAdapter::new(values).unwrap();
-
-        ProtocolParametersStore::new(Box::new(adapter), retention_len)
-    }
+    <span class="kw">use super</span>::<span class="kw-2">*</span>;
 
     <span class="attr">#[tokio::test]
-    </span><span class="kw">async fn </span>save_key_in_empty_store() {
-        <span class="kw">let </span>protocol_parameters = setup_protocol_parameters(<span class="number">1</span>);
-        <span class="kw">let </span>store = init_store(<span class="number">0</span>, <span class="prelude-val">None</span>);
-        <span class="kw">let </span>res = store
-            .save_protocol_parameters(protocol_parameters[<span class="number">0</span>].<span class="number">0</span>, protocol_parameters[<span class="number">0</span>].<span class="number">1</span>.clone())
+    </span><span class="kw">async fn </span>test_save_protocol_parameters_do_not_exist_yet() {
+        <span class="kw">let </span>protocol_parameters = fake_data::protocol_parameters();
+        <span class="kw">let </span>epoch = Epoch(<span class="number">1</span>);
+        <span class="kw">let </span>store = FakeProtocolParametersStorer::new(<span class="macro">vec!</span>[]);
+        <span class="kw">let </span>protocol_parameters_previous = store
+            .save_protocol_parameters(epoch, protocol_parameters)
             .<span class="kw">await
             </span>.unwrap();
 
-        <span class="macro">assert!</span>(res.is_none());
+        <span class="macro">assert!</span>(protocol_parameters_previous.is_none());
     }
 
     <span class="attr">#[tokio::test]
-    </span><span class="kw">async fn </span>update_protocol_parameters_in_store() {
-        <span class="kw">let </span>protocol_parameters = setup_protocol_parameters(<span class="number">2</span>);
-        <span class="kw">let </span>store = init_store(<span class="number">1</span>, <span class="prelude-val">None</span>);
-        <span class="kw">let </span>res = store
-            .save_protocol_parameters(protocol_parameters[<span class="number">0</span>].<span class="number">0</span>, protocol_parameters[<span class="number">1</span>].<span class="number">1</span>.clone())
+    </span><span class="kw">async fn </span>test_save_protocol_parameters_already_exist() {
+        <span class="kw">let </span>protocol_parameters = fake_data::protocol_parameters();
+        <span class="kw">let </span>epoch = Epoch(<span class="number">1</span>);
+        <span class="kw">let </span>store = FakeProtocolParametersStorer::new(<span class="macro">vec!</span>[(epoch, protocol_parameters.clone())]);
+        <span class="kw">let </span>protocol_parameters_new = ProtocolParameters {
+            k: protocol_parameters.k + <span class="number">1</span>,
+            ..protocol_parameters
+        };
+        <span class="kw">let </span>protocol_parameters_previous = store
+            .save_protocol_parameters(epoch, protocol_parameters_new)
             .<span class="kw">await
             </span>.unwrap();
 
-        <span class="macro">assert_eq!</span>(protocol_parameters[<span class="number">0</span>].<span class="number">1</span>, res.unwrap());
+        <span class="macro">assert_eq!</span>(<span class="prelude-val">Some</span>(protocol_parameters), protocol_parameters_previous);
     }
 
     <span class="attr">#[tokio::test]
-    </span><span class="kw">async fn </span>get_protocol_parameters_for_empty_epoch() {
-        <span class="kw">let </span>store = init_store(<span class="number">2</span>, <span class="prelude-val">None</span>);
-        <span class="kw">let </span>res = store.get_protocol_parameters(Epoch(<span class="number">0</span>)).<span class="kw">await</span>.unwrap();
+    </span><span class="kw">async fn </span>test_get_protocol_parameters_exist() {
+        <span class="kw">let </span>protocol_parameters = fake_data::protocol_parameters();
+        <span class="kw">let </span>epoch = Epoch(<span class="number">1</span>);
+        <span class="kw">let </span>store = FakeProtocolParametersStorer::new(<span class="macro">vec!</span>[(epoch, protocol_parameters.clone())]);
+        <span class="kw">let </span>protocol_parameters_stored = store.get_protocol_parameters(epoch).<span class="kw">await</span>.unwrap();
 
-        <span class="macro">assert!</span>(res.is_none());
+        <span class="macro">assert_eq!</span>(<span class="prelude-val">Some</span>(protocol_parameters), protocol_parameters_stored);
     }
 
     <span class="attr">#[tokio::test]
-    </span><span class="kw">async fn </span>get_protocol_parameters_for_existing_epoch() {
-        <span class="kw">let </span>store = init_store(<span class="number">2</span>, <span class="prelude-val">None</span>);
-        <span class="kw">let </span>res = store.get_protocol_parameters(Epoch(<span class="number">1</span>)).<span class="kw">await</span>.unwrap();
+    </span><span class="kw">async fn </span>test_get_protocol_parameters_do_not_exist() {
+        <span class="kw">let </span>protocol_parameters = fake_data::protocol_parameters();
+        <span class="kw">let </span>epoch = Epoch(<span class="number">1</span>);
+        <span class="kw">let </span>store = FakeProtocolParametersStorer::new(<span class="macro">vec!</span>[(epoch, protocol_parameters.clone())]);
+        <span class="kw">let </span>protocol_parameters_stored = store.get_protocol_parameters(epoch + <span class="number">1</span>).<span class="kw">await</span>.unwrap();
 
-        <span class="macro">assert!</span>(res.is_some());
+        <span class="macro">assert!</span>(protocol_parameters_stored.is_none());
     }
 
     <span class="attr">#[tokio::test]
-    </span><span class="kw">async fn </span>test_retention_length() {
-        <span class="kw">let </span>store = init_store(<span class="number">2</span>, <span class="prelude-val">Some</span>(<span class="number">2</span>));
-        <span class="kw">let </span>protocol_parameters = setup_protocol_parameters(<span class="number">3</span>);
-        <span class="kw">let _ </span>= store
-            .save_protocol_parameters(Epoch(<span class="number">3</span>), protocol_parameters[<span class="number">2</span>].<span class="number">1</span>.clone())
-            .<span class="kw">await
-            </span>.unwrap();
-        <span class="macro">assert!</span>(store
-            .get_protocol_parameters(Epoch(<span class="number">1</span>))
-            .<span class="kw">await
-            </span>.unwrap()
-            .is_some());
-        <span class="kw">let </span>res = store.get_protocol_parameters(Epoch(<span class="number">2</span>)).<span class="kw">await</span>.unwrap();
-        <span class="macro">assert!</span>(res.is_some());
-    }
+    </span><span class="kw">async fn </span>test_handle_discrepandies_at_startup_should_complete_at_least_two_epochs() {
+        <span class="kw">let </span>protocol_parameters = fake_data::protocol_parameters();
+        <span class="kw">let </span>protocol_parameters_new = ProtocolParameters {
+            k: protocol_parameters.k + <span class="number">1</span>,
+            ..protocol_parameters
+        };
+        <span class="kw">let </span>epoch = Epoch(<span class="number">1</span>);
+        <span class="kw">let </span>store = FakeProtocolParametersStorer::new(<span class="macro">vec!</span>[
+            (epoch, protocol_parameters.clone()),
+            (epoch + <span class="number">1</span>, protocol_parameters.clone()),
+        ]);
 
-    <span class="attr">#[tokio::test]
-    </span><span class="kw">async fn </span>test_retention_length_on_update() {
-        <span class="kw">let </span>store = init_store(<span class="number">4</span>, <span class="prelude-val">Some</span>(<span class="number">2</span>));
-        <span class="kw">let </span><span class="kw-2">mut </span>protocol_parameters = store
-            .get_protocol_parameters(Epoch(<span class="number">1</span>))
-            .<span class="kw">await
-            </span>.unwrap()
-            .expect(<span class="string">"There should be a protocol parameter for this epoch"</span>);
-        protocol_parameters.k += <span class="number">1</span>;
         store
-            .save_protocol_parameters(Epoch(<span class="number">1</span>), protocol_parameters)
+            .handle_discrepancies_at_startup(epoch, <span class="kw-2">&amp;</span>protocol_parameters_new)
             .<span class="kw">await
             </span>.unwrap();
-        <span class="macro">assert!</span>(store
-            .get_protocol_parameters(Epoch(<span class="number">4</span>))
-            .<span class="kw">await
-            </span>.unwrap()
-            .is_some());
-        <span class="macro">assert!</span>(store
-            .get_protocol_parameters(Epoch(<span class="number">3</span>))
-            .<span class="kw">await
-            </span>.unwrap()
-            .is_some());
-        <span class="macro">assert!</span>(store
-            .get_protocol_parameters(Epoch(<span class="number">1</span>))
-            .<span class="kw">await
-            </span>.unwrap()
-            .is_some());
-        <span class="macro">assert!</span>(store
-            .get_protocol_parameters(Epoch(<span class="number">2</span>))
-            .<span class="kw">await
-            </span>.unwrap()
-            .is_some());
+
+        <span class="kw">let </span>protocol_parameters_stored = store.get_protocol_parameters(epoch).<span class="kw">await</span>.unwrap();
+        <span class="macro">assert_eq!</span>(
+            <span class="prelude-val">Some</span>(protocol_parameters.clone()),
+            protocol_parameters_stored
+        );
+
+        <span class="kw">let </span>protocol_parameters_stored = store.get_protocol_parameters(epoch + <span class="number">1</span>).<span class="kw">await</span>.unwrap();
+        <span class="macro">assert_eq!</span>(
+            <span class="prelude-val">Some</span>(protocol_parameters.clone()),
+            protocol_parameters_stored
+        );
+
+        <span class="kw">let </span>protocol_parameters_stored = store.get_protocol_parameters(epoch + <span class="number">2</span>).<span class="kw">await</span>.unwrap();
+        <span class="macro">assert_eq!</span>(
+            <span class="prelude-val">Some</span>(protocol_parameters_new.clone()),
+            protocol_parameters_stored
+        );
+
+        <span class="kw">let </span>protocol_parameters_stored = store.get_protocol_parameters(epoch + <span class="number">3</span>).<span class="kw">await</span>.unwrap();
+        <span class="macro">assert!</span>(protocol_parameters_stored.is_none());
     }
 }
 </code></pre></div></section></main></body></html>

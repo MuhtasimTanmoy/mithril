@@ -843,11 +843,6 @@
 <a href="#842" id="842">842</a>
 <a href="#843" id="843">843</a>
 <a href="#844" id="844">844</a>
-<a href="#845" id="845">845</a>
-<a href="#846" id="846">846</a>
-<a href="#847" id="847">847</a>
-<a href="#848" id="848">848</a>
-<a href="#849" id="849">849</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>anyhow::Context;
 <span class="kw">use </span>async_trait::async_trait;
 <span class="kw">use </span>slog_scope::debug;
@@ -1317,7 +1312,8 @@
     <span class="kw">use </span>std::collections::{BTreeSet, HashMap};
 
     <span class="kw">use </span><span class="kw">crate</span>::services::epoch_service::tests::ServiceBuilderParameters::WithFutureProtocolParameters;
-    <span class="kw">use crate</span>::{ProtocolParametersStore, VerificationKeyStore};
+    <span class="kw">use </span><span class="kw">crate</span>::store::FakeProtocolParametersStorer;
+    <span class="kw">use </span><span class="kw">crate</span>::VerificationKeyStore;
 
     <span class="kw">use super</span>::<span class="kw-2">*</span>;
 
@@ -1408,26 +1404,20 @@
             }
         }
 
-        <span class="kw">let </span>protocol_parameters_store = ProtocolParametersStore::new(
-            Box::new(
-                MemoryAdapter::new(<span class="prelude-val">Some</span>(<span class="macro">vec!</span>[
-                    (
-                        signer_retrieval_epoch,
-                        current_epoch_fixture.protocol_parameters(),
-                    ),
-                    (
-                        next_signer_retrieval_epoch,
-                        next_epoch_fixture.protocol_parameters(),
-                    ),
-                    (
-                        next_signer_retrieval_epoch.next(),
-                        upcoming_protocol_parameters.clone(),
-                    ),
-                ]))
-                .unwrap(),
+        <span class="kw">let </span>protocol_parameters_store = FakeProtocolParametersStorer::new(<span class="macro">vec!</span>[
+            (
+                signer_retrieval_epoch,
+                current_epoch_fixture.protocol_parameters(),
             ),
-            <span class="prelude-val">None</span>,
-        );
+            (
+                next_signer_retrieval_epoch,
+                next_epoch_fixture.protocol_parameters(),
+            ),
+            (
+                next_signer_retrieval_epoch.next(),
+                upcoming_protocol_parameters.clone(),
+            ),
+        ]);
         <span class="kw">let </span>vkey_store = VerificationKeyStore::new(Box::new(
             MemoryAdapter::new(<span class="prelude-val">Some</span>(<span class="macro">vec!</span>[
                 (

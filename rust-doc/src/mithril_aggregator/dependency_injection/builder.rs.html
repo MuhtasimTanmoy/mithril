@@ -1398,38 +1398,9 @@
 <a href="#1397" id="1397">1397</a>
 <a href="#1398" id="1398">1398</a>
 <a href="#1399" id="1399">1399</a>
-<a href="#1400" id="1400">1400</a>
-<a href="#1401" id="1401">1401</a>
-<a href="#1402" id="1402">1402</a>
-<a href="#1403" id="1403">1403</a>
-<a href="#1404" id="1404">1404</a>
-<a href="#1405" id="1405">1405</a>
-<a href="#1406" id="1406">1406</a>
-<a href="#1407" id="1407">1407</a>
-<a href="#1408" id="1408">1408</a>
-<a href="#1409" id="1409">1409</a>
-<a href="#1410" id="1410">1410</a>
-<a href="#1411" id="1411">1411</a>
-<a href="#1412" id="1412">1412</a>
-<a href="#1413" id="1413">1413</a>
-<a href="#1414" id="1414">1414</a>
-<a href="#1415" id="1415">1415</a>
-<a href="#1416" id="1416">1416</a>
-<a href="#1417" id="1417">1417</a>
-<a href="#1418" id="1418">1418</a>
-<a href="#1419" id="1419">1419</a>
-<a href="#1420" id="1420">1420</a>
-<a href="#1421" id="1421">1421</a>
-<a href="#1422" id="1422">1422</a>
-<a href="#1423" id="1423">1423</a>
-<a href="#1424" id="1424">1424</a>
-<a href="#1425" id="1425">1425</a>
-<a href="#1426" id="1426">1426</a>
-<a href="#1427" id="1427">1427</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>anyhow::Context;
 <span class="kw">use </span>semver::Version;
 <span class="kw">use </span>slog::Logger;
-<span class="kw">use </span>slog_scope::debug;
 <span class="kw">use </span>sqlite::Connection;
 <span class="kw">use </span>std::sync::Arc;
 <span class="kw">use </span>tokio::{
@@ -1964,10 +1935,34 @@
     <span class="kw">async fn </span>build_protocol_parameters_store(
         <span class="kw-2">&amp;mut </span><span class="self">self</span>,
     ) -&gt; <span class="prelude-ty">Result</span>&lt;Arc&lt;<span class="kw">dyn </span>ProtocolParametersStorer&gt;&gt; {
-        <span class="prelude-val">Ok</span>(Arc::new(EpochSettingStore::new(
+        <span class="kw">let </span>protocol_parameters_store = EpochSettingStore::new(
             <span class="self">self</span>.get_sqlite_connection().<span class="kw">await</span><span class="question-mark">?</span>,
             <span class="self">self</span>.configuration.safe_epoch_retention_limit(),
-        )))
+        );
+        <span class="kw">let </span>current_epoch = <span class="self">self
+            </span>.get_chain_observer()
+            .<span class="kw">await</span><span class="question-mark">?
+            </span>.get_current_epoch()
+            .<span class="kw">await
+            </span>.map_err(|e| DependenciesBuilderError::Initialization {
+                message: <span class="string">"cannot create aggregator runner: failed to retrieve current epoch."
+                    </span>.to_string(),
+                error: <span class="prelude-val">Some</span>(e.into()),
+            })<span class="question-mark">?
+            </span>.ok_or(DependenciesBuilderError::Initialization {
+                message: <span class="string">"cannot build aggregator runner: no epoch returned."</span>.to_string(),
+                error: <span class="prelude-val">None</span>,
+            })<span class="question-mark">?</span>;
+
+        protocol_parameters_store
+            .handle_discrepancies_at_startup(current_epoch, <span class="kw-2">&amp;</span><span class="self">self</span>.configuration.protocol_parameters)
+            .<span class="kw">await
+            </span>.map_err(|e| DependenciesBuilderError::Initialization {
+                message: <span class="string">"can not create aggregator runner"</span>.to_string(),
+                error: <span class="prelude-val">Some</span>(e),
+            })<span class="question-mark">?</span>;
+
+        <span class="prelude-val">Ok</span>(Arc::new(protocol_parameters_store))
     }
 
     <span class="doccomment">/// Get a configured [ProtocolParametersStorer].
@@ -2642,57 +2637,6 @@
 
     <span class="doccomment">/// Create the AggregatorRunner
     </span><span class="kw">pub async fn </span>create_aggregator_runner(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;AggregatorRuntime&gt; {
-        <span class="comment">// initialize ProtocolParameters store if needed
-        </span>{
-            <span class="kw">let </span>current_epoch = <span class="self">self
-                </span>.get_chain_observer()
-                .<span class="kw">await</span><span class="question-mark">?
-                </span>.get_current_epoch()
-                .<span class="kw">await
-                </span>.map_err(|e| DependenciesBuilderError::Initialization {
-                    message: <span class="string">"cannot create aggregator runner: failed to retrieve current epoch."
-                        </span>.to_string(),
-                    error: <span class="prelude-val">Some</span>(e.into()),
-                })<span class="question-mark">?
-                </span>.ok_or(DependenciesBuilderError::Initialization {
-                    message: <span class="string">"cannot build aggregator runner: no epoch returned."</span>.to_string(),
-                    error: <span class="prelude-val">None</span>,
-                })<span class="question-mark">?</span>;
-            <span class="kw">let </span>(work_epoch, epoch_to_sign, next_epoch_to_sign) = <span class="kw">match </span>current_epoch {
-                Epoch(<span class="number">0</span>) =&gt; (Epoch(<span class="number">0</span>), Epoch(<span class="number">1</span>), Epoch(<span class="number">2</span>)),
-                epoch =&gt; (
-                    epoch.offset_to_signer_retrieval_epoch().unwrap(),
-                    epoch.offset_to_next_signer_retrieval_epoch(),
-                    epoch.offset_to_next_signer_retrieval_epoch().next(),
-                ),
-            };
-            <span class="kw">let </span>protocol_parameters_store = <span class="self">self</span>.get_protocol_parameters_store().<span class="kw">await</span><span class="question-mark">?</span>;
-
-            <span class="kw">if </span>protocol_parameters_store
-                .get_protocol_parameters(work_epoch)
-                .<span class="kw">await
-                </span>.map_err(|e| DependenciesBuilderError::Initialization {
-                    message: <span class="string">"can not create aggregator runner"</span>.to_string(),
-                    error: <span class="prelude-val">Some</span>(e),
-                })<span class="question-mark">?
-                </span>.is_none()
-            {
-                <span class="macro">debug!</span>(<span class="string">"First launch, will use the configured protocol parameters for the current and next epoch certificate"</span>);
-
-                <span class="kw">for </span>epoch <span class="kw">in </span>[work_epoch, epoch_to_sign, next_epoch_to_sign] {
-                    protocol_parameters_store
-                        .save_protocol_parameters(
-                            epoch,
-                            <span class="self">self</span>.configuration.protocol_parameters.clone(),
-                        )
-                        .<span class="kw">await
-                        </span>.map_err(|e| DependenciesBuilderError::Initialization {
-                            message: <span class="string">"can not create aggregator runner"</span>.to_string(),
-                            error: <span class="prelude-val">Some</span>(e),
-                        })<span class="question-mark">?</span>;
-                }
-            }
-        }
         <span class="kw">let </span>dependency_container = Arc::new(<span class="self">self</span>.build_dependency_container().<span class="kw">await</span><span class="question-mark">?</span>);
 
         <span class="kw">let </span>config = AggregatorConfig::new(
