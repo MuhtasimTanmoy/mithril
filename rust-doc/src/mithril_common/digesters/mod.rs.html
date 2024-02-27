@@ -19,12 +19,15 @@
 <a href="#18" id="18">18</a>
 <a href="#19" id="19">19</a>
 <a href="#20" id="20">20</a>
+<a href="#21" id="21">21</a>
+<a href="#22" id="22">22</a>
+<a href="#23" id="23">23</a>
+<a href="#24" id="24">24</a>
 </pre></div><pre class="rust"><code><span class="doccomment">//! Tools to compute mithril digest from a Cardano node database.
 
 </span><span class="kw">pub mod </span>cache;
 <span class="kw">mod </span>cardano_immutable_digester;
 <span class="kw">mod </span>dumb_immutable_observer;
-<span class="kw">mod </span>dummy_immutable_db_builder;
 <span class="kw">mod </span>immutable_digester;
 <span class="kw">mod </span>immutable_file;
 <span class="kw">mod </span>immutable_file_observer;
@@ -38,5 +41,10 @@
 };
 
 <span class="kw">pub use </span>dumb_immutable_observer::DumbImmutableDigester;
-<span class="kw">pub use </span>dummy_immutable_db_builder::{DummyImmutableDb, DummyImmutablesDbBuilder};
+
+<span class="macro">cfg_test_tools! </span>{
+    <span class="kw">mod </span>dummy_immutable_db_builder;
+
+    <span class="kw">pub use </span>dummy_immutable_db_builder::{DummyImmutableDb, DummyImmutablesDbBuilder};
+}
 </code></pre></div></section></main></body></html>

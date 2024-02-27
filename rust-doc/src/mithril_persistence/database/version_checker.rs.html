@@ -358,11 +358,6 @@
 <a href="#357" id="357">357</a>
 <a href="#358" id="358">358</a>
 <a href="#359" id="359">359</a>
-<a href="#360" id="360">360</a>
-<a href="#361" id="361">361</a>
-<a href="#362" id="362">362</a>
-<a href="#363" id="363">363</a>
-<a href="#364" id="364">364</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>anyhow::{anyhow, Context};
 <span class="kw">use </span>chrono::Utc;
 <span class="kw">use </span>mithril_common::StdResult;
@@ -537,6 +532,7 @@
 <span class="attr">#[cfg(test)]
 </span><span class="kw">mod </span>tests {
     <span class="kw">use </span>anyhow::Context;
+    <span class="kw">use </span>mithril_common::test_utils::TempDir;
     <span class="kw">use </span>mithril_common::StdResult;
     <span class="kw">use </span>sqlite::Connection;
     <span class="kw">use </span>std::path::PathBuf;
@@ -553,14 +549,9 @@
         <span class="macro">assert_eq!</span>(db_version, version.version);
     }
 
-    <span class="kw">fn </span>create_sqlite_file(name: <span class="kw-2">&amp;</span>str) -&gt; StdResult&lt;(PathBuf, SqliteConnection)&gt; {
-        <span class="kw">let </span>dirpath = std::env::temp_dir().join(<span class="string">"mithril_test_database"</span>);
-        std::fs::create_dir_all(<span class="kw-2">&amp;</span>dirpath).unwrap();
-        <span class="kw">let </span>filepath = dirpath.join(name);
-
-        <span class="kw">if </span>filepath.exists() {
-            std::fs::remove_file(filepath.as_path()).unwrap();
-        }
+    <span class="kw">fn </span>create_sqlite_file(test_name: <span class="kw-2">&amp;</span>str) -&gt; StdResult&lt;(PathBuf, SqliteConnection)&gt; {
+        <span class="kw">let </span>dirpath = TempDir::create(<span class="string">"mithril_test_database"</span>, test_name);
+        <span class="kw">let </span>filepath = dirpath.join(<span class="string">"db.sqlite3"</span>);
 
         <span class="kw">let </span>connection = Connection::open_thread_safe(<span class="kw-2">&amp;</span>filepath)
             .with_context(|| <span class="string">"connection to sqlite file failure"</span>)<span class="question-mark">?</span>;
@@ -644,8 +635,7 @@
 
     <span class="attr">#[tokio::test]
     </span><span class="kw">async fn </span>starting_with_migration() {
-        <span class="kw">let </span>(_filepath, connection) =
-            create_sqlite_file(<span class="string">"starting_with_migration.sqlite3"</span>).unwrap();
+        <span class="kw">let </span>(_filepath, connection) = create_sqlite_file(<span class="string">"starting_with_migration"</span>).unwrap();
         <span class="kw">let </span><span class="kw-2">mut </span>db_checker = DatabaseVersionChecker::new(
             slog_scope::logger(),
             ApplicationNodeType::Aggregator,
@@ -668,7 +658,7 @@
     /// * previous migrations are ok and the database version is updated
     /// * further migrations are not played.
     </span><span class="kw">async fn </span>test_failing_migration() {
-        <span class="kw">let </span>(_filepath, connection) = create_sqlite_file(<span class="string">"test_failing_migration.sqlite3"</span>).unwrap();
+        <span class="kw">let </span>(_filepath, connection) = create_sqlite_file(<span class="string">"test_failing_migration"</span>).unwrap();
         <span class="kw">let </span><span class="kw-2">mut </span>db_checker = DatabaseVersionChecker::new(
             slog_scope::logger(),
             ApplicationNodeType::Aggregator,
@@ -699,7 +689,7 @@
 
     <span class="attr">#[tokio::test]
     </span><span class="kw">async fn </span>test_fail_downgrading() {
-        <span class="kw">let </span>(_filepath, connection) = create_sqlite_file(<span class="string">"test_fail_downgrading.sqlite3"</span>).unwrap();
+        <span class="kw">let </span>(_filepath, connection) = create_sqlite_file(<span class="string">"test_fail_downgrading"</span>).unwrap();
         <span class="kw">let </span><span class="kw-2">mut </span>db_checker = DatabaseVersionChecker::new(
             slog_scope::logger(),
             ApplicationNodeType::Aggregator,

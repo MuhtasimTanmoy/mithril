@@ -201,13 +201,16 @@
 <span class="attr">#[cfg(test)]
 </span><span class="kw">mod </span>tests {
     <span class="kw">use </span><span class="kw">crate</span>::digesters::cache::JsonImmutableFileDigestCacheProviderBuilder;
+    <span class="kw">use </span><span class="kw">crate</span>::test_utils::TempDir;
+    <span class="kw">use </span>std::path::PathBuf;
+
+    <span class="kw">fn </span>get_test_dir(subdir_name: <span class="kw-2">&amp;</span>str) -&gt; PathBuf {
+        TempDir::new(<span class="string">"json_provider_builder"</span>, subdir_name).build_path()
+    }
 
     <span class="attr">#[tokio::test]
     </span><span class="kw">async fn </span>create_dir_if_ensure_dir_exist_is_set() {
-        <span class="kw">let </span>dir = std::env::temp_dir()
-            .join(<span class="string">"mithril_test"</span>)
-            .join(<span class="string">"json_provider_builder"</span>)
-            .join(<span class="string">"create_dir_if_ensure_dir_exist_is_set"</span>);
+        <span class="kw">let </span>dir = get_test_dir(<span class="string">"create_dir_if_ensure_dir_exist_is_set"</span>);
 
         JsonImmutableFileDigestCacheProviderBuilder::new(<span class="kw-2">&amp;</span>dir, <span class="string">"test.json"</span>)
             .ensure_dir_exist()
@@ -220,10 +223,7 @@
 
     <span class="attr">#[tokio::test]
     </span><span class="kw">async fn </span>dont_create_dir_if_ensure_dir_exist_is_not_set() {
-        <span class="kw">let </span>dir = std::env::temp_dir()
-            .join(<span class="string">"mithril_test"</span>)
-            .join(<span class="string">"json_provider_builder"</span>)
-            .join(<span class="string">"dont_create_dir_if_ensure_dir_exist_is_not_set"</span>);
+        <span class="kw">let </span>dir = get_test_dir(<span class="string">"dont_create_dir_if_ensure_dir_exist_is_not_set"</span>);
 
         JsonImmutableFileDigestCacheProviderBuilder::new(<span class="kw-2">&amp;</span>dir, <span class="string">"test.json"</span>)
             .build()

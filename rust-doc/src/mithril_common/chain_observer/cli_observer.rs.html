@@ -692,7 +692,6 @@
 <a href="#691" id="691">691</a>
 <a href="#692" id="692">692</a>
 <a href="#693" id="693">693</a>
-<a href="#694" id="694">694</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>anyhow::{anyhow, Context};
 <span class="kw">use </span>async_trait::async_trait;
 <span class="kw">use </span>bech32::{<span class="self">self</span>, ToBase32, Variant};
@@ -1143,8 +1142,7 @@
     ) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="prelude-ty">Option</span>&lt;KESPeriod&gt;, ChainObserverError&gt; {
         <span class="kw">let </span>dir = std::env::temp_dir().join(<span class="string">"mithril_kes_period"</span>);
         fs::create_dir_all(<span class="kw-2">&amp;</span>dir).map_err(|e| ChainObserverError::General(e.into()))<span class="question-mark">?</span>;
-        <span class="kw">let </span>opcert_file =
-            std::env::temp_dir().join(<span class="macro">format!</span>(<span class="string">"opcert_kes_period-{}"</span>, opcert.compute_hash()));
+        <span class="kw">let </span>opcert_file = dir.join(<span class="macro">format!</span>(<span class="string">"opcert_kes_period-{}"</span>, opcert.compute_hash()));
         opcert
             .to_file(<span class="kw-2">&amp;</span>opcert_file)
             .map_err(|e| ChainObserverError::General(e.into()))<span class="question-mark">?</span>;

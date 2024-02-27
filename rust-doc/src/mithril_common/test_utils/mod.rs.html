@@ -23,6 +23,9 @@
 <a href="#22" id="22">22</a>
 <a href="#23" id="23">23</a>
 <a href="#24" id="24">24</a>
+<a href="#25" id="25">25</a>
+<a href="#26" id="26">26</a>
+<a href="#27" id="27">27</a>
 </pre></div><pre class="rust"><code><span class="doccomment">//! Test utilities
 //!
 //! They contains:
@@ -41,10 +44,13 @@
 <span class="kw">mod </span>fixture_builder;
 <span class="kw">mod </span>mithril_fixture;
 
+<span class="kw">mod </span>temp_dir;
+
 <span class="attr">#[cfg(feature = <span class="string">"test_http_server"</span>)]
 #[cfg_attr(docsrs, doc(cfg(feature = <span class="string">"test_http_server"</span>)))]
 </span><span class="kw">pub mod </span>test_http_server;
 
 <span class="kw">pub use </span>fixture_builder::{MithrilFixtureBuilder, StakeDistributionGenerationMethod};
 <span class="kw">pub use </span>mithril_fixture::{MithrilFixture, SignerFixture};
+<span class="kw">pub use </span>temp_dir::<span class="kw-2">*</span>;
 </code></pre></div></section></main></body></html>

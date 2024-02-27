@@ -571,14 +571,6 @@
 <a href="#570" id="570">570</a>
 <a href="#571" id="571">571</a>
 <a href="#572" id="572">572</a>
-<a href="#573" id="573">573</a>
-<a href="#574" id="574">574</a>
-<a href="#575" id="575">575</a>
-<a href="#576" id="576">576</a>
-<a href="#577" id="577">577</a>
-<a href="#578" id="578">578</a>
-<a href="#579" id="579">579</a>
-<a href="#580" id="580">580</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>anyhow::{anyhow, Context};
 <span class="kw">use </span>flate2::Compression;
 <span class="kw">use </span>flate2::{read::GzDecoder, write::GzEncoder};
@@ -902,7 +894,7 @@
                     <span class="kw">return </span><span class="prelude-val">Err</span>(SnapshotError::InvalidArchiveError(<span class="macro">format!</span>(
                         <span class="string">"can't unpack entry with error: '{:?}'"</span>,
                         e
-                    )))
+                    )));
                 }
                 <span class="prelude-val">Ok</span>(<span class="kw">_</span>) =&gt; {
                     <span class="kw">if let </span><span class="prelude-val">Err</span>(e) = fs::remove_file(unpack_file_path) {
@@ -972,20 +964,12 @@
     <span class="kw">use </span>std::sync::Arc;
 
     <span class="kw">use </span>mithril_common::digesters::DummyImmutablesDbBuilder;
+    <span class="kw">use </span>mithril_common::test_utils::TempDir;
 
     <span class="kw">use super</span>::<span class="kw-2">*</span>;
 
     <span class="kw">fn </span>get_test_directory(dir_name: <span class="kw-2">&amp;</span>str) -&gt; PathBuf {
-        <span class="kw">let </span>test_dir = std::env::temp_dir()
-            .join(<span class="string">"mithril_test"</span>)
-            .join(<span class="string">"snapshotter"</span>)
-            .join(dir_name);
-        <span class="kw">if </span>test_dir.exists() {
-            std::fs::remove_dir_all(<span class="kw-2">&amp;</span>test_dir).unwrap();
-        }
-        std::fs::create_dir_all(<span class="kw-2">&amp;</span>test_dir).unwrap();
-
-        test_dir
+        TempDir::create(<span class="string">"snapshotter"</span>, dir_name)
     }
 
     <span class="attr">#[test]
@@ -1011,7 +995,7 @@
     </span><span class="kw">fn </span>should_create_directory_if_does_not_exist() {
         <span class="kw">let </span>test_dir = get_test_directory(<span class="string">"should_create_directory_if_does_not_exist"</span>);
         <span class="kw">let </span>pending_snapshot_directory = test_dir.join(<span class="string">"pending_snapshot"</span>);
-        <span class="kw">let </span>db_directory = std::env::temp_dir().join(<span class="string">"whatever"</span>);
+        <span class="kw">let </span>db_directory = test_dir.join(<span class="string">"whatever"</span>);
 
         Arc::new(
             CompressedArchiveSnapshotter::new(
@@ -1030,9 +1014,9 @@
         <span class="kw">let </span>test_dir =
             get_test_directory(<span class="string">"should_clean_pending_snapshot_directory_if_already_exists"</span>);
         <span class="kw">let </span>pending_snapshot_directory = test_dir.join(<span class="string">"pending_snapshot"</span>);
-        <span class="kw">let </span>db_directory = std::env::temp_dir().join(<span class="string">"whatever"</span>);
+        <span class="kw">let </span>db_directory = test_dir.join(<span class="string">"whatever"</span>);
 
-        std::fs::create_dir_all(<span class="kw-2">&amp;</span>pending_snapshot_directory).unwrap();
+        fs::create_dir_all(<span class="kw-2">&amp;</span>pending_snapshot_directory).unwrap();
 
         File::create(pending_snapshot_directory.join(<span class="string">"whatever.txt"</span>)).unwrap();
 

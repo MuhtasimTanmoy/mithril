@@ -163,11 +163,6 @@
 <a href="#162" id="162">162</a>
 <a href="#163" id="163">163</a>
 <a href="#164" id="164">164</a>
-<a href="#165" id="165">165</a>
-<a href="#166" id="166">166</a>
-<a href="#167" id="167">167</a>
-<a href="#168" id="168">168</a>
-<a href="#169" id="169">169</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>human_bytes::human_bytes;
 <span class="kw">use </span>std::{
     fs::{create_dir_all, remove_dir},
@@ -246,15 +241,10 @@
 <span class="attr">#[cfg(test)]
 </span><span class="kw">mod </span>test {
     <span class="kw">use super</span>::<span class="kw-2">*</span>;
-    <span class="kw">use </span>std::fs::remove_dir_all;
+    <span class="kw">use </span>mithril_common::test_utils::TempDir;
 
     <span class="kw">fn </span>create_temporary_empty_directory(name: <span class="kw-2">&amp;</span>str) -&gt; PathBuf {
-        <span class="kw">let </span>pathdir = std::env::temp_dir().join(name);
-        <span class="kw">if </span>pathdir.exists() {
-            remove_dir_all(<span class="kw-2">&amp;</span>pathdir).unwrap();
-        }
-        create_dir_all(<span class="kw-2">&amp;</span>pathdir).unwrap();
-        pathdir
+        TempDir::create(<span class="string">"client-cli"</span>, name)
     }
 
     <span class="attr">#[test]
