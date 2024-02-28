@@ -186,6 +186,7 @@
 <a href="#185" id="185">185</a>
 <a href="#186" id="186">186</a>
 <a href="#187" id="187">187</a>
+<a href="#188" id="188">188</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span><span class="kw">crate</span>::http_server::routes::{
     artifact_routes, certificate_routes, epoch_routes, root_routes, signatures_routes,
     signer_routes, statistics_routes,
@@ -303,6 +304,7 @@
 
 <span class="attr">#[cfg(test)]
 </span><span class="kw">mod </span>tests {
+    <span class="kw">use </span>semver::Version;
     <span class="kw">use </span>std::collections::HashMap;
 
     <span class="kw">use </span>mithril_common::{
@@ -344,7 +346,7 @@
         <span class="kw">let </span>era_checker = EraChecker::new(SupportedEra::dummy(), Epoch(<span class="number">1</span>));
         <span class="kw">let </span><span class="kw-2">mut </span>version_provider = APIVersionProvider::new(Arc::new(era_checker));
         <span class="kw">let </span><span class="kw-2">mut </span>open_api_versions = HashMap::new();
-        open_api_versions.insert(<span class="string">"openapi.yaml"</span>.to_string(), <span class="string">"1.0.0"</span>.to_string());
+        open_api_versions.insert(<span class="string">"openapi.yaml"</span>.to_string(), Version::new(<span class="number">1</span>, <span class="number">0</span>, <span class="number">0</span>));
         version_provider.update_open_api_versions(open_api_versions);
         <span class="kw">let </span>api_version_provider = Arc::new(version_provider);
         <span class="kw">let </span>filters = header_must_be(api_version_provider);
@@ -361,7 +363,7 @@
         <span class="kw">let </span>era_checker = EraChecker::new(SupportedEra::dummy(), Epoch(<span class="number">1</span>));
         <span class="kw">let </span><span class="kw-2">mut </span>version_provider = APIVersionProvider::new(Arc::new(era_checker));
         <span class="kw">let </span><span class="kw-2">mut </span>open_api_versions = HashMap::new();
-        open_api_versions.insert(<span class="string">"openapi.yaml"</span>.to_string(), <span class="string">"0.1.0"</span>.to_string());
+        open_api_versions.insert(<span class="string">"openapi.yaml"</span>.to_string(), Version::new(<span class="number">0</span>, <span class="number">1</span>, <span class="number">0</span>));
         version_provider.update_open_api_versions(open_api_versions);
         <span class="kw">let </span>api_version_provider = Arc::new(version_provider);
         <span class="kw">let </span>filters = header_must_be(api_version_provider);
