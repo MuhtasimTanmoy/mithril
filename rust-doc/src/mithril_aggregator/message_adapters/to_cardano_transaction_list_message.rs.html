@@ -56,28 +56,28 @@
 <a href="#55" id="55">55</a>
 <a href="#56" id="56">56</a>
 <a href="#57" id="57">57</a>
-</pre></div><pre class="rust"><code><span class="kw">use </span>mithril_common::entities::{CardanoTransactionsCommitment, SignedEntity};
+</pre></div><pre class="rust"><code><span class="kw">use </span>mithril_common::entities::{CardanoTransactionsSnapshot, SignedEntity};
 <span class="kw">use </span>mithril_common::messages::{
-    CardanoTransactionCommitmentListItemMessage, CardanoTransactionCommitmentListMessage,
+    CardanoTransactionSnapshotListItemMessage, CardanoTransactionSnapshotListMessage,
     ToMessageAdapter,
 };
 
-<span class="doccomment">/// Adapter to convert a list of [CardanoTransaction] to [CardanoTransactionCommitmentListMessage] instances
+<span class="doccomment">/// Adapter to convert a list of [CardanoTransaction] to [CardanoTransactionSnapshotListMessage] instances
 </span><span class="kw">pub struct </span>ToCardanoTransactionListMessageAdapter;
 
 <span class="kw">impl
     </span>ToMessageAdapter&lt;
-        Vec&lt;SignedEntity&lt;CardanoTransactionsCommitment&gt;&gt;,
-        CardanoTransactionCommitmentListMessage,
+        Vec&lt;SignedEntity&lt;CardanoTransactionsSnapshot&gt;&gt;,
+        CardanoTransactionSnapshotListMessage,
     &gt; <span class="kw">for </span>ToCardanoTransactionListMessageAdapter
 {
     <span class="doccomment">/// Method to trigger the conversion
     </span><span class="kw">fn </span>adapt(
-        snapshots: Vec&lt;SignedEntity&lt;CardanoTransactionsCommitment&gt;&gt;,
-    ) -&gt; CardanoTransactionCommitmentListMessage {
+        snapshots: Vec&lt;SignedEntity&lt;CardanoTransactionsSnapshot&gt;&gt;,
+    ) -&gt; CardanoTransactionSnapshotListMessage {
         snapshots
             .into_iter()
-            .map(|entity| CardanoTransactionCommitmentListItemMessage {
+            .map(|entity| CardanoTransactionSnapshotListItemMessage {
                 merkle_root: entity.artifact.merkle_root.clone(),
                 beacon: entity.artifact.beacon.clone(),
                 hash: entity.artifact.hash,
@@ -94,9 +94,9 @@
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>adapt_ok() {
-        <span class="kw">let </span>signed_entity = SignedEntity::&lt;CardanoTransactionsCommitment&gt;::dummy();
+        <span class="kw">let </span>signed_entity = SignedEntity::&lt;CardanoTransactionsSnapshot&gt;::dummy();
         <span class="kw">let </span>mithril_stake_distribution_list_message_expected =
-            <span class="macro">vec!</span>[CardanoTransactionCommitmentListItemMessage {
+            <span class="macro">vec!</span>[CardanoTransactionSnapshotListItemMessage {
                 merkle_root: signed_entity.artifact.merkle_root.clone(),
                 beacon: signed_entity.artifact.beacon.clone(),
                 hash: signed_entity.artifact.hash.clone(),

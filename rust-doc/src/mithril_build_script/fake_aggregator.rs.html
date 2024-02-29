@@ -338,8 +338,8 @@
     msds_list: FileContent,
     individual_msds: BTreeMap&lt;ArtifactId, FileContent&gt;,
 
-    ctx_commitments_list: FileContent,
-    individual_ctx_commitments: BTreeMap&lt;ArtifactId, FileContent&gt;,
+    ctx_snapshots_list: FileContent,
+    individual_ctx_snapshots: BTreeMap&lt;ArtifactId, FileContent&gt;,
     ctx_proofs: BTreeMap&lt;ArtifactId, FileContent&gt;,
 }
 
@@ -374,8 +374,8 @@
                 <span class="string">"certificates.json" </span>=&gt; {
                     data.certificates_list = file_content;
                 }
-                <span class="string">"ctx-commitments.json" </span>=&gt; {
-                    data.ctx_commitments_list = file_content;
+                <span class="string">"ctx-snapshots.json" </span>=&gt; {
+                    data.ctx_snapshots_list = file_content;
                 }
                 <span class="kw">_ if </span>filename.starts_with(<span class="string">"mithril-stake-distribution-"</span>) =&gt; {
                     data.individual_msds.insert(
@@ -391,9 +391,9 @@
                     data.individual_certificates
                         .insert(extract_artifact_id(<span class="kw-2">&amp;</span>filename, <span class="string">"certificate-"</span>), file_content);
                 }
-                <span class="kw">_ if </span>filename.starts_with(<span class="string">"ctx-commitment-"</span>) =&gt; {
-                    data.individual_ctx_commitments.insert(
-                        extract_artifact_id(<span class="kw-2">&amp;</span>filename, <span class="string">"ctx-commitment-"</span>),
+                <span class="kw">_ if </span>filename.starts_with(<span class="string">"ctx-snapshot-"</span>) =&gt; {
+                    data.individual_ctx_snapshots.insert(
+                        extract_artifact_id(<span class="kw-2">&amp;</span>filename, <span class="string">"ctx-snapshot-"</span>),
                         file_content,
                     );
                 }
@@ -425,8 +425,8 @@
                     BTreeSet::from_iter(<span class="self">self</span>.individual_certificates.keys().cloned()),
                 ),
                 generate_ids_array(
-                    <span class="string">"ctx_commitment_hashes"</span>,
-                    BTreeSet::from_iter(<span class="self">self</span>.individual_ctx_commitments.keys().cloned()),
+                    <span class="string">"ctx_snapshot_hashes"</span>,
+                    BTreeSet::from_iter(<span class="self">self</span>.individual_ctx_snapshots.keys().cloned()),
                 ),
                 generate_ids_array(
                     <span class="string">"proof_transaction_hashes"</span>,
@@ -460,11 +460,11 @@
                 generate_artifact_getter(<span class="string">"certificates"</span>, <span class="self">self</span>.individual_certificates),
                 generate_list_getter(<span class="string">"certificate_list"</span>, <span class="self">self</span>.certificates_list),
                 generate_ids_array(
-                    <span class="string">"ctx_commitment_hashes"</span>,
-                    BTreeSet::from_iter(<span class="self">self</span>.individual_ctx_commitments.keys().cloned()),
+                    <span class="string">"ctx_snapshot_hashes"</span>,
+                    BTreeSet::from_iter(<span class="self">self</span>.individual_ctx_snapshots.keys().cloned()),
                 ),
-                generate_artifact_getter(<span class="string">"ctx_commitments"</span>, <span class="self">self</span>.individual_ctx_commitments),
-                generate_list_getter(<span class="string">"ctx_commitments_list"</span>, <span class="self">self</span>.ctx_commitments_list),
+                generate_artifact_getter(<span class="string">"ctx_snapshots"</span>, <span class="self">self</span>.individual_ctx_snapshots),
+                generate_list_getter(<span class="string">"ctx_snapshots_list"</span>, <span class="self">self</span>.ctx_snapshots_list),
                 generate_ids_array(
                     <span class="string">"proof_transaction_hashes"</span>,
                     BTreeSet::from_iter(<span class="self">self</span>.ctx_proofs.keys().cloned()),

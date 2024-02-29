@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"enum":["CardanoTransactionCommands","CardanoTransactionCommitmentCommands"],"struct":["CardanoTransactionCommitmentListCommand","CardanoTransactionsCertifyCommand","CardanoTransactionsCommitmentShowCommand"]};
+window.SIDEBAR_ITEMS = {"enum":["CardanoTransactionCommands","CardanoTransactionSnapshotCommands"],"struct":["CardanoTransactionSnapshotListCommand","CardanoTransactionsCertifyCommand","CardanoTransactionsSnapshotShowCommand"]};

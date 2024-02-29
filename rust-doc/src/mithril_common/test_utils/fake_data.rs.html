@@ -456,10 +456,10 @@
 }
 
 <span class="doccomment">/// Fake Cardano Transactions
-</span><span class="kw">pub fn </span>cardano_transactions_commitment(total: u64) -&gt; Vec&lt;entities::CardanoTransactionsCommitment&gt; {
+</span><span class="kw">pub fn </span>cardano_transactions_snapshot(total: u64) -&gt; Vec&lt;entities::CardanoTransactionsSnapshot&gt; {
     (<span class="number">1</span>..total + <span class="number">1</span>)
         .map(|idx| {
-            entities::CardanoTransactionsCommitment::new(
+            entities::CardanoTransactionsSnapshot::new(
                 <span class="macro">format!</span>(<span class="string">"merkleroot-{idx}"</span>),
                 entities::Beacon {
                     immutable_file_number: idx,

@@ -108,7 +108,7 @@
 
 <span class="kw">use </span>mithril_client::feedback::{FeedbackReceiver, MithrilEvent};
 
-<span class="doccomment">/// Custom [FeedbackReceiver] for Snapshot to handle events sent
+<span class="doccomment">/// Custom [FeedbackReceiver] for Cardano DB to handle events sent
 /// by the `mithril-client` library
 </span><span class="kw">pub struct </span>IndicatifFeedbackReceiver {
     download_progress_reporter: RwLock&lt;<span class="prelude-ty">Option</span>&lt;DownloadProgressReporter&gt;&gt;,
@@ -162,7 +162,7 @@
             MithrilEvent::SnapshotDownloadCompleted { download_id: <span class="kw">_ </span>} =&gt; {
                 <span class="kw">let </span><span class="kw-2">mut </span>download_progress_reporter = <span class="self">self</span>.download_progress_reporter.write().<span class="kw">await</span>;
                 <span class="kw">if let </span><span class="prelude-val">Some</span>(progress_reporter) = download_progress_reporter.as_ref() {
-                    progress_reporter.finish(<span class="string">"Snapshot download completed"</span>);
+                    progress_reporter.finish(<span class="string">"Cardano DB download completed"</span>);
                 }
                 <span class="kw-2">*</span>download_progress_reporter = <span class="prelude-val">None</span>;
             }

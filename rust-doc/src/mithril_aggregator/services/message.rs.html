@@ -529,7 +529,7 @@
 <span class="kw">use </span>mithril_common::{
     entities::SignedEntityTypeDiscriminants,
     messages::{
-        CardanoTransactionCommitmentListMessage, CardanoTransactionCommitmentMessage,
+        CardanoTransactionSnapshotListMessage, CardanoTransactionSnapshotMessage,
         CertificateListMessage, CertificateMessage, MithrilStakeDistributionListMessage,
         MithrilStakeDistributionMessage, SnapshotListMessage, SnapshotMessage,
     },
@@ -588,13 +588,13 @@
     </span><span class="kw">async fn </span>get_cardano_transaction_message(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         signed_entity_id: <span class="kw-2">&amp;</span>str,
-    ) -&gt; StdResult&lt;<span class="prelude-ty">Option</span>&lt;CardanoTransactionCommitmentMessage&gt;&gt;;
+    ) -&gt; StdResult&lt;<span class="prelude-ty">Option</span>&lt;CardanoTransactionSnapshotMessage&gt;&gt;;
 
     <span class="doccomment">/// Return the list of the last Cardano transactions set message
     </span><span class="kw">async fn </span>get_cardano_transaction_list_message(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         limit: usize,
-    ) -&gt; StdResult&lt;CardanoTransactionCommitmentListMessage&gt;;
+    ) -&gt; StdResult&lt;CardanoTransactionSnapshotListMessage&gt;;
 }
 
 <span class="doccomment">/// Implementation of the [MessageService]
@@ -686,7 +686,7 @@
     <span class="kw">async fn </span>get_cardano_transaction_message(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         signed_entity_id: <span class="kw-2">&amp;</span>str,
-    ) -&gt; StdResult&lt;<span class="prelude-ty">Option</span>&lt;CardanoTransactionCommitmentMessage&gt;&gt; {
+    ) -&gt; StdResult&lt;<span class="prelude-ty">Option</span>&lt;CardanoTransactionSnapshotMessage&gt;&gt; {
         <span class="kw">let </span>signed_entity = <span class="self">self
             </span>.signed_entity_storer
             .get_signed_entity(signed_entity_id)
@@ -698,7 +698,7 @@
     <span class="kw">async fn </span>get_cardano_transaction_list_message(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         limit: usize,
-    ) -&gt; StdResult&lt;CardanoTransactionCommitmentListMessage&gt; {
+    ) -&gt; StdResult&lt;CardanoTransactionSnapshotListMessage&gt; {
         <span class="kw">let </span>signed_entity_type_id = SignedEntityTypeDiscriminants::CardanoTransactions;
         <span class="kw">let </span>entities = <span class="self">self
             </span>.signed_entity_storer
@@ -715,7 +715,7 @@
 
     <span class="kw">use </span>mithril_common::{
         entities::{
-            Beacon, CardanoTransactionsCommitment, MithrilStakeDistribution, SignedEntity,
+            Beacon, CardanoTransactionsSnapshot, MithrilStakeDistribution, SignedEntity,
             SignedEntityType, Snapshot,
         },
         messages::ToMessageAdapter,
@@ -961,7 +961,7 @@
 
     <span class="attr">#[tokio::test]
     </span><span class="kw">async fn </span>get_cardano_transaction() {
-        <span class="kw">let </span>entity = SignedEntity::&lt;CardanoTransactionsCommitment&gt;::dummy();
+        <span class="kw">let </span>entity = SignedEntity::&lt;CardanoTransactionsSnapshot&gt;::dummy();
         <span class="kw">let </span>record = SignedEntityRecord {
             signed_entity_id: entity.signed_entity_id.clone(),
             signed_entity_type: SignedEntityType::CardanoTransactions(
@@ -1011,7 +1011,7 @@
 
     <span class="attr">#[tokio::test]
     </span><span class="kw">async fn </span>get_cardano_transaction_list_message() {
-        <span class="kw">let </span>entity = SignedEntity::&lt;CardanoTransactionsCommitment&gt;::dummy();
+        <span class="kw">let </span>entity = SignedEntity::&lt;CardanoTransactionsSnapshot&gt;::dummy();
         <span class="kw">let </span>records = <span class="macro">vec!</span>[SignedEntityRecord {
             signed_entity_id: entity.signed_entity_id.clone(),
             signed_entity_type: SignedEntityType::CardanoTransactions(

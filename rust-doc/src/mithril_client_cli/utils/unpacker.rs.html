@@ -174,11 +174,11 @@
 
 <span class="doccomment">/// Check and unpack a downloaded archive in a given directory.
 </span><span class="attr">#[derive(Default)]
-</span><span class="kw">pub struct </span>SnapshotUnpacker;
+</span><span class="kw">pub struct </span>CardanoDbUnpacker;
 
-<span class="doccomment">/// Errors tied with the SnapshotUnpacker.
+<span class="doccomment">/// Errors tied with the CardanoDbUnpacker.
 </span><span class="attr">#[derive(Debug, Error)]
-</span><span class="kw">pub enum </span>SnapshotUnpackerError {
+</span><span class="kw">pub enum </span>CardanoDbUnpackerError {
     <span class="doccomment">/// Not enough space on the disk. There should be at least the ratio given for the
     /// used algorithm (see [CompressionAlgorithm::free_space_snapshot_ratio]) times
     /// the size of the archive to download to ensure it could be unpacked safely.
@@ -190,11 +190,11 @@
         <span class="doccomment">/// Specified location
         </span>pathdir: PathBuf,
 
-        <span class="doccomment">/// Packed snapshot size
+        <span class="doccomment">/// Packed cardano db size
         </span>archive_size: f64,
     },
 
-    <span class="doccomment">/// The directory where the files from snapshot are expanded already exists.
+    <span class="doccomment">/// The directory where the files from cardano db are expanded already exists.
     /// An error is raised because it lets the user a chance to preserve a
     /// previous work.
     </span><span class="attr">#[error(<span class="string">"Unpack directory '{0}' already exists, please move or delete it."</span>)]
@@ -205,9 +205,9 @@
     </span>UnpackDirectoryIsNotWritable(PathBuf, <span class="attr">#[source] </span>MithrilError),
 }
 
-<span class="kw">impl </span>SnapshotUnpacker {
+<span class="kw">impl </span>CardanoDbUnpacker {
     <span class="doccomment">/// Check all prerequisites are met before starting to download and unpack
-    /// big snapshot archive.
+    /// big cardano db archive.
     </span><span class="kw">pub fn </span>check_prerequisites(
         pathdir: <span class="kw-2">&amp;</span>Path,
         size: u64,
@@ -215,18 +215,18 @@
     ) -&gt; MithrilResult&lt;()&gt; {
         <span class="kw">if </span>pathdir.exists() {
             <span class="kw">return </span><span class="prelude-val">Err</span>(
-                SnapshotUnpackerError::UnpackDirectoryAlreadyExists(pathdir.to_owned()).into(),
+                CardanoDbUnpackerError::UnpackDirectoryAlreadyExists(pathdir.to_owned()).into(),
             );
         }
         create_dir_all(pathdir).map_err(|e| {
-            SnapshotUnpackerError::UnpackDirectoryIsNotWritable(pathdir.to_owned(), e.into())
+            CardanoDbUnpackerError::UnpackDirectoryIsNotWritable(pathdir.to_owned(), e.into())
         })<span class="question-mark">?</span>;
         <span class="kw">let </span>free_space = fs2::available_space(pathdir)<span class="question-mark">? </span><span class="kw">as </span>f64;
         <span class="comment">// `remove_dir` doesn't remove intermediate directories that could have been created by `create_dir_all`
         </span>remove_dir(pathdir)<span class="question-mark">?</span>;
 
         <span class="kw">if </span>free_space &lt; compression_algorithm.free_space_snapshot_ratio() * size <span class="kw">as </span>f64 {
-            <span class="kw">return </span><span class="prelude-val">Err</span>(SnapshotUnpackerError::NotEnoughSpace {
+            <span class="kw">return </span><span class="prelude-val">Err</span>(CardanoDbUnpackerError::NotEnoughSpace {
                 left_space: free_space,
                 pathdir: pathdir.to_owned(),
                 archive_size: size <span class="kw">as </span>f64,
@@ -251,7 +251,7 @@
     </span><span class="kw">fn </span>should_return_ok() {
         <span class="kw">let </span>pathdir = create_temporary_empty_directory(<span class="string">"return_ok"</span>).join(<span class="string">"target_directory"</span>);
 
-        SnapshotUnpacker::check_prerequisites(<span class="kw-2">&amp;</span>pathdir, <span class="number">12</span>, CompressionAlgorithm::default())
+        CardanoDbUnpacker::check_prerequisites(<span class="kw-2">&amp;</span>pathdir, <span class="number">12</span>, CompressionAlgorithm::default())
             .expect(<span class="string">"check_prerequisites should not fail"</span>);
     }
 
@@ -260,13 +260,13 @@
         <span class="kw">let </span>pathdir = create_temporary_empty_directory(<span class="string">"existing_directory"</span>);
 
         <span class="kw">let </span>error =
-            SnapshotUnpacker::check_prerequisites(<span class="kw-2">&amp;</span>pathdir, <span class="number">12</span>, CompressionAlgorithm::default())
+            CardanoDbUnpacker::check_prerequisites(<span class="kw-2">&amp;</span>pathdir, <span class="number">12</span>, CompressionAlgorithm::default())
                 .expect_err(<span class="string">"check_prerequisites should fail"</span>);
 
         <span class="macro">assert!</span>(
             <span class="macro">matches!</span>(
-                error.downcast_ref::&lt;SnapshotUnpackerError&gt;(),
-                <span class="prelude-val">Some</span>(SnapshotUnpackerError::UnpackDirectoryAlreadyExists(<span class="kw">_</span>))
+                error.downcast_ref::&lt;CardanoDbUnpackerError&gt;(),
+                <span class="prelude-val">Some</span>(CardanoDbUnpackerError::UnpackDirectoryAlreadyExists(<span class="kw">_</span>))
             ),
             <span class="string">"Unexpected error: {:?}"</span>,
             error
@@ -287,13 +287,13 @@
         <span class="kw">let </span>targetdir = pathdir.join(<span class="string">"target_directory"</span>);
 
         <span class="kw">let </span>error =
-            SnapshotUnpacker::check_prerequisites(<span class="kw-2">&amp;</span>targetdir, <span class="number">12</span>, CompressionAlgorithm::default())
+            CardanoDbUnpacker::check_prerequisites(<span class="kw-2">&amp;</span>targetdir, <span class="number">12</span>, CompressionAlgorithm::default())
                 .expect_err(<span class="string">"check_prerequisites should fail"</span>);
 
         <span class="macro">assert!</span>(
             <span class="macro">matches!</span>(
-                error.downcast_ref::&lt;SnapshotUnpackerError&gt;(),
-                <span class="prelude-val">Some</span>(SnapshotUnpackerError::UnpackDirectoryIsNotWritable(<span class="kw">_</span>, <span class="kw">_</span>))
+                error.downcast_ref::&lt;CardanoDbUnpackerError&gt;(),
+                <span class="prelude-val">Some</span>(CardanoDbUnpackerError::UnpackDirectoryIsNotWritable(<span class="kw">_</span>, <span class="kw">_</span>))
             ),
             <span class="string">"Unexpected error: {:?}"</span>,
             error
@@ -306,7 +306,7 @@
             create_temporary_empty_directory(<span class="string">"enough_available_space"</span>).join(<span class="string">"target_directory"</span>);
         <span class="kw">let </span>archive_size = u64::MAX;
 
-        <span class="kw">let </span>error = SnapshotUnpacker::check_prerequisites(
+        <span class="kw">let </span>error = CardanoDbUnpacker::check_prerequisites(
             <span class="kw-2">&amp;</span>pathdir,
             archive_size,
             CompressionAlgorithm::default(),
@@ -315,8 +315,8 @@
 
         <span class="macro">assert!</span>(
             <span class="macro">matches!</span>(
-                error.downcast_ref::&lt;SnapshotUnpackerError&gt;(),
-                <span class="prelude-val">Some</span>(SnapshotUnpackerError::NotEnoughSpace {
+                error.downcast_ref::&lt;CardanoDbUnpackerError&gt;(),
+                <span class="prelude-val">Some</span>(CardanoDbUnpackerError::NotEnoughSpace {
                     left_space: <span class="kw">_</span>,
                     pathdir: <span class="kw">_</span>,
                     archive_size: <span class="kw">_

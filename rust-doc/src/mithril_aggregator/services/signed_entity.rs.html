@@ -520,7 +520,7 @@
 <a href="#519" id="519">519</a>
 </pre></div><pre class="rust"><code><span class="doccomment">//! ## SignedEntityService
 //!
-//! This service is responsible of dealing with [SignedEntity] type.
+//! This service is responsible for dealing with [SignedEntity] type.
 //! It creates [Artifact] that can be accessed by clients.
 </span><span class="kw">use </span>anyhow::Context;
 <span class="kw">use </span>async_trait::async_trait;
@@ -530,7 +530,7 @@
 
 <span class="kw">use </span>mithril_common::{
     entities::{
-        Beacon, CardanoTransactionsCommitment, Certificate, Epoch, MithrilStakeDistribution,
+        Beacon, CardanoTransactionsSnapshot, Certificate, Epoch, MithrilStakeDistribution,
         SignedEntity, SignedEntityType, SignedEntityTypeDiscriminants, Snapshot,
     },
     signable_builder::Artifact,
@@ -569,10 +569,10 @@
         total: usize,
     ) -&gt; StdResult&lt;Vec&lt;SignedEntity&lt;MithrilStakeDistribution&gt;&gt;&gt;;
 
-    <span class="doccomment">/// Return the last signed Cardano Transaction Commitment.
-    </span><span class="kw">async fn </span>get_last_cardano_transaction_commitment(
+    <span class="doccomment">/// Return the last signed Cardano Transaction Snapshot.
+    </span><span class="kw">async fn </span>get_last_cardano_transaction_snapshot(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
-    ) -&gt; StdResult&lt;<span class="prelude-ty">Option</span>&lt;SignedEntity&lt;CardanoTransactionsCommitment&gt;&gt;&gt;;
+    ) -&gt; StdResult&lt;<span class="prelude-ty">Option</span>&lt;SignedEntity&lt;CardanoTransactionsSnapshot&gt;&gt;&gt;;
 
     <span class="doccomment">/// Return a signed snapshot
     </span><span class="kw">async fn </span>get_signed_snapshot_by_id(
@@ -594,7 +594,7 @@
         Arc&lt;<span class="kw">dyn </span>ArtifactBuilder&lt;Epoch, MithrilStakeDistribution&gt;&gt;,
     cardano_immutable_files_full_artifact_builder: Arc&lt;<span class="kw">dyn </span>ArtifactBuilder&lt;Beacon, Snapshot&gt;&gt;,
     cardano_transactions_artifact_builder:
-        Arc&lt;<span class="kw">dyn </span>ArtifactBuilder&lt;Beacon, CardanoTransactionsCommitment&gt;&gt;,
+        Arc&lt;<span class="kw">dyn </span>ArtifactBuilder&lt;Beacon, CardanoTransactionsSnapshot&gt;&gt;,
 }
 
 <span class="kw">impl </span>MithrilSignedEntityService {
@@ -606,7 +606,7 @@
         &gt;,
         cardano_immutable_files_full_artifact_builder: Arc&lt;<span class="kw">dyn </span>ArtifactBuilder&lt;Beacon, Snapshot&gt;&gt;,
         cardano_transactions_artifact_builder: Arc&lt;
-            <span class="kw">dyn </span>ArtifactBuilder&lt;Beacon, CardanoTransactionsCommitment&gt;,
+            <span class="kw">dyn </span>ArtifactBuilder&lt;Beacon, CardanoTransactionsSnapshot&gt;,
         &gt;,
     ) -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{
@@ -759,9 +759,9 @@
         <span class="prelude-val">Ok</span>(signed_entities)
     }
 
-    <span class="kw">async fn </span>get_last_cardano_transaction_commitment(
+    <span class="kw">async fn </span>get_last_cardano_transaction_snapshot(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
-    ) -&gt; StdResult&lt;<span class="prelude-ty">Option</span>&lt;SignedEntity&lt;CardanoTransactionsCommitment&gt;&gt;&gt; {
+    ) -&gt; StdResult&lt;<span class="prelude-ty">Option</span>&lt;SignedEntity&lt;CardanoTransactionsSnapshot&gt;&gt;&gt; {
         <span class="kw">let </span><span class="kw-2">mut </span>signed_entities_records = <span class="self">self
             </span>.get_last_signed_entities(<span class="number">1</span>, <span class="kw-2">&amp;</span>SignedEntityTypeDiscriminants::CardanoTransactions)
             .<span class="kw">await</span><span class="question-mark">?</span>;
@@ -816,7 +816,7 @@
 <span class="attr">#[cfg(test)]
 </span><span class="kw">mod </span>tests {
     <span class="kw">use </span>mithril_common::{
-        entities::{CardanoTransactionsCommitment, Epoch},
+        entities::{CardanoTransactionsSnapshot, Epoch},
         signable_builder,
         test_utils::fake_data,
     };
@@ -854,7 +854,7 @@
             MockArtifactBuilder&lt;Epoch, MithrilStakeDistribution&gt;,
         mock_cardano_immutable_files_full_artifact_builder: MockArtifactBuilder&lt;Beacon, Snapshot&gt;,
         mock_cardano_transactions_artifact_builder:
-            MockArtifactBuilder&lt;Beacon, CardanoTransactionsCommitment&gt;,
+            MockArtifactBuilder&lt;Beacon, CardanoTransactionsSnapshot&gt;,
     }
 
     <span class="kw">impl </span>MockDependencyInjector {
@@ -871,7 +871,7 @@
                 &gt;::new(),
                 mock_cardano_transactions_artifact_builder: MockArtifactBuilder::&lt;
                     Beacon,
-                    CardanoTransactionsCommitment,
+                    CardanoTransactionsSnapshot,
                 &gt;::new(),
             }
         }
@@ -956,18 +956,18 @@
     }
 
     <span class="attr">#[tokio::test]
-    </span><span class="kw">async fn </span>build_cardano_transactions_commitment_artifact_when_given_cardano_transactions_type() {
+    </span><span class="kw">async fn </span>build_cardano_transactions_snapshot_artifact_when_given_cardano_transactions_type() {
         <span class="kw">let </span><span class="kw-2">mut </span>mock_container = MockDependencyInjector::new();
 
         <span class="kw">let </span>expected =
-            CardanoTransactionsCommitment::new(<span class="string">"merkle_root"</span>.to_string(), Beacon::default());
+            CardanoTransactionsSnapshot::new(<span class="string">"merkle_root"</span>.to_string(), Beacon::default());
 
         mock_container
             .mock_cardano_transactions_artifact_builder
             .expect_compute_artifact()
             .times(<span class="number">1</span>)
             .returning(|<span class="kw">_</span>, <span class="kw">_</span>| {
-                <span class="prelude-val">Ok</span>(CardanoTransactionsCommitment::new(
+                <span class="prelude-val">Ok</span>(CardanoTransactionsSnapshot::new(
                     <span class="string">"merkle_root"</span>.to_string(),
                     Beacon::default(),
                 ))
@@ -989,7 +989,7 @@
     </span><span class="kw">async fn </span>should_store_the_artifact_when_creating_artifact_for_cardano_transactions() {
         generic_test_that_the_artifact_is_stored(
             SignedEntityType::CardanoTransactions(Beacon::default()),
-            CardanoTransactionsCommitment::new(<span class="string">"merkle_root"</span>.to_string(), Beacon::default()),
+            CardanoTransactionsSnapshot::new(<span class="string">"merkle_root"</span>.to_string(), Beacon::default()),
             <span class="kw-2">&amp;</span>|mock_injector| <span class="kw-2">&amp;mut </span>mock_injector.mock_cardano_transactions_artifact_builder,
         )
         .<span class="kw">await</span>;

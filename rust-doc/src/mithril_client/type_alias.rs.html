@@ -112,13 +112,13 @@
 
     <span class="kw">pub use </span>mithril_common::messages::VerifyCardanoTransactionsProofsError;
 
-    <span class="doccomment">/// A commitment that Mithril have certified Cardano transactions up to a given [point of time][common::Beacon].
+    <span class="doccomment">/// A snapshot that allow to know up to which [point of time][common::Beacon] Mithril have certified Cardano transactions.
     ///
-    </span><span class="kw">pub use </span>mithril_common::messages::CardanoTransactionCommitmentMessage <span class="kw">as </span>CardanoTransactionCommitment;
+    </span><span class="kw">pub use </span>mithril_common::messages::CardanoTransactionSnapshotMessage <span class="kw">as </span>CardanoTransactionSnapshot;
 
-    <span class="doccomment">/// List item of a Cardano transaction commitment.
+    <span class="doccomment">/// List item of a Cardano transaction snapshot.
     ///
-    </span><span class="kw">pub use </span>mithril_common::messages::CardanoTransactionCommitmentListItemMessage <span class="kw">as </span>CardanoTransactionCommitmentListItem;
+    </span><span class="kw">pub use </span>mithril_common::messages::CardanoTransactionSnapshotListItemMessage <span class="kw">as </span>CardanoTransactionSnapshotListItem;
 }
 
 <span class="doccomment">/// `mithril-common` re-exports

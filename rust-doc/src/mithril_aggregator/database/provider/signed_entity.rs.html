@@ -1109,7 +1109,7 @@
         Beacon, Epoch, SignedEntity, SignedEntityType, SignedEntityTypeDiscriminants, Snapshot,
     },
     messages::{
-        CardanoTransactionCommitmentListItemMessage, CardanoTransactionCommitmentMessage,
+        CardanoTransactionSnapshotListItemMessage, CardanoTransactionSnapshotMessage,
         MithrilStakeDistributionListItemMessage, MithrilStakeDistributionMessage,
         SignerWithStakeMessagePart, SnapshotListItemMessage, SnapshotMessage,
     },
@@ -1238,7 +1238,7 @@
     }
 }
 
-<span class="kw">impl </span>TryFrom&lt;SignedEntityRecord&gt; <span class="kw">for </span>CardanoTransactionCommitmentMessage {
+<span class="kw">impl </span>TryFrom&lt;SignedEntityRecord&gt; <span class="kw">for </span>CardanoTransactionSnapshotMessage {
     <span class="kw">type </span>Error = StdError;
 
     <span class="kw">fn </span>try_from(value: SignedEntityRecord) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, <span class="self">Self</span>::Error&gt; {
@@ -1249,7 +1249,7 @@
             hash: String,
         }
         <span class="kw">let </span>artifact = serde_json::from_str::&lt;TmpCardanoTransaction&gt;(<span class="kw-2">&amp;</span>value.artifact)<span class="question-mark">?</span>;
-        <span class="kw">let </span>cardano_transaction_message = CardanoTransactionCommitmentMessage {
+        <span class="kw">let </span>cardano_transaction_message = CardanoTransactionSnapshotMessage {
             merkle_root: artifact.merkle_root,
             beacon: artifact.beacon,
             hash: artifact.hash,
@@ -1261,7 +1261,7 @@
     }
 }
 
-<span class="kw">impl </span>TryFrom&lt;SignedEntityRecord&gt; <span class="kw">for </span>CardanoTransactionCommitmentListItemMessage {
+<span class="kw">impl </span>TryFrom&lt;SignedEntityRecord&gt; <span class="kw">for </span>CardanoTransactionSnapshotListItemMessage {
     <span class="kw">type </span>Error = StdError;
 
     <span class="kw">fn </span>try_from(value: SignedEntityRecord) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, <span class="self">Self</span>::Error&gt; {
@@ -1272,7 +1272,7 @@
             hash: String,
         }
         <span class="kw">let </span>artifact = serde_json::from_str::&lt;TmpCardanoTransaction&gt;(<span class="kw-2">&amp;</span>value.artifact)<span class="question-mark">?</span>;
-        <span class="kw">let </span>message = CardanoTransactionCommitmentListItemMessage {
+        <span class="kw">let </span>message = CardanoTransactionSnapshotListItemMessage {
             merkle_root: artifact.merkle_root,
             beacon: artifact.beacon,
             hash: artifact.hash,

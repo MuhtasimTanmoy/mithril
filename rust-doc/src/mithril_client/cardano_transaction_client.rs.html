@@ -282,17 +282,15 @@
 <a href="#281" id="281">281</a>
 <a href="#282" id="282">282</a>
 <a href="#283" id="283">283</a>
-<a href="#284" id="284">284</a>
-<a href="#285" id="285">285</a>
 </pre></div><pre class="rust"><code><span class="doccomment">//! A client to retrieve from an aggregator cryptographic proofs of membership for a subset of Cardano transactions.
 //!
 //! In order to do so it defines a [CardanoTransactionClient] which exposes the following features:
 //!  - [get_proofs][CardanoTransactionClient::get_proofs]: get a [cryptographic proof][CardanoTransactionsProofs]
 //! that the transactions with given hash are included in the global Cardano transactions set.
-//!  - [get][CardanoTransactionClient::get_commitment]: get a [Cardano transaction commitment][CardanoTransactionCommitment]
+//!  - [get][CardanoTransactionClient::get_snapshot]: get a [Cardano transaction snapshot][CardanoTransactionSnapshot]
 //! data from its hash.
-//!  - [list][CardanoTransactionClient::list_commitments]: get the list of the latest available Cardano transaction
-//! commitments.
+//!  - [list][CardanoTransactionClient::list_snapshots]: get the list of the latest available Cardano transaction
+//! snapshot.
 //!
 //!  **Important:** Verifying a proof **only** means that its cryptography is valid, in order to certify that a Cardano
 //! transactions subset is valid, the associated proof must be tied to a valid Mithril certificate (see the example below).
@@ -326,35 +324,35 @@
 //! # }
 //! ```
 //!
-//! # Get a Cardano transaction commitment
+//! # Get a Cardano transaction snapshot
 //!
-//! To get a Cardano transaction commitment using the [ClientBuilder][crate::client::ClientBuilder].
+//! To get a Cardano transaction snapshot using the [ClientBuilder][crate::client::ClientBuilder].
 //!
 //! ```no_run
 //! # async fn run() -&gt; mithril_client::MithrilResult&lt;()&gt; {
 //! use mithril_client::ClientBuilder;
 //!
 //! let client = ClientBuilder::aggregator("YOUR_AGGREGATOR_ENDPOINT", "YOUR_GENESIS_VERIFICATION_KEY").build()?;
-//! let cardano_transaction_commitment = client.cardano_transaction().get_commitment("CARDANO_TRANSACTION_COMMITMENT_HASH").await?.unwrap();
+//! let cardano_transaction_snapshot = client.cardano_transaction().get_snapshot("CARDANO_TRANSACTION_SNAPSHOT_HASH").await?.unwrap();
 //!
-//! println!("Cardano transaction commitment hash={}, epoch={}", cardano_transaction_commitment.hash, cardano_transaction_commitment.beacon.epoch);
+//! println!("Cardano transaction snapshot hash={}, epoch={}", cardano_transaction_snapshot.hash, cardano_transaction_snapshot.beacon.epoch);
 //! #    Ok(())
 //! # }
 //! ```
 //!
-//! # List available Cardano transaction commitments
+//! # List available Cardano transaction snapshots
 //!
-//! To list latest available Cardano transaction commitments using the [ClientBuilder][crate::client::ClientBuilder].
+//! To list latest available Cardano transaction snapshots using the [ClientBuilder][crate::client::ClientBuilder].
 //!
 //! ```no_run
 //! # async fn run() -&gt; mithril_client::MithrilResult&lt;()&gt; {
 //! use mithril_client::ClientBuilder;
 //!
 //! let client = ClientBuilder::aggregator("YOUR_AGGREGATOR_ENDPOINT", "YOUR_GENESIS_VERIFICATION_KEY").build()?;
-//! let cardano_transaction_commitments = client.cardano_transaction().list_commitments().await?;
+//! let cardano_transaction_snapshots = client.cardano_transaction().list_snapshots().await?;
 //!
-//! for cardano_transaction_commitment in cardano_transaction_commitments {
-//!     println!("Cardano transaction commitment hash={}, epoch={}", cardano_transaction_commitment.hash, cardano_transaction_commitment.beacon.epoch);
+//! for cardano_transaction_snapshot in cardano_transaction_snapshots {
+//!     println!("Cardano transaction snapshot hash={}, epoch={}", cardano_transaction_snapshot.hash, cardano_transaction_snapshot.beacon.epoch);
 //! }
 //! #    Ok(())
 //! # }
@@ -362,7 +360,7 @@
 
 </span><span class="kw">use </span><span class="kw">crate</span>::aggregator_client::{AggregatorClient, AggregatorClientError, AggregatorRequest};
 <span class="kw">use crate</span>::{
-    CardanoTransactionCommitment, CardanoTransactionCommitmentListItem, CardanoTransactionsProofs,
+    CardanoTransactionSnapshot, CardanoTransactionSnapshotListItem, CardanoTransactionsProofs,
     MithrilResult,
 };
 <span class="kw">use </span>anyhow::Context;
@@ -403,40 +401,38 @@
         }
     }
 
-    <span class="doccomment">/// Fetch a list of signed Cardano transaction commitments.
-    </span><span class="kw">pub async fn </span>list_commitments(
-        <span class="kw-2">&amp;</span><span class="self">self</span>,
-    ) -&gt; MithrilResult&lt;Vec&lt;CardanoTransactionCommitmentListItem&gt;&gt; {
+    <span class="doccomment">/// Fetch a list of signed Cardano transaction snapshots.
+    </span><span class="kw">pub async fn </span>list_snapshots(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; MithrilResult&lt;Vec&lt;CardanoTransactionSnapshotListItem&gt;&gt; {
         <span class="kw">let </span>response = <span class="self">self
             </span>.aggregator_client
-            .get_content(AggregatorRequest::ListCardanoTransactionCommitments)
+            .get_content(AggregatorRequest::ListCardanoTransactionSnapshots)
             .<span class="kw">await
             </span>.with_context(|| <span class="string">"CardanoTransactionClient Client can not get the artifact list"</span>)<span class="question-mark">?</span>;
-        <span class="kw">let </span>items = serde_json::from_str::&lt;Vec&lt;CardanoTransactionCommitmentListItem&gt;&gt;(<span class="kw-2">&amp;</span>response)
+        <span class="kw">let </span>items = serde_json::from_str::&lt;Vec&lt;CardanoTransactionSnapshotListItem&gt;&gt;(<span class="kw-2">&amp;</span>response)
             .with_context(|| <span class="string">"CardanoTransactionClient Client can not deserialize artifact list"</span>)<span class="question-mark">?</span>;
 
         <span class="prelude-val">Ok</span>(items)
     }
 
-    <span class="doccomment">/// Get the given Cardano transaction commitment data. If it cannot be found, a None is returned.
-    </span><span class="kw">pub async fn </span>get_commitment(
+    <span class="doccomment">/// Get the given Cardano transaction snapshot data. If it cannot be found, a None is returned.
+    </span><span class="kw">pub async fn </span>get_snapshot(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         hash: <span class="kw-2">&amp;</span>str,
-    ) -&gt; MithrilResult&lt;<span class="prelude-ty">Option</span>&lt;CardanoTransactionCommitment&gt;&gt; {
+    ) -&gt; MithrilResult&lt;<span class="prelude-ty">Option</span>&lt;CardanoTransactionSnapshot&gt;&gt; {
         <span class="kw">match </span><span class="self">self
             </span>.aggregator_client
-            .get_content(AggregatorRequest::GetCardanoTransactionCommitment {
+            .get_content(AggregatorRequest::GetCardanoTransactionSnapshot {
                 hash: hash.to_string(),
             })
             .<span class="kw">await
         </span>{
             <span class="prelude-val">Ok</span>(content) =&gt; {
-                <span class="kw">let </span>cardano_transaction_commitment: CardanoTransactionCommitment =
+                <span class="kw">let </span>cardano_transaction_snapshot: CardanoTransactionSnapshot =
                     serde_json::from_str(<span class="kw-2">&amp;</span>content).with_context(|| {
                         <span class="string">"CardanoTransactionClient Client can not deserialize artifact"
                     </span>})<span class="question-mark">?</span>;
 
-                <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(cardano_transaction_commitment))
+                <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(cardano_transaction_snapshot))
             }
             <span class="prelude-val">Err</span>(AggregatorClientError::RemoteServerLogical(<span class="kw">_</span>)) =&gt; <span class="prelude-val">Ok</span>(<span class="prelude-val">None</span>),
             <span class="prelude-val">Err</span>(e) =&gt; <span class="prelude-val">Err</span>(e.into()),
@@ -449,8 +445,8 @@
     <span class="kw">use </span><span class="kw">crate</span>::aggregator_client::{AggregatorClientError, MockAggregatorHTTPClient};
     <span class="kw">use </span><span class="kw">crate</span>::common::Beacon;
     <span class="kw">use crate</span>::{
-        CardanoTransactionCommitment, CardanoTransactionCommitmentListItem,
-        CardanoTransactionsProofs, CardanoTransactionsSetProof,
+        CardanoTransactionSnapshot, CardanoTransactionSnapshotListItem, CardanoTransactionsProofs,
+        CardanoTransactionsSetProof,
     };
     <span class="kw">use </span>anyhow::anyhow;
     <span class="kw">use </span>chrono::{DateTime, Utc};
@@ -458,9 +454,9 @@
 
     <span class="kw">use super</span>::<span class="kw-2">*</span>;
 
-    <span class="kw">fn </span>fake_messages() -&gt; Vec&lt;CardanoTransactionCommitmentListItem&gt; {
+    <span class="kw">fn </span>fake_messages() -&gt; Vec&lt;CardanoTransactionSnapshotListItem&gt; {
         <span class="macro">vec!</span>[
-            CardanoTransactionCommitmentListItem {
+            CardanoTransactionSnapshotListItem {
                 merkle_root: <span class="string">"mk-123"</span>.to_string(),
                 beacon: Beacon::new(<span class="string">"network"</span>.to_string(), <span class="number">1</span>, <span class="number">1</span>),
                 hash: <span class="string">"hash-123"</span>.to_string(),
@@ -469,7 +465,7 @@
                     .unwrap()
                     .with_timezone(<span class="kw-2">&amp;</span>Utc),
             },
-            CardanoTransactionCommitmentListItem {
+            CardanoTransactionSnapshotListItem {
                 merkle_root: <span class="string">"mk-456"</span>.to_string(),
                 beacon: Beacon::new(<span class="string">"network"</span>.to_string(), <span class="number">1</span>, <span class="number">2</span>),
                 hash: <span class="string">"hash-456"</span>.to_string(),
@@ -482,14 +478,14 @@
     }
 
     <span class="attr">#[tokio::test]
-    </span><span class="kw">async fn </span>get_cardano_transactions_commitment_list() {
+    </span><span class="kw">async fn </span>get_cardano_transactions_snapshot_list() {
         <span class="kw">let </span>message = fake_messages();
         <span class="kw">let </span><span class="kw-2">mut </span>http_client = MockAggregatorHTTPClient::new();
         http_client
             .expect_get_content()
             .return_once(<span class="kw">move </span>|<span class="kw">_</span>| <span class="prelude-val">Ok</span>(serde_json::to_string(<span class="kw-2">&amp;</span>message).unwrap()));
         <span class="kw">let </span>client = CardanoTransactionClient::new(Arc::new(http_client));
-        <span class="kw">let </span>items = client.list_commitments().<span class="kw">await</span>.unwrap();
+        <span class="kw">let </span>items = client.list_snapshots().<span class="kw">await</span>.unwrap();
 
         <span class="macro">assert_eq!</span>(<span class="number">2</span>, items.len());
         <span class="macro">assert_eq!</span>(<span class="string">"hash-123"</span>.to_string(), items[<span class="number">0</span>].hash);
@@ -497,9 +493,9 @@
     }
 
     <span class="attr">#[tokio::test]
-    </span><span class="kw">async fn </span>get_cardano_transactions_commitment() {
+    </span><span class="kw">async fn </span>get_cardano_transactions_snapshot() {
         <span class="kw">let </span><span class="kw-2">mut </span>http_client = MockAggregatorHTTPClient::new();
-        <span class="kw">let </span>message = CardanoTransactionCommitment {
+        <span class="kw">let </span>message = CardanoTransactionSnapshot {
             merkle_root: <span class="string">"mk-123"</span>.to_string(),
             beacon: Beacon::new(<span class="string">"network"</span>.to_string(), <span class="number">1</span>, <span class="number">1</span>),
             hash: <span class="string">"hash-123"</span>.to_string(),
@@ -513,13 +509,13 @@
             .expect_get_content()
             .return_once(<span class="kw">move </span>|<span class="kw">_</span>| <span class="prelude-val">Ok</span>(serde_json::to_string(<span class="kw-2">&amp;</span>message).unwrap()));
         <span class="kw">let </span>client = CardanoTransactionClient::new(Arc::new(http_client));
-        <span class="kw">let </span>cardano_transaction_commitment = client
-            .get_commitment(<span class="string">"hash"</span>)
+        <span class="kw">let </span>cardano_transaction_snapshot = client
+            .get_snapshot(<span class="string">"hash"</span>)
             .<span class="kw">await
             </span>.unwrap()
-            .expect(<span class="string">"This test returns a cardano transaction commitment"</span>);
+            .expect(<span class="string">"This test returns a cardano transaction snapshot"</span>);
 
-        <span class="macro">assert_eq!</span>(expected, cardano_transaction_commitment);
+        <span class="macro">assert_eq!</span>(expected, cardano_transaction_snapshot);
     }
 
     <span class="attr">#[tokio::test]

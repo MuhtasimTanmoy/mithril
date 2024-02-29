@@ -568,16 +568,16 @@
         </span>transactions_hashes: Vec&lt;String&gt;,
     },
 
-    <span class="doccomment">/// Get a specific [Cardano transaction commitment][crate::CardanoTransactionCommitment]
+    <span class="doccomment">/// Get a specific [Cardano transaction snapshot][crate::CardanoTransactionSnapshot]
     </span><span class="attr">#[cfg(feature = <span class="string">"unstable"</span>)]
-    </span>GetCardanoTransactionCommitment {
-        <span class="doccomment">/// Hash of the Cardano transaction commitment to retrieve
+    </span>GetCardanoTransactionSnapshot {
+        <span class="doccomment">/// Hash of the Cardano transaction snapshot to retrieve
         </span>hash: String,
     },
 
-    <span class="doccomment">/// Lists the aggregator [Cardano transaction commitment][crate::CardanoTransactionCommitment]
+    <span class="doccomment">/// Lists the aggregator [Cardano transaction snapshot][crate::CardanoTransactionSnapshot]
     </span><span class="attr">#[cfg(feature = <span class="string">"unstable"</span>)]
-    </span>ListCardanoTransactionCommitments,
+    </span>ListCardanoTransactionSnapshots,
 }
 
 <span class="kw">impl </span>AggregatorRequest {
@@ -609,11 +609,11 @@
                 transactions_hashes.join(<span class="string">","</span>)
             ),
             <span class="attr">#[cfg(feature = <span class="string">"unstable"</span>)]
-            </span>AggregatorRequest::GetCardanoTransactionCommitment { hash } =&gt; {
+            </span>AggregatorRequest::GetCardanoTransactionSnapshot { hash } =&gt; {
                 <span class="macro">format!</span>(<span class="string">"artifact/cardano-transaction/{hash}"</span>)
             }
             <span class="attr">#[cfg(feature = <span class="string">"unstable"</span>)]
-            </span>AggregatorRequest::ListCardanoTransactionCommitments =&gt; {
+            </span>AggregatorRequest::ListCardanoTransactionSnapshots =&gt; {
                 <span class="string">"artifact/cardano-transactions"</span>.to_string()
             }
         }
@@ -956,7 +956,7 @@
 
             <span class="macro">assert_eq!</span>(
                 <span class="string">"artifact/cardano-transaction/abc"</span>.to_string(),
-                AggregatorRequest::GetCardanoTransactionCommitment {
+                AggregatorRequest::GetCardanoTransactionSnapshot {
                     hash: <span class="string">"abc"</span>.to_string()
                 }
                 .route()
@@ -964,7 +964,7 @@
 
             <span class="macro">assert_eq!</span>(
                 <span class="string">"artifact/cardano-transactions"</span>.to_string(),
-                AggregatorRequest::ListCardanoTransactionCommitments.route()
+                AggregatorRequest::ListCardanoTransactionSnapshots.route()
             );
         }
     }

@@ -57,14 +57,14 @@
 <a href="#56" id="56">56</a>
 <a href="#57" id="57">57</a>
 <a href="#58" id="58">58</a>
-</pre></div><pre class="rust"><code><span class="doccomment">//! Commands for the Cardano Transaction Commitment artifact &amp; Cardano Transactions Proof
+</pre></div><pre class="rust"><code><span class="doccomment">//! Commands for the Cardano Transaction Snapshot artifact &amp; Cardano Transactions Proof
 </span><span class="kw">mod </span>certify;
-<span class="kw">mod </span>commitment_list;
-<span class="kw">mod </span>commitment_show;
+<span class="kw">mod </span>snapshot_list;
+<span class="kw">mod </span>snapshot_show;
 
 <span class="kw">pub use </span>certify::<span class="kw-2">*</span>;
-<span class="kw">pub use </span>commitment_list::<span class="kw-2">*</span>;
-<span class="kw">pub use </span>commitment_show::<span class="kw-2">*</span>;
+<span class="kw">pub use </span>snapshot_list::<span class="kw-2">*</span>;
+<span class="kw">pub use </span>snapshot_show::<span class="kw-2">*</span>;
 
 <span class="kw">use </span>clap::Subcommand;
 <span class="kw">use </span>config::builder::DefaultState;
@@ -75,9 +75,9 @@
 </span><span class="attr">#[derive(Subcommand, Debug, Clone)]
 #[command(about = <span class="string">"[unstable] Cardano transactions management (alias: ctx)"</span>)]
 </span><span class="kw">pub enum </span>CardanoTransactionCommands {
-    <span class="doccomment">/// Cardano transaction commitment commands
+    <span class="doccomment">/// Cardano transaction snapshot commands
     </span><span class="attr">#[clap(subcommand)]
-    </span>Commitment(CardanoTransactionCommitmentCommands),
+    </span>Snapshot(CardanoTransactionSnapshotCommands),
 
     <span class="doccomment">/// Certify that a given list of transaction hashes are included in the Cardano transactions set
     </span><span class="attr">#[clap(arg_required_else_help = <span class="bool-val">false</span>)]
@@ -86,28 +86,28 @@
 
 <span class="doccomment">/// Cardano transactions set
 </span><span class="attr">#[derive(Subcommand, Debug, Clone)]
-</span><span class="kw">pub enum </span>CardanoTransactionCommitmentCommands {
+</span><span class="kw">pub enum </span>CardanoTransactionSnapshotCommands {
     <span class="doccomment">/// List Cardano transaction sets
     </span><span class="attr">#[clap(arg_required_else_help = <span class="bool-val">false</span>)]
-    </span>List(CardanoTransactionCommitmentListCommand),
+    </span>List(CardanoTransactionSnapshotListCommand),
 
     <span class="doccomment">/// Show Cardano transaction sets
     </span><span class="attr">#[clap(arg_required_else_help = <span class="bool-val">false</span>)]
-    </span>Show(CardanoTransactionsCommitmentShowCommand),
+    </span>Show(CardanoTransactionsSnapshotShowCommand),
 }
 
 <span class="kw">impl </span>CardanoTransactionCommands {
     <span class="doccomment">/// Execute Cardano transaction command
     </span><span class="kw">pub async fn </span>execute(<span class="kw-2">&amp;</span><span class="self">self</span>, config_builder: ConfigBuilder&lt;DefaultState&gt;) -&gt; MithrilResult&lt;()&gt; {
         <span class="kw">match </span><span class="self">self </span>{
-            <span class="self">Self</span>::Commitment(cmd) =&gt; cmd.execute(config_builder).<span class="kw">await</span>,
+            <span class="self">Self</span>::Snapshot(cmd) =&gt; cmd.execute(config_builder).<span class="kw">await</span>,
             <span class="self">Self</span>::Certify(cmd) =&gt; cmd.execute(config_builder).<span class="kw">await</span>,
         }
     }
 }
 
-<span class="kw">impl </span>CardanoTransactionCommitmentCommands {
-    <span class="doccomment">/// Execute Cardano transaction commitment command
+<span class="kw">impl </span>CardanoTransactionSnapshotCommands {
+    <span class="doccomment">/// Execute Cardano transaction snapshot command
     </span><span class="kw">pub async fn </span>execute(<span class="kw-2">&amp;</span><span class="self">self</span>, config_builder: ConfigBuilder&lt;DefaultState&gt;) -&gt; MithrilResult&lt;()&gt; {
         <span class="kw">match </span><span class="self">self </span>{
             <span class="self">Self</span>::List(cmd) =&gt; cmd.execute(config_builder).<span class="kw">await</span>,

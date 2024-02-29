@@ -95,15 +95,13 @@
 <a href="#94" id="94">94</a>
 <a href="#95" id="95">95</a>
 <a href="#96" id="96">96</a>
-<a href="#97" id="97">97</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>async_trait::async_trait;
 
 <span class="kw">use </span><span class="kw">super</span>::ArtifactBuilder;
 <span class="kw">use </span>anyhow::{anyhow, Context};
 <span class="kw">use </span>mithril_common::{
     entities::{
-        Beacon, CardanoTransactionsCommitment, Certificate, ProtocolMessagePartKey,
-        SignedEntityType,
+        Beacon, CardanoTransactionsSnapshot, Certificate, ProtocolMessagePartKey, SignedEntityType,
     },
     StdResult,
 };
@@ -119,12 +117,12 @@
 }
 
 <span class="attr">#[async_trait]
-</span><span class="kw">impl </span>ArtifactBuilder&lt;Beacon, CardanoTransactionsCommitment&gt; <span class="kw">for </span>CardanoTransactionsArtifactBuilder {
+</span><span class="kw">impl </span>ArtifactBuilder&lt;Beacon, CardanoTransactionsSnapshot&gt; <span class="kw">for </span>CardanoTransactionsArtifactBuilder {
     <span class="kw">async fn </span>compute_artifact(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         beacon: Beacon,
         certificate: <span class="kw-2">&amp;</span>Certificate,
-    ) -&gt; StdResult&lt;CardanoTransactionsCommitment&gt; {
+    ) -&gt; StdResult&lt;CardanoTransactionsSnapshot&gt; {
         <span class="kw">let </span>merkle_root = certificate
             .protocol_message
             .get_message_part(<span class="kw-2">&amp;</span>ProtocolMessagePartKey::CardanoTransactionsMerkleRoot)
@@ -138,7 +136,7 @@
                 )
             })<span class="question-mark">?</span>;
 
-        <span class="prelude-val">Ok</span>(CardanoTransactionsCommitment::new(
+        <span class="prelude-val">Ok</span>(CardanoTransactionsSnapshot::new(
             merkle_root.to_string(),
             beacon,
         ))
@@ -173,7 +171,7 @@
             .<span class="kw">await
             </span>.unwrap();
         <span class="kw">let </span>artifact_expected =
-            CardanoTransactionsCommitment::new(<span class="string">"merkleroot"</span>.to_string(), certificate.beacon);
+            CardanoTransactionsSnapshot::new(<span class="string">"merkleroot"</span>.to_string(), certificate.beacon);
         <span class="macro">assert_eq!</span>(artifact_expected, artifact);
     }
 
