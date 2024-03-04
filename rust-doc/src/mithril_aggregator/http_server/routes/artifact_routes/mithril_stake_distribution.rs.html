@@ -279,6 +279,19 @@
 <a href="#278" id="278">278</a>
 <a href="#279" id="279">279</a>
 <a href="#280" id="280">280</a>
+<a href="#281" id="281">281</a>
+<a href="#282" id="282">282</a>
+<a href="#283" id="283">283</a>
+<a href="#284" id="284">284</a>
+<a href="#285" id="285">285</a>
+<a href="#286" id="286">286</a>
+<a href="#287" id="287">287</a>
+<a href="#288" id="288">288</a>
+<a href="#289" id="289">289</a>
+<a href="#290" id="290">290</a>
+<a href="#291" id="291">291</a>
+<a href="#292" id="292">292</a>
+<a href="#293" id="293">293</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span><span class="kw">crate</span>::http_server::routes::middlewares;
 <span class="kw">use </span><span class="kw">crate</span>::DependencyContainer;
 <span class="kw">use </span>std::sync::Arc;
@@ -384,7 +397,10 @@
     };
     <span class="kw">use </span>mithril_persistence::sqlite::HydrationError;
     <span class="kw">use </span>serde_json::Value::Null;
-    <span class="kw">use </span>warp::{http::Method, test::request};
+    <span class="kw">use </span>warp::{
+        http::{Method, StatusCode},
+        test::request,
+    };
 
     <span class="kw">use super</span>::<span class="kw-2">*</span>;
 
@@ -432,7 +448,9 @@
             <span class="string">"application/json"</span>,
             <span class="kw-2">&amp;</span>Null,
             <span class="kw-2">&amp;</span>response,
-        );
+            <span class="kw-2">&amp;</span>StatusCode::OK,
+        )
+        .unwrap();
     }
 
     <span class="attr">#[tokio::test]
@@ -461,7 +479,9 @@
             <span class="string">"application/json"</span>,
             <span class="kw-2">&amp;</span>Null,
             <span class="kw-2">&amp;</span>response,
-        );
+            <span class="kw-2">&amp;</span>StatusCode::INTERNAL_SERVER_ERROR,
+        )
+        .unwrap();
     }
 
     <span class="attr">#[tokio::test]
@@ -498,11 +518,13 @@
             <span class="string">"application/json"</span>,
             <span class="kw-2">&amp;</span>Null,
             <span class="kw-2">&amp;</span>response,
-        );
+            <span class="kw-2">&amp;</span>StatusCode::OK,
+        )
+        .unwrap();
     }
 
     <span class="attr">#[tokio::test]
-    </span><span class="kw">async fn </span>test_mithril_stake_distribution_ok_norecord() {
+    </span><span class="kw">async fn </span>test_mithril_stake_distribution_returns_404_no_found_when_no_record() {
         <span class="kw">let </span><span class="kw-2">mut </span>mock_http_message_service = MockMessageService::new();
         mock_http_message_service
             .expect_get_mithril_stake_distribution_message()
@@ -527,7 +549,9 @@
             <span class="string">"application/json"</span>,
             <span class="kw-2">&amp;</span>Null,
             <span class="kw-2">&amp;</span>response,
-        );
+            <span class="kw-2">&amp;</span>StatusCode::NOT_FOUND,
+        )
+        .unwrap();
     }
 
     <span class="attr">#[tokio::test]
@@ -556,7 +580,9 @@
             <span class="string">"application/json"</span>,
             <span class="kw-2">&amp;</span>Null,
             <span class="kw-2">&amp;</span>response,
-        );
+            <span class="kw-2">&amp;</span>StatusCode::INTERNAL_SERVER_ERROR,
+        )
+        .unwrap();
     }
 }
 </code></pre></div></section></main></body></html>

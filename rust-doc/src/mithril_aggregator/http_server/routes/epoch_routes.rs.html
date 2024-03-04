@@ -127,6 +127,19 @@
 <a href="#126" id="126">126</a>
 <a href="#127" id="127">127</a>
 <a href="#128" id="128">128</a>
+<a href="#129" id="129">129</a>
+<a href="#130" id="130">130</a>
+<a href="#131" id="131">131</a>
+<a href="#132" id="132">132</a>
+<a href="#133" id="133">133</a>
+<a href="#134" id="134">134</a>
+<a href="#135" id="135">135</a>
+<a href="#136" id="136">136</a>
+<a href="#137" id="137">137</a>
+<a href="#138" id="138">138</a>
+<a href="#139" id="139">139</a>
+<a href="#140" id="140">140</a>
+<a href="#141" id="141">141</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span><span class="kw">crate</span>::http_server::routes::middlewares;
 <span class="kw">use </span><span class="kw">crate</span>::DependencyContainer;
 <span class="kw">use </span>std::sync::Arc;
@@ -189,14 +202,20 @@
 
 <span class="attr">#[cfg(test)]
 </span><span class="kw">mod </span>tests {
-    <span class="kw">use </span><span class="kw">crate</span>::http_server::SERVER_BASE_PATH;
-    <span class="kw">use </span>mithril_common::test_utils::apispec::APISpec;
+    <span class="kw">use </span>mithril_common::{
+        entities::Epoch,
+        test_utils::{apispec::APISpec, MithrilFixtureBuilder},
+    };
     <span class="kw">use </span>serde_json::Value::Null;
-    <span class="kw">use </span>warp::http::Method;
+    <span class="kw">use </span>tokio::sync::RwLock;
+    <span class="kw">use </span>warp::http::{Method, StatusCode};
     <span class="kw">use </span>warp::test::request;
 
-    <span class="kw">use super</span>::<span class="kw-2">*</span>;
+    <span class="kw">use </span><span class="kw">crate</span>::http_server::SERVER_BASE_PATH;
     <span class="kw">use </span><span class="kw">crate</span>::initialize_dependencies;
+    <span class="kw">use </span><span class="kw">crate</span>::services::FakeEpochService;
+
+    <span class="kw">use super</span>::<span class="kw-2">*</span>;
 
     <span class="kw">fn </span>setup_router(
         dependency_manager: Arc&lt;DependencyContainer&gt;,
@@ -215,7 +234,10 @@
     </span><span class="kw">async fn </span>test_epoch_settings_get_ok() {
         <span class="kw">let </span>method = Method::GET.as_str();
         <span class="kw">let </span>path = <span class="string">"/epoch-settings"</span>;
-        <span class="kw">let </span>dependency_manager = initialize_dependencies().<span class="kw">await</span>;
+        <span class="kw">let </span><span class="kw-2">mut </span>dependency_manager = initialize_dependencies().<span class="kw">await</span>;
+        <span class="kw">let </span>fixture = MithrilFixtureBuilder::default().with_signers(<span class="number">5</span>).build();
+        <span class="kw">let </span>epoch_service = FakeEpochService::from_fixture(Epoch(<span class="number">5</span>), <span class="kw-2">&amp;</span>fixture);
+        dependency_manager.epoch_service = Arc::new(RwLock::new(epoch_service));
 
         <span class="kw">let </span>response = request()
             .method(method)
@@ -230,7 +252,9 @@
             <span class="string">"application/json"</span>,
             <span class="kw-2">&amp;</span>Null,
             <span class="kw-2">&amp;</span>response,
-        );
+            <span class="kw-2">&amp;</span>StatusCode::OK,
+        )
+        .unwrap();
     }
 
     <span class="attr">#[tokio::test]
@@ -252,7 +276,9 @@
             <span class="string">"application/json"</span>,
             <span class="kw-2">&amp;</span>Null,
             <span class="kw-2">&amp;</span>response,
-        );
+            <span class="kw-2">&amp;</span>StatusCode::INTERNAL_SERVER_ERROR,
+        )
+        .unwrap();
     }
 }
 </code></pre></div></section></main></body></html>

@@ -231,6 +231,15 @@
 <a href="#230" id="230">230</a>
 <a href="#231" id="231">231</a>
 <a href="#232" id="232">232</a>
+<a href="#233" id="233">233</a>
+<a href="#234" id="234">234</a>
+<a href="#235" id="235">235</a>
+<a href="#236" id="236">236</a>
+<a href="#237" id="237">237</a>
+<a href="#238" id="238">238</a>
+<a href="#239" id="239">239</a>
+<a href="#240" id="240">240</a>
+<a href="#241" id="241">241</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>serde::{Deserialize, Serialize};
 <span class="kw">use </span>std::sync::Arc;
 <span class="kw">use </span>warp::Filter;
@@ -345,7 +354,10 @@
         CardanoTransactionsSetProof, CardanoTransactionsSnapshot, SignedEntity,
     };
     <span class="kw">use </span>serde_json::Value::Null;
-    <span class="kw">use </span>warp::{http::Method, test::request};
+    <span class="kw">use </span>warp::{
+        http::{Method, StatusCode},
+        test::request,
+    };
 
     <span class="kw">use </span><span class="kw">crate</span>::services::MockSignedEntityService;
     <span class="kw">use crate</span>::{
@@ -401,7 +413,9 @@
             <span class="string">"application/json"</span>,
             <span class="kw-2">&amp;</span>Null,
             <span class="kw-2">&amp;</span>response,
-        );
+            <span class="kw-2">&amp;</span>StatusCode::OK,
+        )
+        .unwrap();
     }
 
     <span class="attr">#[tokio::test]
@@ -428,7 +442,9 @@
             <span class="string">"application/json"</span>,
             <span class="kw-2">&amp;</span>Null,
             <span class="kw-2">&amp;</span>response,
-        );
+            <span class="kw-2">&amp;</span>StatusCode::NOT_FOUND,
+        )
+        .unwrap();
     }
 
     <span class="attr">#[tokio::test]
@@ -460,7 +476,9 @@
             <span class="string">"application/json"</span>,
             <span class="kw-2">&amp;</span>Null,
             <span class="kw-2">&amp;</span>response,
-        );
+            <span class="kw-2">&amp;</span>StatusCode::INTERNAL_SERVER_ERROR,
+        )
+        .unwrap();
     }
 }
 </code></pre></div></section></main></body></html>

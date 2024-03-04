@@ -293,6 +293,16 @@
 <a href="#292" id="292">292</a>
 <a href="#293" id="293">293</a>
 <a href="#294" id="294">294</a>
+<a href="#295" id="295">295</a>
+<a href="#296" id="296">296</a>
+<a href="#297" id="297">297</a>
+<a href="#298" id="298">298</a>
+<a href="#299" id="299">299</a>
+<a href="#300" id="300">300</a>
+<a href="#301" id="301">301</a>
+<a href="#302" id="302">302</a>
+<a href="#303" id="303">303</a>
+<a href="#304" id="304">304</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span><span class="kw">crate</span>::http_server::routes::middlewares;
 <span class="kw">use </span><span class="kw">crate</span>::DependencyContainer;
 <span class="kw">use </span>std::sync::Arc;
@@ -398,7 +408,7 @@
 <span class="attr">#[cfg(test)]
 </span><span class="kw">mod </span>tests {
     <span class="kw">use </span>anyhow::anyhow;
-    <span class="kw">use </span>warp::http::Method;
+    <span class="kw">use </span>warp::http::{Method, StatusCode};
     <span class="kw">use </span>warp::test::request;
 
     <span class="kw">use </span>mithril_common::{
@@ -455,7 +465,9 @@
             <span class="string">"application/json"</span>,
             <span class="kw-2">&amp;</span>message,
             <span class="kw-2">&amp;</span>response,
-        );
+            <span class="kw-2">&amp;</span>StatusCode::CREATED,
+        )
+        .unwrap();
     }
 
     <span class="attr">#[tokio::test]
@@ -487,7 +499,9 @@
             <span class="string">"application/json"</span>,
             <span class="kw-2">&amp;</span>message,
             <span class="kw-2">&amp;</span>response,
-        );
+            <span class="kw-2">&amp;</span>StatusCode::BAD_REQUEST,
+        )
+        .unwrap();
     }
 
     <span class="attr">#[tokio::test]
@@ -520,7 +534,9 @@
             <span class="string">"application/json"</span>,
             <span class="kw-2">&amp;</span>message,
             <span class="kw-2">&amp;</span>response,
-        );
+            <span class="kw-2">&amp;</span>StatusCode::NOT_FOUND,
+        )
+        .unwrap();
     }
 
     <span class="attr">#[tokio::test]
@@ -553,7 +569,9 @@
             <span class="string">"application/json"</span>,
             <span class="kw-2">&amp;</span>message,
             <span class="kw-2">&amp;</span>response,
-        );
+            <span class="kw-2">&amp;</span>StatusCode::GONE,
+        )
+        .unwrap();
     }
 
     <span class="attr">#[tokio::test]
@@ -584,7 +602,9 @@
             <span class="string">"application/json"</span>,
             <span class="kw-2">&amp;</span>message,
             <span class="kw-2">&amp;</span>response,
-        );
+            <span class="kw-2">&amp;</span>StatusCode::INTERNAL_SERVER_ERROR,
+        )
+        .unwrap();
     }
 }
 </code></pre></div></section></main></body></html>

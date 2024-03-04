@@ -210,13 +210,40 @@
 <a href="#209" id="209">209</a>
 <a href="#210" id="210">210</a>
 <a href="#211" id="211">211</a>
+<a href="#212" id="212">212</a>
+<a href="#213" id="213">213</a>
+<a href="#214" id="214">214</a>
+<a href="#215" id="215">215</a>
+<a href="#216" id="216">216</a>
+<a href="#217" id="217">217</a>
+<a href="#218" id="218">218</a>
+<a href="#219" id="219">219</a>
+<a href="#220" id="220">220</a>
+<a href="#221" id="221">221</a>
+<a href="#222" id="222">222</a>
+<a href="#223" id="223">223</a>
+<a href="#224" id="224">224</a>
+<a href="#225" id="225">225</a>
+<a href="#226" id="226">226</a>
+<a href="#227" id="227">227</a>
+<a href="#228" id="228">228</a>
+<a href="#229" id="229">229</a>
+<a href="#230" id="230">230</a>
+<a href="#231" id="231">231</a>
+<a href="#232" id="232">232</a>
+<a href="#233" id="233">233</a>
+<a href="#234" id="234">234</a>
+<a href="#235" id="235">235</a>
+<a href="#236" id="236">236</a>
 </pre></div><pre class="rust"><code><span class="kw">use super</span>::{AdapterError, StoreAdapter};
+<span class="kw">use </span>anyhow::anyhow;
 <span class="kw">use </span>async_trait::async_trait;
 
 <span class="doccomment">/// A [StoreAdapter] that store one fixed data record, for testing purpose.
 </span><span class="kw">pub struct </span>DumbStoreAdapter&lt;K, R&gt; {
     last_key: <span class="prelude-ty">Option</span>&lt;K&gt;,
     last_value: <span class="prelude-ty">Option</span>&lt;R&gt;,
+    error: <span class="prelude-ty">Option</span>&lt;String&gt;,
 }
 
 <span class="kw">impl</span>&lt;K, R&gt; DumbStoreAdapter&lt;K, R&gt; {
@@ -225,6 +252,15 @@
         <span class="self">Self </span>{
             last_key: <span class="prelude-val">None</span>,
             last_value: <span class="prelude-val">None</span>,
+            error: <span class="prelude-val">None</span>,
+        }
+    }
+
+    <span class="doccomment">/// DumbStoreAdapter factory that returns error when 'get_record' is called.
+    </span><span class="kw">pub fn </span>new_failing_adapter(error: <span class="kw-2">&amp;</span>str) -&gt; <span class="self">Self </span>{
+        <span class="self">Self </span>{
+            error: <span class="prelude-val">Some</span>(error.to_string()),
+            ..<span class="self">Self</span>::new()
         }
     }
 }
@@ -259,10 +295,15 @@
     }
 
     <span class="kw">async fn </span>get_record(<span class="kw-2">&amp;</span><span class="self">self</span>, key: <span class="kw-2">&amp;</span><span class="self">Self</span>::Key) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::Record&gt;, AdapterError&gt; {
-        <span class="kw">if </span><span class="self">self</span>.record_exists(key).<span class="kw">await</span><span class="question-mark">? </span>{
-            <span class="prelude-val">Ok</span>(<span class="self">self</span>.last_value.as_ref().cloned())
-        } <span class="kw">else </span>{
-            <span class="prelude-val">Ok</span>(<span class="prelude-val">None</span>)
+        <span class="kw">match </span><span class="kw-2">&amp;</span><span class="self">self</span>.error {
+            <span class="prelude-val">Some</span>(error) =&gt; <span class="prelude-val">Err</span>(AdapterError::GeneralError(<span class="macro">anyhow!</span>(error.clone()))),
+            <span class="prelude-val">None </span>=&gt; {
+                <span class="kw">if </span><span class="self">self</span>.record_exists(key).<span class="kw">await</span><span class="question-mark">? </span>{
+                    <span class="prelude-val">Ok</span>(<span class="self">self</span>.last_value.as_ref().cloned())
+                } <span class="kw">else </span>{
+                    <span class="prelude-val">Ok</span>(<span class="prelude-val">None</span>)
+                }
+            }
         }
     }
 
@@ -419,6 +460,15 @@
         <span class="kw">let </span>records = adapter.get_iter().<span class="kw">await</span>.unwrap();
 
         <span class="macro">assert_eq!</span>(<span class="number">0</span>, records.count());
+    }
+
+    <span class="attr">#[tokio::test]
+    </span><span class="kw">async fn </span>test_return_error_calling_get_record() {
+        <span class="kw">let </span>adapter: DumbStoreAdapter&lt;String, String&gt; =
+            DumbStoreAdapter::new_failing_adapter(<span class="string">"error"</span>);
+        <span class="kw">let </span>result = adapter.get_record(<span class="kw-2">&amp;</span><span class="string">"key"</span>.to_string()).<span class="kw">await</span>;
+
+        <span class="macro">assert!</span>(result.is_err());
     }
 }
 </code></pre></div></section></main></body></html>
