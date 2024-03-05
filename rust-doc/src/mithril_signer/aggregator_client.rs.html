@@ -939,6 +939,9 @@
 <a href="#938" id="938">938</a>
 <a href="#939" id="939">939</a>
 <a href="#940" id="940">940</a>
+<a href="#941" id="941">941</a>
+<a href="#942" id="942">942</a>
+<a href="#943" id="943">943</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>anyhow::anyhow;
 <span class="kw">use </span>async_trait::async_trait;
 <span class="kw">use </span>reqwest::{<span class="self">self</span>, Client, Proxy, RequestBuilder, Response, StatusCode};
@@ -1381,6 +1384,9 @@
             reset_digests_cache: <span class="bool-val">false</span>,
             era_reader_adapter_type: EraReaderAdapterType::Bootstrap,
             era_reader_adapter_params: <span class="prelude-val">None</span>,
+            enable_metrics_server: <span class="bool-val">true</span>,
+            metrics_server_ip: <span class="string">"0.0.0.0"</span>.to_string(),
+            metrics_server_port: <span class="number">9090</span>,
         };
         <span class="kw">let </span>era_checker = EraChecker::new(SupportedEra::dummy(), Epoch(<span class="number">1</span>));
         <span class="kw">let </span>api_version_provider = APIVersionProvider::new(Arc::new(era_checker));

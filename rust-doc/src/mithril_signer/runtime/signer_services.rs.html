@@ -404,6 +404,14 @@
 <a href="#403" id="403">403</a>
 <a href="#404" id="404">404</a>
 <a href="#405" id="405">405</a>
+<a href="#406" id="406">406</a>
+<a href="#407" id="407">407</a>
+<a href="#408" id="408">408</a>
+<a href="#409" id="409">409</a>
+<a href="#410" id="410">410</a>
+<a href="#411" id="411">411</a>
+<a href="#412" id="412">412</a>
+<a href="#413" id="413">413</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>anyhow::{anyhow, Context};
 <span class="kw">use </span>async_trait::async_trait;
 <span class="kw">use </span>sqlite::Connection;
@@ -435,9 +443,9 @@
 
 <span class="kw">use crate</span>::{
     aggregator_client::AggregatorClient, database::provider::CardanoTransactionRepository,
-    single_signer::SingleSigner, AggregatorHTTPClient, Configuration, MithrilSingleSigner,
-    ProtocolInitializerStore, ProtocolInitializerStorer, HTTP_REQUEST_TIMEOUT_DURATION,
-    SQLITE_FILE, SQLITE_FILE_CARDANO_TRANSACTION,
+    metrics::MetricsService, single_signer::SingleSigner, AggregatorHTTPClient, Configuration,
+    MithrilSingleSigner, ProtocolInitializerStore, ProtocolInitializerStorer,
+    HTTP_REQUEST_TIMEOUT_DURATION, SQLITE_FILE, SQLITE_FILE_CARDANO_TRANSACTION,
 };
 
 <span class="kw">type </span>StakeStoreService = Arc&lt;StakeStore&gt;;
@@ -688,6 +696,7 @@
             cardano_immutable_snapshot_builder,
             cardano_transactions_builder,
         ));
+        <span class="kw">let </span>metrics_service = Arc::new(MetricsService::new().unwrap());
 
         <span class="kw">let </span>services = SignerServices {
             beacon_provider,
@@ -701,6 +710,7 @@
             era_reader,
             api_version_provider,
             signable_builder_service,
+            metrics_service,
         };
 
         <span class="prelude-val">Ok</span>(services)
@@ -741,6 +751,9 @@
 
     <span class="doccomment">/// Signable Builder Service
     </span><span class="kw">pub </span>signable_builder_service: Arc&lt;<span class="kw">dyn </span>SignableBuilderService&gt;,
+
+    <span class="doccomment">/// Metrics service
+    </span><span class="kw">pub </span>metrics_service: Arc&lt;MetricsService&gt;,
 }
 
 <span class="attr">#[cfg(test)]
@@ -782,6 +795,9 @@
             reset_digests_cache: <span class="bool-val">false</span>,
             era_reader_adapter_type: EraReaderAdapterType::Bootstrap,
             era_reader_adapter_params: <span class="prelude-val">None</span>,
+            enable_metrics_server: <span class="bool-val">true</span>,
+            metrics_server_ip: <span class="string">"0.0.0.0"</span>.to_string(),
+            metrics_server_port: <span class="number">9090</span>,
         };
 
         <span class="macro">assert!</span>(!stores_dir.exists());

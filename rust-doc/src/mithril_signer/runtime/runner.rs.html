@@ -904,6 +904,13 @@
 <a href="#903" id="903">903</a>
 <a href="#904" id="904">904</a>
 <a href="#905" id="905">905</a>
+<a href="#906" id="906">906</a>
+<a href="#907" id="907">907</a>
+<a href="#908" id="908">908</a>
+<a href="#909" id="909">909</a>
+<a href="#910" id="910">910</a>
+<a href="#911" id="911">911</a>
+<a href="#912" id="912">912</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>anyhow::Context;
 <span class="kw">use </span>async_trait::async_trait;
 <span class="kw">use </span>slog_scope::{debug, info, trace, warn};
@@ -1311,11 +1318,13 @@
 
         <span class="kw">if let </span><span class="prelude-val">Some</span>(single_signatures) = maybe_signature {
             <span class="macro">debug!</span>(<span class="string">" &gt; there is a single signature to send"</span>);
+
             <span class="self">self</span>.services
                 .certificate_handler
                 .register_signatures(signed_entity_type, <span class="kw-2">&amp;</span>single_signatures)
-                .<span class="kw">await
-                </span>.map_err(|e| e.into())
+                .<span class="kw">await</span><span class="question-mark">?</span>;
+
+            <span class="prelude-val">Ok</span>(())
         } <span class="kw">else </span>{
             <span class="macro">debug!</span>(<span class="string">" &gt; NO single signature to send, doing nothing"</span>);
 
@@ -1381,8 +1390,8 @@
     };
 
     <span class="kw">use crate</span>::{
-        AggregatorClient, DumbAggregatorClient, MithrilSingleSigner, MockAggregatorClient,
-        ProtocolInitializerStore, SingleSigner,
+        metrics::MetricsService, AggregatorClient, DumbAggregatorClient, MithrilSingleSigner,
+        MockAggregatorClient, ProtocolInitializerStore, SingleSigner,
     };
 
     <span class="kw">use super</span>::<span class="kw-2">*</span>;
@@ -1454,6 +1463,7 @@
             cardano_immutable_signable_builder,
             cardano_transactions_builder,
         ));
+        <span class="kw">let </span>metrics_service = Arc::new(MetricsService::new().unwrap());
 
         SignerServices {
             stake_store: Arc::new(StakeStore::new(Box::new(DumbStoreAdapter::new()), <span class="prelude-val">None</span>)),
@@ -1470,6 +1480,7 @@
             era_reader,
             api_version_provider,
             signable_builder_service,
+            metrics_service,
         }
     }
 
@@ -1496,6 +1507,9 @@
             reset_digests_cache: <span class="bool-val">false</span>,
             era_reader_adapter_type: EraReaderAdapterType::Bootstrap,
             era_reader_adapter_params: <span class="prelude-val">None</span>,
+            enable_metrics_server: <span class="bool-val">true</span>,
+            metrics_server_ip: <span class="string">"0.0.0.0"</span>.to_string(),
+            metrics_server_port: <span class="number">9090</span>,
         };
 
         SignerRunner::new(
