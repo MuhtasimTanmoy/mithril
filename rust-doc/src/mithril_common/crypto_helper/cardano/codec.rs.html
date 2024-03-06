@@ -178,6 +178,8 @@
 <a href="#177" id="177">177</a>
 <a href="#178" id="178">178</a>
 <a href="#179" id="179">179</a>
+<a href="#180" id="180">180</a>
+<a href="#181" id="181">181</a>
 </pre></div><pre class="rust"><code><span class="doccomment">//! Module to provide functions to (de)serialise JSON data structures as used in Shelley,
 //! which have the following format:
 //! ```json
@@ -250,7 +252,8 @@
         <span class="kw">let </span>hex_vector = Vec::from_hex(file.cbor_hex)
             .with_context(|| <span class="string">"SerDeShelleyFileFormat can not unserialize hex data"</span>)
             .map_err(|e| CodecParseError(<span class="macro">anyhow!</span>(e)))<span class="question-mark">?</span>;
-        <span class="kw">let </span>a: <span class="self">Self </span>= serde_cbor::from_slice(<span class="kw-2">&amp;</span>hex_vector)
+        <span class="kw">let </span><span class="kw-2">mut </span>cursor = std::io::Cursor::new(<span class="kw-2">&amp;</span>hex_vector);
+        <span class="kw">let </span>a: <span class="self">Self </span>= ciborium::de::from_reader(<span class="kw-2">&amp;mut </span>cursor)
             .with_context(|| <span class="string">"SerDeShelleyFileFormat can not unserialize cbor data"</span>)
             .map_err(|e| CodecParseError(<span class="macro">anyhow!</span>(e)))<span class="question-mark">?</span>;
 
@@ -260,11 +263,11 @@
     <span class="doccomment">/// Serialize a type `T: Serialize + DeserializeOwned` to file following Cardano
     /// Shelley file format.
     </span><span class="kw">fn </span>to_file&lt;P: AsRef&lt;Path&gt;&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, path: P) -&gt; <span class="prelude-ty">Result</span>&lt;(), CodecParseError&gt; {
-        <span class="kw">let </span>cbor_string = hex::encode(
-            serde_cbor::to_vec(<span class="kw-2">&amp;</span><span class="self">self</span>)
-                .with_context(|| <span class="string">"SerDeShelleyFileFormat can not serialize data to cbor"</span>)
-                .map_err(|e| CodecParseError(<span class="macro">anyhow!</span>(e)))<span class="question-mark">?</span>,
-        );
+        <span class="kw">let </span><span class="kw-2">mut </span>cursor = std::io::Cursor::new(Vec::new());
+        ciborium::ser::into_writer(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw-2">&amp;mut </span>cursor)
+            .with_context(|| <span class="string">"SerDeShelleyFileFormat can not serialize data to cbor"</span>)
+            .map_err(|e| CodecParseError(<span class="macro">anyhow!</span>(e)))<span class="question-mark">?</span>;
+        <span class="kw">let </span>cbor_string = hex::encode(cursor.into_inner());
 
         <span class="kw">let </span>file_format = ShelleyFileFormat {
             file_type: <span class="self">Self</span>::TYPE.to_string(),
@@ -312,7 +315,8 @@
             </span>hex_vector.extend_from_slice(<span class="kw-2">&amp;</span>[<span class="number">0u8</span>; <span class="number">4</span>]);
         }
 
-        <span class="kw">let </span>a: <span class="self">Self </span>= serde_cbor::from_slice(<span class="kw-2">&amp;</span>hex_vector)
+        <span class="kw">let </span><span class="kw-2">mut </span>cursor = std::io::Cursor::new(<span class="kw-2">&amp;</span>hex_vector);
+        <span class="kw">let </span>a: <span class="self">Self </span>= ciborium::from_reader(<span class="kw-2">&amp;mut </span>cursor)
             .with_context(|| <span class="string">"Sum6KesBytes can not unserialize cbor data"</span>)
             .map_err(|e| CodecParseError(<span class="macro">anyhow!</span>(e)))<span class="question-mark">?</span>;
         <span class="prelude-val">Ok</span>(a)
