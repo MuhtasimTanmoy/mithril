@@ -4,10 +4,37 @@
         <title>Mithril. A complete guide. Blog</title>
         <link>https://mithril.network/doc/adr/</link>
         <description>Mithril. A complete guide. Blog</description>
-        <lastBuildDate>Wed, 27 Sep 2023 00:00:00 GMT</lastBuildDate>
+        <lastBuildDate>Sun, 07 Apr 2024 00:00:00 GMT</lastBuildDate>
         <docs>https://validator.w3.org/feed/docs/rss2.html</docs>
         <generator>https://github.com/jpmonette/feed</generator>
         <language>en</language>
+        <item>
+            <title><![CDATA[7. Standardize log output
+]]></title>
+            <link>https://mithril.network/doc/adr/7</link>
+            <guid>https://mithril.network/doc/adr/7</guid>
+            <pubDate>Sun, 07 Apr 2024 00:00:00 GMT</pubDate>
+            <description><![CDATA[Status]]></description>
+            <content:encoded><![CDATA[<h2 class="anchor anchorWithStickyNavbar_LWe7" id="status">Status<a href="https://mithril.network/doc/adr/7#status" class="hash-link" aria-label="Direct link to Status" title="Direct link to Status">​</a></h2>
+<p>Accepted</p>
+<h2 class="anchor anchorWithStickyNavbar_LWe7" id="context">Context<a href="https://mithril.network/doc/adr/7#context" class="hash-link" aria-label="Direct link to Context" title="Direct link to Context">​</a></h2>
+<ul>
+<li><a href="https://mithril.network/doc/adr/2">ADR 2</a> is not completely relevant now, we have migrated recently the logs in the client to <code>stderr</code>. Only the result of the command execution is in <code>stdout</code>. This makes it possible to exploit the result, see our <a href="https://mithril.network/doc/dev-blog/2024/02/26/mithril-client-cli-output-breaking-change">blog post</a>.</li>
+<li>Mithril aggregator logs are always redirected to <code>stdout</code> but it mixes 2 types of CLI commands, some of which would benefit from the logs output to <code>stderr</code>.</li>
+<li>Mithril aggregator and Mithril client CLI have not a consistent log strategy, that's why we need to standardize them.</li>
+</ul>
+<h2 class="anchor anchorWithStickyNavbar_LWe7" id="decision">Decision<a href="https://mithril.network/doc/adr/7#decision" class="hash-link" aria-label="Direct link to Decision" title="Direct link to Decision">​</a></h2>
+<ul>
+<li>For commands that provide a result or execute an action, logs are sent to <code>stderr</code>. Only the result of the command is sent to <code>stdout</code>.</li>
+<li>For commands that launch a program without an expected result (server), logs are sent to <code>stdout</code>.</li>
+</ul>
+<h2 class="anchor anchorWithStickyNavbar_LWe7" id="consequences">Consequences<a href="https://mithril.network/doc/adr/7#consequences" class="hash-link" aria-label="Direct link to Consequences" title="Direct link to Consequences">​</a></h2>
+<ul>
+<li>End users who use <code>stdout</code> logs would have a breaking change. They will have to retrieve the logs that come from <code>stderr</code> in addition.</li>
+<li>Commands <code>genesis</code>, <code>era</code> and <code>tools</code> from Mithril aggregator now send their logs to <code>stderr</code>.</li>
+</ul>]]></content:encoded>
+            <category>Accepted</category>
+        </item>
         <item>
             <title><![CDATA[6. Errors implementation Standard
 ]]></title>
@@ -16,7 +43,7 @@
             <pubDate>Wed, 27 Sep 2023 00:00:00 GMT</pubDate>
             <description><![CDATA[Status]]></description>
             <content:encoded><![CDATA[<h2 class="anchor anchorWithStickyNavbar_LWe7" id="status">Status<a href="https://mithril.network/doc/adr/6#status" class="hash-link" aria-label="Direct link to Status" title="Direct link to Status">​</a></h2>
-<p>Draft</p>
+<p>Accepted</p>
 <h2 class="anchor anchorWithStickyNavbar_LWe7" id="context">Context<a href="https://mithril.network/doc/adr/6#context" class="hash-link" aria-label="Direct link to Context" title="Direct link to Context">​</a></h2>
 <p>Error handling is difficult with Rust:</p>
 <ul>
@@ -82,7 +109,7 @@ This has enabled us to have a clear vision of the do and don't that we intend to
 <li>(<em>Still undecided</em>) You should avoid wrapping a <code>StdError</code> in a <code>thiserror</code> type. This <strong>breaks</strong> the stack trace and makes it really difficult to retrieve the innermost errors using <code>downcast_ref</code>. When the <code>thiserror</code> type is itself wrapped in a <code>StdError</code> afterward, you would have to <code>downcast_ref</code> twice: first to get the <code>thiserror</code> type and then to get the innermost error.
 This should be restricted to the topmost errors of our system (ie the state machine errors).</li>
 </ul>]]></content:encoded>
-            <category>Draft</category>
+            <category>Accepted</category>
         </item>
         <item>
             <title><![CDATA[5. Use rfc3339 for date formatting 
@@ -131,7 +158,7 @@ the same format.</li>
             <pubDate>Thu, 05 Jan 2023 00:00:00 GMT</pubDate>
             <description><![CDATA[Status]]></description>
             <content:encoded><![CDATA[<h2 class="anchor anchorWithStickyNavbar_LWe7" id="status">Status<a href="https://mithril.network/doc/adr/4#status" class="hash-link" aria-label="Direct link to Status" title="Direct link to Status">​</a></h2>
-<p><strong>Draft</strong></p>
+<p>Accepted</p>
 <h2 class="anchor anchorWithStickyNavbar_LWe7" id="context">Context<a href="https://mithril.network/doc/adr/4#context" class="hash-link" aria-label="Direct link to Context" title="Direct link to Context">​</a></h2>
 <p>When we will run Mithril on mainnet there will be thousands of signers running. Upgrading the version of the nodes has an impact as different versions of API, messages, signature may lead to loss of a significant part of the signers population over one epoch or more. In any case we must prevent a gap in the certificate chain while upgrading critical parts.</p>
 <p>We need to be able to keep enough of signer nodes and the aggregator able to work together in order to produce at least one certificate per epoch.</p>
@@ -160,7 +187,7 @@ the same format.</li>
 <h3 class="anchor anchorWithStickyNavbar_LWe7" id="behavior-switch">Behavior Switch<a href="https://mithril.network/doc/adr/4#behavior-switch" class="hash-link" aria-label="Direct link to Behavior Switch" title="Direct link to Behavior Switch">​</a></h3>
 <p>The nodes must be able to switch from one behavior to another when the Era Epoch is reached. This means the software must embed both behaviors. The switch is developed as a one time operation, there is no rollback mechanism available. Once the Epoch is transitioned and the switch has occurred, a new software release can remove the old behavior from the codebase.</p>
 ]]></content:encoded>
-            <category>Draft</category>
+            <category>Accepted</category>
         </item>
         <item>
             <title><![CDATA[3. Release process and versioning
@@ -170,7 +197,7 @@ the same format.</li>
             <pubDate>Fri, 21 Oct 2022 00:00:00 GMT</pubDate>
             <description><![CDATA[Status]]></description>
             <content:encoded><![CDATA[<h2 class="anchor anchorWithStickyNavbar_LWe7" id="status">Status<a href="https://mithril.network/doc/adr/3#status" class="hash-link" aria-label="Direct link to Status" title="Direct link to Status">​</a></h2>
-<p><strong>draft</strong></p>
+<p>Accepted</p>
 <h2 class="anchor anchorWithStickyNavbar_LWe7" id="context">Context<a href="https://mithril.network/doc/adr/3#context" class="hash-link" aria-label="Direct link to Context" title="Direct link to Context">​</a></h2>
 <p>In order to deliver regularly the software to our users, we should implement a release process based on a predictable versioning scheme.</p>
 <h3 class="anchor anchorWithStickyNavbar_LWe7" id="versioning">Versioning<a href="https://mithril.network/doc/adr/3#versioning" class="hash-link" aria-label="Direct link to Versioning" title="Direct link to Versioning">​</a></h3>
@@ -229,7 +256,7 @@ In case of a blocking issue (following a distribution release) on the release en
 <li>The CI gets the built artifacts associated with this commit and generates a named release which is deployed on <code>release</code>.</li>
 <li>Merge the hotfix branch on main branch (and adapt the changes if they are not compatible with the current main branch).</li>
 </ol>]]></content:encoded>
-            <category>Draft</category>
+            <category>Accepted</category>
         </item>
         <item>
             <title><![CDATA[2. Use simple structured logging
@@ -239,7 +266,7 @@ In case of a blocking issue (following a distribution release) on the release en
             <pubDate>Sun, 24 Apr 2022 00:00:00 GMT</pubDate>
             <description><![CDATA[Status]]></description>
             <content:encoded><![CDATA[<h2 class="anchor anchorWithStickyNavbar_LWe7" id="status">Status<a href="https://mithril.network/doc/adr/2#status" class="hash-link" aria-label="Direct link to Status" title="Direct link to Status">​</a></h2>
-<p><strong>Draft</strong></p>
+<p>Superseded by <a href="https://mithril.network/doc/adr/7">ADR 7</a></p>
 <h2 class="anchor anchorWithStickyNavbar_LWe7" id="context">Context<a href="https://mithril.network/doc/adr/2#context" class="hash-link" aria-label="Direct link to Context" title="Direct link to Context">​</a></h2>
 <ul>
 <li>Logs are a critical tool for operating any software system, enabling <a href="https://cloud.google.com/architecture/devops/devops-measurement-monitoring-and-observability" target="_blank" rel="noopener noreferrer">observability</a> of the system.</li>
@@ -257,7 +284,7 @@ In case of a blocking issue (following a distribution release) on the release en
 <li>It is the responsibility of the node operator to consume the logs and process them</li>
 <li>We use existing libraries to provide needed log infrastructure, like <a href="https://zsiciarz.github.io/24daysofrust/book/vol2/day4.html" target="_blank" rel="noopener noreferrer">slog</a> for Rust</li>
 </ul>]]></content:encoded>
-            <category>Draft</category>
+            <category>Superseded</category>
         </item>
         <item>
             <title><![CDATA[1. Record Architecture Decisions

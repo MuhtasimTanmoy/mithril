@@ -2,11 +2,41 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://mithril.network/doc/adr/</id>
     <title>Mithril. A complete guide. Blog</title>
-    <updated>2023-09-27T00:00:00.000Z</updated>
+    <updated>2024-04-07T00:00:00.000Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://mithril.network/doc/adr/"/>
     <subtitle>Mithril. A complete guide. Blog</subtitle>
     <icon>https://mithril.network/doc/img/logo.svg</icon>
+    <entry>
+        <title type="html"><![CDATA[7. Standardize log output
+]]></title>
+        <id>https://mithril.network/doc/adr/7</id>
+        <link href="https://mithril.network/doc/adr/7"/>
+        <updated>2024-04-07T00:00:00.000Z</updated>
+        <summary type="html"><![CDATA[Status]]></summary>
+        <content type="html"><![CDATA[<h2 class="anchor anchorWithStickyNavbar_LWe7" id="status">Status<a href="https://mithril.network/doc/adr/7#status" class="hash-link" aria-label="Direct link to Status" title="Direct link to Status">​</a></h2>
+<p>Accepted</p>
+<h2 class="anchor anchorWithStickyNavbar_LWe7" id="context">Context<a href="https://mithril.network/doc/adr/7#context" class="hash-link" aria-label="Direct link to Context" title="Direct link to Context">​</a></h2>
+<ul>
+<li><a href="https://mithril.network/doc/adr/2">ADR 2</a> is not completely relevant now, we have migrated recently the logs in the client to <code>stderr</code>. Only the result of the command execution is in <code>stdout</code>. This makes it possible to exploit the result, see our <a href="https://mithril.network/doc/dev-blog/2024/02/26/mithril-client-cli-output-breaking-change">blog post</a>.</li>
+<li>Mithril aggregator logs are always redirected to <code>stdout</code> but it mixes 2 types of CLI commands, some of which would benefit from the logs output to <code>stderr</code>.</li>
+<li>Mithril aggregator and Mithril client CLI have not a consistent log strategy, that's why we need to standardize them.</li>
+</ul>
+<h2 class="anchor anchorWithStickyNavbar_LWe7" id="decision">Decision<a href="https://mithril.network/doc/adr/7#decision" class="hash-link" aria-label="Direct link to Decision" title="Direct link to Decision">​</a></h2>
+<ul>
+<li>For commands that provide a result or execute an action, logs are sent to <code>stderr</code>. Only the result of the command is sent to <code>stdout</code>.</li>
+<li>For commands that launch a program without an expected result (server), logs are sent to <code>stdout</code>.</li>
+</ul>
+<h2 class="anchor anchorWithStickyNavbar_LWe7" id="consequences">Consequences<a href="https://mithril.network/doc/adr/7#consequences" class="hash-link" aria-label="Direct link to Consequences" title="Direct link to Consequences">​</a></h2>
+<ul>
+<li>End users who use <code>stdout</code> logs would have a breaking change. They will have to retrieve the logs that come from <code>stderr</code> in addition.</li>
+<li>Commands <code>genesis</code>, <code>era</code> and <code>tools</code> from Mithril aggregator now send their logs to <code>stderr</code>.</li>
+</ul>]]></content>
+        <author>
+            <name>Mithril Team</name>
+        </author>
+        <category label="Accepted" term="Accepted"/>
+    </entry>
     <entry>
         <title type="html"><![CDATA[6. Errors implementation Standard
 ]]></title>
@@ -15,7 +45,7 @@
         <updated>2023-09-27T00:00:00.000Z</updated>
         <summary type="html"><![CDATA[Status]]></summary>
         <content type="html"><![CDATA[<h2 class="anchor anchorWithStickyNavbar_LWe7" id="status">Status<a href="https://mithril.network/doc/adr/6#status" class="hash-link" aria-label="Direct link to Status" title="Direct link to Status">​</a></h2>
-<p>Draft</p>
+<p>Accepted</p>
 <h2 class="anchor anchorWithStickyNavbar_LWe7" id="context">Context<a href="https://mithril.network/doc/adr/6#context" class="hash-link" aria-label="Direct link to Context" title="Direct link to Context">​</a></h2>
 <p>Error handling is difficult with Rust:</p>
 <ul>
@@ -84,7 +114,7 @@ This should be restricted to the topmost errors of our system (ie the state mach
         <author>
             <name>Mithril Team</name>
         </author>
-        <category label="Draft" term="Draft"/>
+        <category label="Accepted" term="Accepted"/>
     </entry>
     <entry>
         <title type="html"><![CDATA[5. Use rfc3339 for date formatting 
@@ -136,7 +166,7 @@ the same format.</li>
         <updated>2023-01-05T00:00:00.000Z</updated>
         <summary type="html"><![CDATA[Status]]></summary>
         <content type="html"><![CDATA[<h2 class="anchor anchorWithStickyNavbar_LWe7" id="status">Status<a href="https://mithril.network/doc/adr/4#status" class="hash-link" aria-label="Direct link to Status" title="Direct link to Status">​</a></h2>
-<p><strong>Draft</strong></p>
+<p>Accepted</p>
 <h2 class="anchor anchorWithStickyNavbar_LWe7" id="context">Context<a href="https://mithril.network/doc/adr/4#context" class="hash-link" aria-label="Direct link to Context" title="Direct link to Context">​</a></h2>
 <p>When we will run Mithril on mainnet there will be thousands of signers running. Upgrading the version of the nodes has an impact as different versions of API, messages, signature may lead to loss of a significant part of the signers population over one epoch or more. In any case we must prevent a gap in the certificate chain while upgrading critical parts.</p>
 <p>We need to be able to keep enough of signer nodes and the aggregator able to work together in order to produce at least one certificate per epoch.</p>
@@ -168,7 +198,7 @@ the same format.</li>
         <author>
             <name>Mithril Team</name>
         </author>
-        <category label="Draft" term="Draft"/>
+        <category label="Accepted" term="Accepted"/>
     </entry>
     <entry>
         <title type="html"><![CDATA[3. Release process and versioning
@@ -178,7 +208,7 @@ the same format.</li>
         <updated>2022-10-21T00:00:00.000Z</updated>
         <summary type="html"><![CDATA[Status]]></summary>
         <content type="html"><![CDATA[<h2 class="anchor anchorWithStickyNavbar_LWe7" id="status">Status<a href="https://mithril.network/doc/adr/3#status" class="hash-link" aria-label="Direct link to Status" title="Direct link to Status">​</a></h2>
-<p><strong>draft</strong></p>
+<p>Accepted</p>
 <h2 class="anchor anchorWithStickyNavbar_LWe7" id="context">Context<a href="https://mithril.network/doc/adr/3#context" class="hash-link" aria-label="Direct link to Context" title="Direct link to Context">​</a></h2>
 <p>In order to deliver regularly the software to our users, we should implement a release process based on a predictable versioning scheme.</p>
 <h3 class="anchor anchorWithStickyNavbar_LWe7" id="versioning">Versioning<a href="https://mithril.network/doc/adr/3#versioning" class="hash-link" aria-label="Direct link to Versioning" title="Direct link to Versioning">​</a></h3>
@@ -240,7 +270,7 @@ In case of a blocking issue (following a distribution release) on the release en
         <author>
             <name>Mithril Team</name>
         </author>
-        <category label="Draft" term="Draft"/>
+        <category label="Accepted" term="Accepted"/>
     </entry>
     <entry>
         <title type="html"><![CDATA[2. Use simple structured logging
@@ -250,7 +280,7 @@ In case of a blocking issue (following a distribution release) on the release en
         <updated>2022-04-24T00:00:00.000Z</updated>
         <summary type="html"><![CDATA[Status]]></summary>
         <content type="html"><![CDATA[<h2 class="anchor anchorWithStickyNavbar_LWe7" id="status">Status<a href="https://mithril.network/doc/adr/2#status" class="hash-link" aria-label="Direct link to Status" title="Direct link to Status">​</a></h2>
-<p><strong>Draft</strong></p>
+<p>Superseded by <a href="https://mithril.network/doc/adr/7">ADR 7</a></p>
 <h2 class="anchor anchorWithStickyNavbar_LWe7" id="context">Context<a href="https://mithril.network/doc/adr/2#context" class="hash-link" aria-label="Direct link to Context" title="Direct link to Context">​</a></h2>
 <ul>
 <li>Logs are a critical tool for operating any software system, enabling <a href="https://cloud.google.com/architecture/devops/devops-measurement-monitoring-and-observability" target="_blank" rel="noopener noreferrer">observability</a> of the system.</li>
@@ -271,7 +301,7 @@ In case of a blocking issue (following a distribution release) on the release en
         <author>
             <name>Mithril Team</name>
         </author>
-        <category label="Draft" term="Draft"/>
+        <category label="Superseded" term="Superseded"/>
     </entry>
     <entry>
         <title type="html"><![CDATA[1. Record Architecture Decisions
