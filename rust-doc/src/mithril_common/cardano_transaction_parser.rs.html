@@ -488,7 +488,7 @@
     <span class="attr">#[tokio::test]
     </span><span class="kw">async fn </span>test_parse_expected_number_of_transactions() {
         <span class="comment">// We known the number of transactions in those prebuilt immutables
-        </span><span class="kw">let </span>immutable_files = [(<span class="string">"00000"</span>, <span class="number">20usize</span>), (<span class="string">"00001"</span>, <span class="number">8</span>), (<span class="string">"00002"</span>, <span class="number">0</span>)];
+        </span><span class="kw">let </span>immutable_files = [(<span class="string">"00000"</span>, <span class="number">20usize</span>), (<span class="string">"00001"</span>, <span class="number">9</span>), (<span class="string">"00002"</span>, <span class="number">0</span>)];
         <span class="kw">let </span>db_path = Path::new(<span class="string">"../mithril-test-lab/test_data/immutable/"</span>);
         <span class="macro">assert!</span>(get_number_of_immutable_chunk_in_dir(db_path) &gt;= <span class="number">3</span>);
 
