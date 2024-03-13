@@ -264,20 +264,25 @@
 <a href="#263" id="263">263</a>
 <a href="#264" id="264">264</a>
 <a href="#265" id="265">265</a>
+<a href="#266" id="266">266</a>
+<a href="#267" id="267">267</a>
+<a href="#268" id="268">268</a>
+<a href="#269" id="269">269</a>
+<a href="#270" id="270">270</a>
+<a href="#271" id="271">271</a>
+<a href="#272" id="272">272</a>
+<a href="#273" id="273">273</a>
 </pre></div><pre class="rust"><code><span class="doccomment">//! The module used for parsing Cardano transactions
-
 </span><span class="kw">use crate</span>::{
     digesters::ImmutableFile,
     entities::{Beacon, BlockNumber, CardanoTransaction, ImmutableFileNumber, TransactionHash},
     StdResult,
 };
-<span class="kw">use </span>anyhow::Context;
+<span class="kw">use </span>anyhow::{anyhow, Context};
 <span class="kw">use </span>async_trait::async_trait;
-<span class="kw">use </span>pallas_traverse::{
-    probe::{block_era, Outcome},
-    MultiEraBlock,
-};
-<span class="kw">use </span>std::{cmp::min, fs, path::Path};
+<span class="kw">use </span>pallas_hardano::storage::immutable::chunk::{read_blocks, Reader};
+<span class="kw">use </span>pallas_traverse::MultiEraBlock;
+<span class="kw">use </span>std::path::Path;
 <span class="kw">use </span>tokio::sync::RwLock;
 
 <span class="doccomment">/// A parser that can read cardano transactions in a cardano database
@@ -385,43 +390,54 @@
 
     <span class="doccomment">/// Read blocks from immutable file
     </span><span class="kw">fn </span>read_blocks_from_immutable_file(immutable_file: <span class="kw-2">&amp;</span>ImmutableFile) -&gt; StdResult&lt;Vec&lt;Block&gt;&gt; {
-        <span class="kw">let </span>cbor = fs::read(<span class="kw-2">&amp;</span>immutable_file.path).with_context(|| {
+        <span class="kw">let </span>cardano_blocks_reader =
+            CardanoTransactionParser::cardano_blocks_reader(immutable_file)<span class="question-mark">?</span>;
+
+        <span class="kw">let </span><span class="kw-2">mut </span>blocks = Vec::new();
+        <span class="kw">for </span>parsed_block <span class="kw">in </span>cardano_blocks_reader {
+            <span class="kw">let </span>block = parsed_block.with_context(|| {
+                <span class="macro">format!</span>(
+                    <span class="string">"Error while reading block in immutable file: '{:?}'"</span>,
+                    immutable_file.path
+                )
+            })<span class="question-mark">?</span>;
+            blocks.push(CardanoTransactionParser::convert_to_block(
+                <span class="kw-2">&amp;</span>block,
+                immutable_file,
+            )<span class="question-mark">?</span>);
+        }
+        <span class="prelude-val">Ok</span>(blocks)
+    }
+
+    <span class="kw">fn </span>convert_to_block(block: <span class="kw-2">&amp;</span>[u8], immutable_file: <span class="kw-2">&amp;</span>ImmutableFile) -&gt; StdResult&lt;Block&gt; {
+        <span class="kw">let </span>multi_era_block = MultiEraBlock::decode(block).with_context(|| {
             <span class="macro">format!</span>(
-                <span class="string">"CardanoTransactionParser could not read from immutable file: {:?}"</span>,
+                <span class="string">"Error while decoding block in immutable file: '{:?}'"</span>,
                 immutable_file.path
             )
         })<span class="question-mark">?</span>;
 
-        <span class="kw">let </span><span class="kw-2">mut </span>blocks_start_byte_index: Vec&lt;<span class="kw">_</span>&gt; = (<span class="number">0</span>..cbor.len())
-            .filter(|<span class="kw-2">&amp;</span>byte_index| {
-                <span class="kw">let </span>cbor_header_maybe = <span class="kw-2">&amp;</span>cbor[byte_index..min(byte_index + <span class="number">2</span>, cbor.len())];
-                <span class="kw">match </span>block_era(cbor_header_maybe) {
-                    Outcome::Matched(<span class="kw">_</span>) | Outcome::EpochBoundary =&gt; <span class="bool-val">true</span>,
-                    Outcome::Inconclusive =&gt; <span class="bool-val">false</span>,
-                }
-            })
-            .collect();
+        Block::try_convert(multi_era_block, immutable_file.number).with_context(|| {
+            <span class="macro">format!</span>(
+                <span class="string">"CardanoTransactionParser could not read data from block in immutable file: {:?}"</span>,
+                immutable_file.path
+            )
+        })
+    }
 
-        blocks_start_byte_index.push(cbor.len() + <span class="number">1</span>);
-
-        <span class="kw">let </span><span class="kw-2">mut </span>blocks = Vec::new();
-        <span class="kw">let </span><span class="kw-2">mut </span>last_start_byte_index = <span class="number">0</span>;
-        <span class="kw">for </span>block_start_index <span class="kw">in </span>blocks_start_byte_index.into_iter().skip(<span class="number">1</span>) {
-            <span class="kw">let </span>maybe_end_byte_index = min(block_start_index, cbor.len());
-            <span class="kw">if let </span><span class="prelude-val">Ok</span>(multi_era_block) =
-                MultiEraBlock::decode(<span class="kw-2">&amp;</span>cbor[last_start_byte_index..maybe_end_byte_index])
-            {
-                <span class="kw">let </span>block = Block::try_convert(multi_era_block, immutable_file.number)
-                    .with_context(|| {
-                        <span class="macro">format!</span>(
-                        <span class="string">"CardanoTransactionParser could not read data from block in immutable file: {:?}"</span>,
-                        immutable_file.path
-                    )
-                    })<span class="question-mark">?</span>;
-                blocks.push(block);
-                last_start_byte_index = block_start_index;
-            }
-        }
+    <span class="kw">fn </span>cardano_blocks_reader(immutable_file: <span class="kw-2">&amp;</span>ImmutableFile) -&gt; StdResult&lt;Reader&gt; {
+        <span class="kw">let </span>dir_path = immutable_file.path.parent().ok_or(<span class="macro">anyhow!</span>(<span class="macro">format!</span>(
+            <span class="string">"Could not retrieve immutable file directory with immutable file path: '{:?}'"</span>,
+            immutable_file.path
+        )))<span class="question-mark">?</span>;
+        <span class="kw">let </span>file_name = <span class="kw-2">&amp;</span>Path::new(<span class="kw-2">&amp;</span>immutable_file.filename)
+            .file_stem()
+            .ok_or(<span class="macro">anyhow!</span>(<span class="macro">format!</span>(
+                <span class="string">"Could not extract immutable file name from file: '{}'"</span>,
+                immutable_file.filename
+            )))<span class="question-mark">?
+            </span>.to_string_lossy();
+        <span class="kw">let </span>blocks = read_blocks(dir_path, file_name)<span class="question-mark">?</span>;
 
         <span class="prelude-val">Ok</span>(blocks)
     }
@@ -488,7 +504,7 @@
     <span class="attr">#[tokio::test]
     </span><span class="kw">async fn </span>test_parse_expected_number_of_transactions() {
         <span class="comment">// We known the number of transactions in those prebuilt immutables
-        </span><span class="kw">let </span>immutable_files = [(<span class="string">"00000"</span>, <span class="number">20usize</span>), (<span class="string">"00001"</span>, <span class="number">9</span>), (<span class="string">"00002"</span>, <span class="number">0</span>)];
+        </span><span class="kw">let </span>immutable_files = [(<span class="string">"00000"</span>, <span class="number">0usize</span>), (<span class="string">"00001"</span>, <span class="number">2</span>), (<span class="string">"00002"</span>, <span class="number">3</span>)];
         <span class="kw">let </span>db_path = Path::new(<span class="string">"../mithril-test-lab/test_data/immutable/"</span>);
         <span class="macro">assert!</span>(get_number_of_immutable_chunk_in_dir(db_path) &gt;= <span class="number">3</span>);
 
@@ -510,12 +526,12 @@
     <span class="attr">#[tokio::test]
     </span><span class="kw">async fn </span>test_parse_up_to_given_beacon() {
         <span class="comment">// We known the number of transactions in those prebuilt immutables
-        </span><span class="kw">let </span>immutable_files = [(<span class="string">"00000"</span>, <span class="number">20usize</span>)];
+        </span><span class="kw">let </span>immutable_files = [(<span class="string">"00000"</span>, <span class="number">0usize</span>), (<span class="string">"00001"</span>, <span class="number">2</span>)];
         <span class="kw">let </span>db_path = Path::new(<span class="string">"../mithril-test-lab/test_data/immutable/"</span>);
         <span class="macro">assert!</span>(get_number_of_immutable_chunk_in_dir(db_path) &gt;= <span class="number">2</span>);
 
         <span class="kw">let </span>beacon = Beacon {
-            immutable_file_number: <span class="number">0</span>,
+            immutable_file_number: <span class="number">1</span>,
             ..Beacon::default()
         };
         <span class="kw">let </span>tx_count: usize = immutable_files.iter().map(|(<span class="kw">_</span>, count)| <span class="kw-2">*</span>count).sum();
