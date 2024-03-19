@@ -105,7 +105,13 @@
 <a href="#104" id="104">104</a>
 <a href="#105" id="105">105</a>
 <a href="#106" id="106">106</a>
-</pre></div><pre class="rust"><code><span class="kw">use </span>mithril_common::messages::CardanoTransactionsSetProofMessagePart;
+<a href="#107" id="107">107</a>
+<a href="#108" id="108">108</a>
+<a href="#109" id="109">109</a>
+<a href="#110" id="110">110</a>
+<a href="#111" id="111">111</a>
+</pre></div><pre class="rust"><code><span class="kw">use </span>mithril_common::entities::{CardanoTransactionsSnapshot, SignedEntity};
+<span class="kw">use </span>mithril_common::messages::CardanoTransactionsSetProofMessagePart;
 <span class="kw">use </span>mithril_common::{
     entities::{CardanoTransactionsSetProof, TransactionHash},
     messages::CardanoTransactionsProofsMessage,
@@ -118,7 +124,7 @@
 <span class="kw">impl </span>ToCardanoTransactionsProofsMessageAdapter {
     <span class="doccomment">/// Turn an entity instance into message.
     </span><span class="kw">pub fn </span>try_adapt(
-        certificate_hash: <span class="kw-2">&amp;</span>str,
+        signed_entity: SignedEntity&lt;CardanoTransactionsSnapshot&gt;,
         transactions_set_proofs: Vec&lt;CardanoTransactionsSetProof&gt;,
         transaction_hashes_to_certify: Vec&lt;TransactionHash&gt;,
     ) -&gt; StdResult&lt;CardanoTransactionsProofsMessage&gt; {
@@ -128,9 +134,10 @@
         );
 
         <span class="prelude-val">Ok</span>(CardanoTransactionsProofsMessage::new(
-            certificate_hash,
+            <span class="kw-2">&amp;</span>signed_entity.certificate_id,
             try_adapt_set_proof_message(transactions_set_proofs)<span class="question-mark">?</span>,
             transactions_hashes_not_certified,
+            signed_entity.artifact.beacon.immutable_file_number,
         ))
     }
 }
@@ -183,30 +190,33 @@
         <span class="kw">let </span>transactions_hashes_certified = <span class="kw-2">&amp;</span>transaction_hashes[<span class="number">0</span>..<span class="number">5</span>];
         <span class="kw">let </span>transactions_hashes_non_certified = <span class="kw-2">&amp;</span>transaction_hashes[<span class="number">5</span>..];
 
-        <span class="kw">let </span><span class="kw-2">mut </span>transactions_set_proofs = Vec::new();
-        <span class="kw">for </span>transaction_hashes_in_chunk <span class="kw">in </span>transactions_hashes_certified.chunks(<span class="number">2</span>) {
-            <span class="kw">let </span>mk_proof = MKProof::from_leaves(transaction_hashes_in_chunk).unwrap();
-            transactions_set_proofs.push(CardanoTransactionsSetProof::new(
-                transaction_hashes_in_chunk.to_vec(),
-                mk_proof,
-            ))
-        }
+        <span class="kw">let </span>transactions_set_proofs = transactions_hashes_certified
+            .chunks(<span class="number">2</span>)
+            .map(|transaction_hashes_in_chunk| {
+                <span class="kw">let </span>mk_proof = MKProof::from_leaves(transaction_hashes_in_chunk).unwrap();
+                CardanoTransactionsSetProof::new(transaction_hashes_in_chunk.to_vec(), mk_proof)
+            })
+            .collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;();
 
-        <span class="kw">let </span>certificate_hash = <span class="string">"certificate_hash"</span>;
+        <span class="kw">let </span>signed_entity = SignedEntity::&lt;CardanoTransactionsSnapshot&gt;::dummy();
+
         <span class="kw">let </span>message = ToCardanoTransactionsProofsMessageAdapter::try_adapt(
-            certificate_hash,
+            signed_entity.clone(),
             transactions_set_proofs.clone(),
             transaction_hashes.to_vec(),
         )
         .unwrap();
-        <span class="kw">let </span>transactions_set_proofs = transactions_set_proofs
+
+        <span class="kw">let </span>transactions_set_proof_message_part = transactions_set_proofs
             .into_iter()
             .map(|p| p.try_into().unwrap())
             .collect();
+
         <span class="kw">let </span>expected_message = CardanoTransactionsProofsMessage::new(
-            certificate_hash,
-            transactions_set_proofs,
+            <span class="kw-2">&amp;</span>signed_entity.certificate_id,
+            transactions_set_proof_message_part,
             transactions_hashes_non_certified.to_vec(),
+            signed_entity.artifact.beacon.immutable_file_number,
         );
         <span class="macro">assert_eq!</span>(expected_message, message);
     }
