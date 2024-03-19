@@ -720,6 +720,101 @@
 <a href="#719" id="719">719</a>
 <a href="#720" id="720">720</a>
 <a href="#721" id="721">721</a>
+<a href="#722" id="722">722</a>
+<a href="#723" id="723">723</a>
+<a href="#724" id="724">724</a>
+<a href="#725" id="725">725</a>
+<a href="#726" id="726">726</a>
+<a href="#727" id="727">727</a>
+<a href="#728" id="728">728</a>
+<a href="#729" id="729">729</a>
+<a href="#730" id="730">730</a>
+<a href="#731" id="731">731</a>
+<a href="#732" id="732">732</a>
+<a href="#733" id="733">733</a>
+<a href="#734" id="734">734</a>
+<a href="#735" id="735">735</a>
+<a href="#736" id="736">736</a>
+<a href="#737" id="737">737</a>
+<a href="#738" id="738">738</a>
+<a href="#739" id="739">739</a>
+<a href="#740" id="740">740</a>
+<a href="#741" id="741">741</a>
+<a href="#742" id="742">742</a>
+<a href="#743" id="743">743</a>
+<a href="#744" id="744">744</a>
+<a href="#745" id="745">745</a>
+<a href="#746" id="746">746</a>
+<a href="#747" id="747">747</a>
+<a href="#748" id="748">748</a>
+<a href="#749" id="749">749</a>
+<a href="#750" id="750">750</a>
+<a href="#751" id="751">751</a>
+<a href="#752" id="752">752</a>
+<a href="#753" id="753">753</a>
+<a href="#754" id="754">754</a>
+<a href="#755" id="755">755</a>
+<a href="#756" id="756">756</a>
+<a href="#757" id="757">757</a>
+<a href="#758" id="758">758</a>
+<a href="#759" id="759">759</a>
+<a href="#760" id="760">760</a>
+<a href="#761" id="761">761</a>
+<a href="#762" id="762">762</a>
+<a href="#763" id="763">763</a>
+<a href="#764" id="764">764</a>
+<a href="#765" id="765">765</a>
+<a href="#766" id="766">766</a>
+<a href="#767" id="767">767</a>
+<a href="#768" id="768">768</a>
+<a href="#769" id="769">769</a>
+<a href="#770" id="770">770</a>
+<a href="#771" id="771">771</a>
+<a href="#772" id="772">772</a>
+<a href="#773" id="773">773</a>
+<a href="#774" id="774">774</a>
+<a href="#775" id="775">775</a>
+<a href="#776" id="776">776</a>
+<a href="#777" id="777">777</a>
+<a href="#778" id="778">778</a>
+<a href="#779" id="779">779</a>
+<a href="#780" id="780">780</a>
+<a href="#781" id="781">781</a>
+<a href="#782" id="782">782</a>
+<a href="#783" id="783">783</a>
+<a href="#784" id="784">784</a>
+<a href="#785" id="785">785</a>
+<a href="#786" id="786">786</a>
+<a href="#787" id="787">787</a>
+<a href="#788" id="788">788</a>
+<a href="#789" id="789">789</a>
+<a href="#790" id="790">790</a>
+<a href="#791" id="791">791</a>
+<a href="#792" id="792">792</a>
+<a href="#793" id="793">793</a>
+<a href="#794" id="794">794</a>
+<a href="#795" id="795">795</a>
+<a href="#796" id="796">796</a>
+<a href="#797" id="797">797</a>
+<a href="#798" id="798">798</a>
+<a href="#799" id="799">799</a>
+<a href="#800" id="800">800</a>
+<a href="#801" id="801">801</a>
+<a href="#802" id="802">802</a>
+<a href="#803" id="803">803</a>
+<a href="#804" id="804">804</a>
+<a href="#805" id="805">805</a>
+<a href="#806" id="806">806</a>
+<a href="#807" id="807">807</a>
+<a href="#808" id="808">808</a>
+<a href="#809" id="809">809</a>
+<a href="#810" id="810">810</a>
+<a href="#811" id="811">811</a>
+<a href="#812" id="812">812</a>
+<a href="#813" id="813">813</a>
+<a href="#814" id="814">814</a>
+<a href="#815" id="815">815</a>
+<a href="#816" id="816">816</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>anyhow::{anyhow, Context};
 <span class="kw">use </span>async_trait::async_trait;
 <span class="kw">use </span>bech32::{<span class="self">self</span>, ToBase32, Variant};
@@ -730,7 +825,7 @@
     miniprotocols::{
         localstate::{
             queries_v16::{
-                <span class="self">self</span>, Addr, Addrs, PostAlonsoTransactionOutput, StakeSnapshot, Stakes,
+                <span class="self">self</span>, Addr, Addrs, Genesis, PostAlonsoTransactionOutput, StakeSnapshot, Stakes,
                 TransactionOutput, UTxOByAddress,
             },
             Client,
@@ -993,6 +1088,40 @@
             .with_context(|| <span class="string">"PallasChainObserver failed to convert kes period"</span>)<span class="question-mark">?</span>)
     }
 
+    <span class="doccomment">/// Fetches the current chain point using the provided `statequery` client.
+    </span><span class="kw">async fn </span>do_get_chain_point_state_query(<span class="kw-2">&amp;</span><span class="self">self</span>, statequery: <span class="kw-2">&amp;mut </span>Client) -&gt; StdResult&lt;Point&gt; {
+        <span class="kw">let </span>chain_point = queries_v16::get_chain_point(statequery)
+            .<span class="kw">await
+            </span>.map_err(|err| <span class="macro">anyhow!</span>(err))
+            .with_context(|| <span class="string">"PallasChainObserver failed to get chain point"</span>)<span class="question-mark">?</span>;
+
+        <span class="prelude-val">Ok</span>(chain_point)
+    }
+
+    <span class="doccomment">/// Fetches the current era using the provided `statequery` client.
+    </span><span class="kw">async fn </span>do_get_current_era_state_query(<span class="kw-2">&amp;</span><span class="self">self</span>, statequery: <span class="kw-2">&amp;mut </span>Client) -&gt; StdResult&lt;u16&gt; {
+        <span class="kw">let </span>era = queries_v16::get_current_era(statequery)
+            .<span class="kw">await
+            </span>.map_err(|err| <span class="macro">anyhow!</span>(err))
+            .with_context(|| <span class="string">"PallasChainObserver failed to get current era"</span>)<span class="question-mark">?</span>;
+
+        <span class="prelude-val">Ok</span>(era)
+    }
+
+    <span class="doccomment">/// Fetches the current genesis config using the provided `statequery` client.
+    </span><span class="kw">async fn </span>do_get_genesis_config_state_query(
+        <span class="kw-2">&amp;</span><span class="self">self</span>,
+        statequery: <span class="kw-2">&amp;mut </span>Client,
+    ) -&gt; StdResult&lt;Vec&lt;Genesis&gt;&gt; {
+        <span class="kw">let </span>era = <span class="self">self</span>.do_get_current_era_state_query(statequery).<span class="kw">await</span><span class="question-mark">?</span>;
+        <span class="kw">let </span>genesis_config = queries_v16::get_genesis_config(statequery, era)
+            .<span class="kw">await
+            </span>.map_err(|err| <span class="macro">anyhow!</span>(err))
+            .with_context(|| <span class="string">"PallasChainObserver failed to get genesis config"</span>)<span class="question-mark">?</span>;
+
+        <span class="prelude-val">Ok</span>(genesis_config)
+    }
+
     <span class="doccomment">/// Fetches chain point and genesis config through the local statequery.
     /// The KES period is calculated afterwards.
     </span><span class="kw">async fn </span>get_kes_period(
@@ -1007,20 +1136,9 @@
             </span>.map_err(|err| <span class="macro">anyhow!</span>(err))
             .with_context(|| <span class="string">"PallasChainObserver failed to acquire statequery"</span>)<span class="question-mark">?</span>;
 
-        <span class="kw">let </span>chain_point = queries_v16::get_chain_point(statequery)
-            .<span class="kw">await
-            </span>.map_err(|err| <span class="macro">anyhow!</span>(err))
-            .with_context(|| <span class="string">"PallasChainObserver failed to get chain point"</span>)<span class="question-mark">?</span>;
+        <span class="kw">let </span>chain_point = <span class="self">self</span>.do_get_chain_point_state_query(statequery).<span class="kw">await</span><span class="question-mark">?</span>;
 
-        <span class="kw">let </span>era = queries_v16::get_current_era(statequery)
-            .<span class="kw">await
-            </span>.map_err(|err| <span class="macro">anyhow!</span>(err))
-            .with_context(|| <span class="string">"PallasChainObserver failed to get current era"</span>)<span class="question-mark">?</span>;
-
-        <span class="kw">let </span>genesis_config = queries_v16::get_genesis_config(statequery, era)
-            .<span class="kw">await
-            </span>.map_err(|err| <span class="macro">anyhow!</span>(err))
-            .with_context(|| <span class="string">"PallasChainObserver failed to get genesis config"</span>)<span class="question-mark">?</span>;
+        <span class="kw">let </span>genesis_config = <span class="self">self</span>.do_get_genesis_config_state_query(statequery).<span class="kw">await</span><span class="question-mark">?</span>;
 
         <span class="kw">let </span>config = genesis_config
             .first()
@@ -1301,8 +1419,12 @@
         TempDir::create_with_short_path(<span class="string">"pallas_chain_observer_test"</span>, folder_name)
     }
 
-    <span class="doccomment">/// Sets up a mock server.
-    </span><span class="kw">async fn </span>setup_server(socket_path: PathBuf) -&gt; tokio::task::JoinHandle&lt;()&gt; {
+    <span class="doccomment">/// Sets up a mock server for related tests.
+    ///
+    /// Use the `intersections` parameter to define exactly how many
+    /// local state queries should be intersepted by the `mock_server`
+    /// and avoid any panic errors.
+    </span><span class="kw">async fn </span>setup_server(socket_path: PathBuf, intersections: u32) -&gt; tokio::task::JoinHandle&lt;()&gt; {
         tokio::spawn({
             <span class="kw">async move </span>{
                 <span class="kw">if </span>socket_path.exists() {
@@ -1317,14 +1439,10 @@
                 server.statequery().recv_while_idle().<span class="kw">await</span>.unwrap();
                 server.statequery().send_acquired().<span class="kw">await</span>.unwrap();
 
-                <span class="kw">let </span>result = mock_server(<span class="kw-2">&amp;mut </span>server).<span class="kw">await</span>;
-                server.statequery().send_result(result).<span class="kw">await</span>.unwrap();
-
-                <span class="kw">let </span>result = mock_server(<span class="kw-2">&amp;mut </span>server).<span class="kw">await</span>;
-                server.statequery().send_result(result).<span class="kw">await</span>.unwrap();
-
-                <span class="kw">let </span>result = mock_server(<span class="kw-2">&amp;mut </span>server).<span class="kw">await</span>;
-                server.statequery().send_result(result).<span class="kw">await</span>.unwrap();
+                <span class="kw">for _ in </span><span class="number">0</span>..intersections {
+                    <span class="kw">let </span>result = mock_server(<span class="kw-2">&amp;mut </span>server).<span class="kw">await</span>;
+                    server.statequery().send_result(result).<span class="kw">await</span>.unwrap();
+                }
             }
         })
     }
@@ -1332,7 +1450,7 @@
     <span class="attr">#[tokio::test]
     </span><span class="kw">async fn </span>get_current_epoch() {
         <span class="kw">let </span>socket_path = create_temp_dir(<span class="string">"get_current_epoch"</span>).join(<span class="string">"node.socket"</span>);
-        <span class="kw">let </span>server = setup_server(socket_path.clone()).<span class="kw">await</span>;
+        <span class="kw">let </span>server = setup_server(socket_path.clone(), <span class="number">2</span>).<span class="kw">await</span>;
         <span class="kw">let </span>client = tokio::spawn(<span class="kw">async move </span>{
             <span class="kw">let </span>observer =
                 PallasChainObserver::new(socket_path.as_path(), CardanoNetwork::TestNet(<span class="number">10</span>));
@@ -1347,7 +1465,7 @@
     <span class="attr">#[tokio::test]
     </span><span class="kw">async fn </span>get_current_datums() {
         <span class="kw">let </span>socket_path = create_temp_dir(<span class="string">"get_current_datums"</span>).join(<span class="string">"node.socket"</span>);
-        <span class="kw">let </span>server = setup_server(socket_path.clone()).<span class="kw">await</span>;
+        <span class="kw">let </span>server = setup_server(socket_path.clone(), <span class="number">2</span>).<span class="kw">await</span>;
         <span class="kw">let </span>client = tokio::spawn(<span class="kw">async move </span>{
             <span class="kw">let </span>observer =
                 PallasChainObserver::new(socket_path.as_path(), CardanoNetwork::TestNet(<span class="number">10</span>));
@@ -1364,7 +1482,7 @@
     <span class="attr">#[tokio::test]
     </span><span class="kw">async fn </span>get_current_stake_distribution() {
         <span class="kw">let </span>socket_path = create_temp_dir(<span class="string">"get_current_stake_distribution"</span>).join(<span class="string">"node.socket"</span>);
-        <span class="kw">let </span>server = setup_server(socket_path.clone()).<span class="kw">await</span>;
+        <span class="kw">let </span>server = setup_server(socket_path.clone(), <span class="number">2</span>).<span class="kw">await</span>;
         <span class="kw">let </span>client = tokio::spawn(<span class="kw">async move </span>{
             <span class="kw">let </span>observer =
                 <span class="kw">super</span>::PallasChainObserver::new(socket_path.as_path(), CardanoNetwork::TestNet(<span class="number">10</span>));
@@ -1394,7 +1512,7 @@
     <span class="attr">#[tokio::test]
     </span><span class="kw">async fn </span>get_current_kes_period() {
         <span class="kw">let </span>socket_path = create_temp_dir(<span class="string">"get_current_kes_period"</span>).join(<span class="string">"node.socket"</span>);
-        <span class="kw">let </span>server = setup_server(socket_path.clone()).<span class="kw">await</span>;
+        <span class="kw">let </span>server = setup_server(socket_path.clone(), <span class="number">3</span>).<span class="kw">await</span>;
         <span class="kw">let </span>client = tokio::spawn(<span class="kw">async move </span>{
             <span class="kw">let </span>observer =
                 PallasChainObserver::new(socket_path.as_path(), CardanoNetwork::TestNet(<span class="number">10</span>));
@@ -1439,6 +1557,78 @@
             </span>.unwrap();
 
         <span class="macro">assert_eq!</span>(<span class="number">413</span>, current_kes_period);
+    }
+
+    <span class="attr">#[tokio::test]
+    </span><span class="kw">async fn </span>get_chain_point() {
+        <span class="kw">let </span>socket_path = create_temp_dir(<span class="string">"get_chain_point"</span>).join(<span class="string">"node.socket"</span>);
+        <span class="kw">let </span>server = setup_server(socket_path.clone(), <span class="number">1</span>).<span class="kw">await</span>;
+        <span class="kw">let </span>client = tokio::spawn(<span class="kw">async move </span>{
+            <span class="kw">let </span>observer =
+                PallasChainObserver::new(socket_path.as_path(), CardanoNetwork::TestNet(<span class="number">10</span>));
+            <span class="kw">let </span><span class="kw-2">mut </span>client = observer.get_client().<span class="kw">await</span>.unwrap();
+            <span class="kw">let </span>statequery = client.statequery();
+            statequery.acquire(<span class="prelude-val">None</span>).<span class="kw">await</span>.unwrap();
+            <span class="kw">let </span>chain_point = observer
+                .do_get_chain_point_state_query(statequery)
+                .<span class="kw">await
+                </span>.unwrap();
+            observer.post_process_statequery(<span class="kw-2">&amp;mut </span>client).<span class="kw">await</span>.unwrap();
+            client.abort().<span class="kw">await</span>;
+            chain_point
+        });
+
+        <span class="kw">let </span>(<span class="kw">_</span>, client_res) = <span class="macro">tokio::join!</span>(server, client);
+        <span class="kw">let </span>chain_point = client_res.expect(<span class="string">"Client failed"</span>);
+        <span class="macro">assert_eq!</span>(chain_point, Point::Specific(<span class="number">52851885</span>, <span class="macro">vec!</span>[<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>]));
+    }
+
+    <span class="attr">#[tokio::test]
+    </span><span class="kw">async fn </span>get_genesis_config() {
+        <span class="kw">let </span>socket_path = create_temp_dir(<span class="string">"get_genesis_config"</span>).join(<span class="string">"node.socket"</span>);
+        <span class="kw">let </span>server = setup_server(socket_path.clone(), <span class="number">2</span>).<span class="kw">await</span>;
+        <span class="kw">let </span>client = tokio::spawn(<span class="kw">async move </span>{
+            <span class="kw">let </span>observer =
+                PallasChainObserver::new(socket_path.as_path(), CardanoNetwork::TestNet(<span class="number">10</span>));
+            <span class="kw">let </span><span class="kw-2">mut </span>client = observer.get_client().<span class="kw">await</span>.unwrap();
+            <span class="kw">let </span>statequery = client.statequery();
+            statequery.acquire(<span class="prelude-val">None</span>).<span class="kw">await</span>.unwrap();
+            <span class="kw">let </span>genesis_config = observer
+                .do_get_genesis_config_state_query(statequery)
+                .<span class="kw">await
+                </span>.unwrap();
+            observer.post_process_statequery(<span class="kw-2">&amp;mut </span>client).<span class="kw">await</span>.unwrap();
+            client.abort().<span class="kw">await</span>;
+            genesis_config
+        });
+
+        <span class="kw">let </span>(<span class="kw">_</span>, client_res) = <span class="macro">tokio::join!</span>(server, client);
+        <span class="kw">let </span>genesis_config = client_res.expect(<span class="string">"Client failed"</span>);
+        <span class="macro">assert_eq!</span>(genesis_config, get_fake_genesis_config());
+    }
+
+    <span class="attr">#[tokio::test]
+    </span><span class="kw">async fn </span>get_current_era() {
+        <span class="kw">let </span>socket_path = create_temp_dir(<span class="string">"get_current_era"</span>).join(<span class="string">"node.socket"</span>);
+        <span class="kw">let </span>server = setup_server(socket_path.clone(), <span class="number">1</span>).<span class="kw">await</span>;
+        <span class="kw">let </span>client = tokio::spawn(<span class="kw">async move </span>{
+            <span class="kw">let </span>observer =
+                PallasChainObserver::new(socket_path.as_path(), CardanoNetwork::TestNet(<span class="number">10</span>));
+            <span class="kw">let </span><span class="kw-2">mut </span>client = observer.get_client().<span class="kw">await</span>.unwrap();
+            <span class="kw">let </span>statequery = client.statequery();
+            statequery.acquire(<span class="prelude-val">None</span>).<span class="kw">await</span>.unwrap();
+            <span class="kw">let </span>era = observer
+                .do_get_current_era_state_query(statequery)
+                .<span class="kw">await
+                </span>.unwrap();
+            observer.post_process_statequery(<span class="kw-2">&amp;mut </span>client).<span class="kw">await</span>.unwrap();
+            client.abort().<span class="kw">await</span>;
+            era
+        });
+
+        <span class="kw">let </span>(<span class="kw">_</span>, client_res) = <span class="macro">tokio::join!</span>(server, client);
+        <span class="kw">let </span>era = client_res.expect(<span class="string">"Client failed"</span>);
+        <span class="macro">assert_eq!</span>(era, <span class="number">4</span>);
     }
 }
 </code></pre></div></section></main></body></html>
