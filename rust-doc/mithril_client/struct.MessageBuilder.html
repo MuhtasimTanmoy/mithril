@@ -4,8 +4,8 @@
 </div></details><details class="toggle method-toggle" open><summary><section id="method.with_logger" class="method"><a class="src rightside" href="../src/mithril_client/message.rs.html#37-40">source</a><h4 class="code-header">pub fn <a href="#method.with_logger" class="fn">with_logger</a>(self, logger: Logger) -&gt; Self</h4></section></summary><div class="docblock"><p>Set the [Logger] to use.</p>
 </div></details><details class="toggle method-toggle" open><summary><section id="method.with_immutable_digester" class="method"><a class="src rightside" href="../src/mithril_client/message.rs.html#53-59">source</a><h4 class="code-header">pub fn <a href="#method.with_immutable_digester" class="fn">with_immutable_digester</a>(
     self,
-    immutable_digester: <a class="struct" href="https://doc.rust-lang.org/1.76.0/alloc/sync/struct.Arc.html" title="struct alloc::sync::Arc">Arc</a>&lt;dyn <a class="trait" href="../mithril_common/digesters/immutable_digester/trait.ImmutableDigester.html" title="trait mithril_common::digesters::immutable_digester::ImmutableDigester">ImmutableDigester</a>&gt;
-) -&gt; Self</h4></section></summary><div class="docblock"><p>Set the <a href="../mithril_common/digesters/immutable_digester/trait.ImmutableDigester.html" title="trait mithril_common::digesters::immutable_digester::ImmutableDigester">ImmutableDigester</a> to be used for the message computation for snapshot.</p>
+    immutable_digester: <a class="struct" href="https://doc.rust-lang.org/1.76.0/alloc/sync/struct.Arc.html" title="struct alloc::sync::Arc">Arc</a>&lt;dyn ImmutableDigester&gt;
+) -&gt; Self</h4></section></summary><div class="docblock"><p>Set the [ImmutableDigester] to be used for the message computation for snapshot.</p>
 <p>If not set a default implementation will be used.</p>
 </div></details><details class="toggle method-toggle" open><summary><section id="method.compute_snapshot_message" class="method"><a class="src rightside" href="../src/mithril_client/message.rs.html#64-85">source</a><h4 class="code-header">pub async fn <a href="#method.compute_snapshot_message" class="fn">compute_snapshot_message</a>(
     &amp;self,
