@@ -1,5 +1,6 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `mithril-aggregator/src/services/prover.rs`."><title>prover.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-ac92e1bbe349e143.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="mithril_aggregator" data-themes="" data-resource-suffix="" data-rustdoc-version="1.76.0 (07dca489a 2024-02-04)" data-channel="1.76.0" data-search-js="search-2b6ce74ff89ae146.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../../static.files/storage-f2adc0d6ca4d09fb.js"></script><script defer src="../../../static.files/src-script-39ed315d46fb705f.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-305769736d49e732.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-feafe1bb7466e4bd.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><div class="sidebar-resizer"></div>
-    <main><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../../../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `mithril-aggregator/src/services/prover.rs`."><title>prover.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-5bc39a1768837dd0.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="mithril_aggregator" data-themes="" data-resource-suffix="" data-rustdoc-version="1.77.0 (aedd173a2 2024-03-17)" data-channel="1.77.0" data-search-js="search-dd67cee4cfa65049.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../../static.files/storage-4c98445ec4002617.js"></script><script defer src="../../../static.files/src-script-e66d777a5a92e9b2.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-48f368f3872407c8.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-04d5337699b92874.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="src-sidebar-title">
+            <h2>Files</h2></div></nav><div class="sidebar-resizer"></div>
+    <main><nav class="sub"><form class="search-form"><span></span><div id="sidebar-button" tabindex="-1"><a href="../../../mithril_aggregator/all.html" title="show sidebar"></a></div><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../../../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -191,14 +192,52 @@
 <a href="#190" id="190">190</a>
 <a href="#191" id="191">191</a>
 <a href="#192" id="192">192</a>
-</pre></div><pre class="rust"><code><span class="kw">use </span>std::sync::Arc;
+<a href="#193" id="193">193</a>
+<a href="#194" id="194">194</a>
+<a href="#195" id="195">195</a>
+<a href="#196" id="196">196</a>
+<a href="#197" id="197">197</a>
+<a href="#198" id="198">198</a>
+<a href="#199" id="199">199</a>
+<a href="#200" id="200">200</a>
+<a href="#201" id="201">201</a>
+<a href="#202" id="202">202</a>
+<a href="#203" id="203">203</a>
+<a href="#204" id="204">204</a>
+<a href="#205" id="205">205</a>
+<a href="#206" id="206">206</a>
+<a href="#207" id="207">207</a>
+<a href="#208" id="208">208</a>
+<a href="#209" id="209">209</a>
+<a href="#210" id="210">210</a>
+<a href="#211" id="211">211</a>
+<a href="#212" id="212">212</a>
+<a href="#213" id="213">213</a>
+<a href="#214" id="214">214</a>
+<a href="#215" id="215">215</a>
+<a href="#216" id="216">216</a>
+<a href="#217" id="217">217</a>
+<a href="#218" id="218">218</a>
+<a href="#219" id="219">219</a>
+<a href="#220" id="220">220</a>
+<a href="#221" id="221">221</a>
+<a href="#222" id="222">222</a>
+<a href="#223" id="223">223</a>
+<a href="#224" id="224">224</a>
+<a href="#225" id="225">225</a>
+<a href="#226" id="226">226</a>
+<a href="#227" id="227">227</a>
+<a href="#228" id="228">228</a>
+</pre></div><pre class="rust"><code><span class="kw">use </span>std::{collections::HashMap, sync::Arc};
 
 <span class="kw">use </span>anyhow::Context;
 <span class="kw">use </span>async_trait::async_trait;
 
 <span class="kw">use </span>mithril_common::{
-    crypto_helper::{MKTree, MKTreeNode, MKTreeStore},
-    entities::{Beacon, CardanoTransaction, CardanoTransactionsSetProof, TransactionHash},
+    crypto_helper::{MKMap, MKMapNode, MKTree, MKTreeNode},
+    entities::{
+        Beacon, BlockRange, CardanoTransaction, CardanoTransactionsSetProof, TransactionHash,
+    },
     StdResult,
 };
 
@@ -237,6 +276,36 @@
             transaction_retriever,
         }
     }
+
+    <span class="kw">fn </span>compute_merkle_map_from_transactions(
+        <span class="kw-2">&amp;</span><span class="self">self</span>,
+        transactions: <span class="kw-2">&amp;</span>[CardanoTransaction],
+    ) -&gt; StdResult&lt;MKMap&lt;BlockRange, MKMapNode&lt;BlockRange&gt;&gt;&gt; {
+        <span class="kw">let </span><span class="kw-2">mut </span>transactions_by_block_ranges: HashMap&lt;BlockRange, Vec&lt;TransactionHash&gt;&gt; =
+            HashMap::new();
+        <span class="kw">for </span>transaction <span class="kw">in </span>transactions {
+            <span class="kw">let </span>block_range = BlockRange::from_block_number(transaction.block_number);
+            transactions_by_block_ranges
+                .entry(block_range)
+                .or_default()
+                .push(transaction.transaction_hash.to_owned());
+        }
+        <span class="kw">let </span>mk_hash_map = MKMap::new(
+            transactions_by_block_ranges
+                .into_iter()
+                .try_fold(
+                    <span class="macro">vec!</span>[],
+                    |<span class="kw-2">mut </span>acc, (block_range, transactions)| -&gt; StdResult&lt;Vec&lt;(<span class="kw">_</span>, MKMapNode&lt;<span class="kw">_</span>&gt;)&gt;&gt; {
+                        acc.push((block_range, MKTree::new(<span class="kw-2">&amp;</span>transactions)<span class="question-mark">?</span>.into()));
+                        <span class="prelude-val">Ok</span>(acc)
+                    },
+                )<span class="question-mark">?
+                </span>.as_slice(),
+        )
+        .with_context(|| <span class="string">"ProverService failed to compute the merkelized structure that proves ownership of the transaction"</span>)<span class="question-mark">?</span>;
+
+        <span class="prelude-val">Ok</span>(mk_hash_map)
+    }
 }
 
 <span class="attr">#[async_trait]
@@ -247,26 +316,33 @@
         transaction_hashes: <span class="kw-2">&amp;</span>[TransactionHash],
     ) -&gt; StdResult&lt;Vec&lt;CardanoTransactionsSetProof&gt;&gt; {
         <span class="kw">let </span>transactions = <span class="self">self</span>.transaction_retriever.get_up_to(up_to).<span class="kw">await</span><span class="question-mark">?</span>;
-        <span class="kw">let </span>mk_leaves_all: Vec&lt;MKTreeNode&gt; =
-            transactions.iter().map(|t| t.to_owned().into()).collect();
-        <span class="kw">let </span>store = MKTreeStore::default();
-        <span class="kw">let </span>mktree = MKTree::new(<span class="kw-2">&amp;</span>mk_leaves_all, <span class="kw-2">&amp;</span>store)
-            .with_context(|| <span class="string">"MKTree creation should not fail"</span>)<span class="question-mark">?</span>;
-
+        <span class="kw">let </span>mk_map = <span class="self">self</span>.compute_merkle_map_from_transactions(<span class="kw-2">&amp;</span>transactions)<span class="question-mark">?</span>;
+        <span class="kw">let </span>transactions_to_prove = transactions
+            .iter()
+            .filter_map(|transaction| {
+                <span class="kw">let </span>block_range = BlockRange::from_block_number(transaction.block_number);
+                transaction_hashes
+                    .contains(<span class="kw-2">&amp;</span>transaction.transaction_hash)
+                    .then(|| (block_range, transaction.to_owned()))
+            })
+            .collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;();
         <span class="kw">let </span><span class="kw-2">mut </span>transaction_hashes_certified = <span class="macro">vec!</span>[];
-        <span class="kw">for </span>transaction_hash <span class="kw">in </span>transaction_hashes {
-            <span class="kw">let </span>mk_leaf = transaction_hash.to_string().into();
-            <span class="kw">if </span>mktree.compute_proof(<span class="kw-2">&amp;</span>[mk_leaf]).is_ok() {
-                transaction_hashes_certified.push(transaction_hash.to_string());
+        <span class="kw">for </span>(_block_range, transaction) <span class="kw">in </span>transactions_to_prove {
+            <span class="kw">let </span>mk_tree_node_transaction_hash: MKTreeNode =
+                transaction.transaction_hash.to_owned().into();
+            <span class="kw">if </span>mk_map
+                .compute_proof(<span class="kw-2">&amp;</span>[mk_tree_node_transaction_hash])
+                .is_ok()
+            {
+                transaction_hashes_certified.push(transaction.transaction_hash.to_string());
             }
         }
-
         <span class="kw">if </span>!transaction_hashes_certified.is_empty() {
             <span class="kw">let </span>mk_leaves: Vec&lt;MKTreeNode&gt; = transaction_hashes_certified
                 .iter()
                 .map(|h| h.to_owned().into())
                 .collect();
-            <span class="kw">let </span>mk_proof = mktree.compute_proof(<span class="kw-2">&amp;</span>mk_leaves)<span class="question-mark">?</span>;
+            <span class="kw">let </span>mk_proof = mk_map.compute_proof(<span class="kw-2">&amp;</span>mk_leaves)<span class="question-mark">?</span>;
             <span class="kw">let </span>transactions_set_proof_batch =
                 CardanoTransactionsSetProof::new(transaction_hashes_certified, mk_proof);
 
@@ -364,10 +440,7 @@
         transactions_set_proof[<span class="number">0</span>].verify().unwrap();
     }
 
-    <span class="comment">// this one can't be done right now because we don't have a merkle tree of merkle tree yet
-    // todo: compute_proof_for_multiple_set_with_multiple_transactions
-
-    </span><span class="attr">#[tokio::test]
+    <span class="attr">#[tokio::test]
     </span><span class="kw">async fn </span>cant_compute_proof_if_retriever_fail() {
         <span class="kw">let </span>(transaction_hashes, _transactions) = generate_transactions(<span class="number">3</span>);
         <span class="kw">let </span><span class="kw-2">mut </span>transaction_retriever = MockTransactionsRetriever::new();
