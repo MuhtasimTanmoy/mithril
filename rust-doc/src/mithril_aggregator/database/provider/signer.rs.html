@@ -1334,7 +1334,7 @@
         }
 
         <span class="kw">for </span><span class="kw-2">mut </span>signer_record <span class="kw">in </span>signer_records_fake {
-            signer_record.updated_at += Duration::hours(<span class="number">1</span>);
+            signer_record.updated_at += Duration::try_hours(<span class="number">1</span>).unwrap();
             <span class="kw">let </span>signer_record_saved = provider.persist(signer_record.clone()).unwrap();
             <span class="macro">assert_eq!</span>(signer_record, signer_record_saved);
         }
@@ -1356,7 +1356,7 @@
 
         <span class="kw">for </span><span class="kw-2">mut </span>signer_record <span class="kw">in </span>signer_records_fake {
             signer_record.pool_ticker = <span class="prelude-val">Some</span>(<span class="macro">format!</span>(<span class="string">"new-pool-{}"</span>, signer_record.signer_id));
-            signer_record.updated_at += Duration::hours(<span class="number">1</span>);
+            signer_record.updated_at += Duration::try_hours(<span class="number">1</span>).unwrap();
             <span class="kw">let </span>signer_record_saved = provider.persist(signer_record.clone()).unwrap();
             <span class="macro">assert_eq!</span>(signer_record, signer_record_saved);
         }
@@ -1377,7 +1377,7 @@
 
         <span class="kw">for </span>signer_record <span class="kw">in </span>signer_records_fake.iter_mut() {
             signer_record.pool_ticker = <span class="prelude-val">Some</span>(<span class="macro">format!</span>(<span class="string">"new-pool-{}"</span>, signer_record.signer_id));
-            signer_record.updated_at += Duration::hours(<span class="number">1</span>);
+            signer_record.updated_at += Duration::try_hours(<span class="number">1</span>).unwrap();
         }
         <span class="kw">let </span><span class="kw-2">mut </span>saved_records = provider.persist_many(signer_records_fake.clone()).unwrap();
         saved_records.sort_by(|a, b| a.signer_id.cmp(<span class="kw-2">&amp;</span>b.signer_id));

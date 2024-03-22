@@ -142,7 +142,7 @@
     <span class="kw">use </span>std::{convert::Infallible, sync::Arc};
 
     <span class="kw">use </span>mithril_common::messages::SnapshotDownloadMessage;
-    <span class="kw">use </span>reqwest::StatusCode;
+    <span class="kw">use </span>warp::http::StatusCode;
 
     <span class="kw">use </span><span class="kw">crate</span>::event_store::{EventMessage, TransmitterService};
     <span class="kw">use </span><span class="kw">crate</span>::http_server::routes::reply;

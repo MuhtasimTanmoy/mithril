@@ -332,9 +332,9 @@
         messages::CardanoTransactionsProofsMessage,
         StdResult,
     };
-    <span class="kw">use </span>reqwest::StatusCode;
     <span class="kw">use </span>slog_scope::{debug, warn};
     <span class="kw">use </span>std::{convert::Infallible, sync::Arc};
+    <span class="kw">use </span>warp::http::StatusCode;
 
     <span class="kw">use crate</span>::{
         http_server::routes::reply,

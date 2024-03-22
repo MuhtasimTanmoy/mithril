@@ -287,7 +287,7 @@
 <span class="macro">cfg_fs_random! </span>{
     <span class="kw">use </span>serde::Deserialize;
     <span class="kw">use </span>anyhow::Context;
-    <span class="kw">use </span>minicbor::{Decode, Decoder, decode};
+    <span class="kw">use </span>pallas_codec::minicbor::{Decode, Decoder, decode};
     <span class="kw">use </span>pallas_primitives::{alonzo::PlutusData, ToCanonicalJson};
 
     <span class="doccomment">/// [Datum] represents an inline datum from UTxO.

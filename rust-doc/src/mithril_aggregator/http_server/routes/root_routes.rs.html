@@ -204,8 +204,8 @@
 
 <span class="kw">mod </span>handlers {
     <span class="kw">use </span>mithril_common::api_version::APIVersionProvider;
-    <span class="kw">use </span>reqwest::StatusCode;
     <span class="kw">use </span>slog_scope::{debug, warn};
+    <span class="kw">use </span>warp::http::StatusCode;
 
     <span class="kw">use crate</span>::{
         http_server::routes::{
@@ -250,11 +250,11 @@
     <span class="kw">use </span><span class="kw">crate</span>::http_server::SERVER_BASE_PATH;
     <span class="kw">use crate</span>::{initialize_dependencies, DependencyContainer};
     <span class="kw">use </span>mithril_common::test_utils::apispec::APISpec;
-    <span class="kw">use </span>reqwest::StatusCode;
     <span class="kw">use </span>serde_json::Value::Null;
     <span class="kw">use </span>std::collections::BTreeSet;
     <span class="kw">use </span>std::sync::Arc;
     <span class="kw">use </span>warp::http::Method;
+    <span class="kw">use </span>warp::http::StatusCode;
     <span class="kw">use </span>warp::test::request;
     <span class="kw">use </span>warp::Filter;
 

@@ -578,7 +578,7 @@
         <span class="kw">let </span>initiated_at = DateTime::parse_from_rfc3339(<span class="string">"2024-02-12T13:11:47.0123043Z"</span>)
             .unwrap()
             .with_timezone(<span class="kw-2">&amp;</span>Utc);
-        <span class="kw">let </span>sealed_at = initiated_at + Duration::seconds(<span class="number">100</span>);
+        <span class="kw">let </span>sealed_at = initiated_at + Duration::try_seconds(<span class="number">100</span>).unwrap();
 
         <span class="kw">let </span>certificate = Certificate::new(
             <span class="string">"previous_hash"</span>.to_string(),
@@ -679,7 +679,7 @@
         <span class="kw">let </span>initiated_at = DateTime::parse_from_rfc3339(<span class="string">"2024-02-12T13:11:47.0123043Z"</span>)
             .unwrap()
             .with_timezone(<span class="kw-2">&amp;</span>Utc);
-        <span class="kw">let </span>sealed_at = initiated_at + Duration::seconds(<span class="number">100</span>);
+        <span class="kw">let </span>sealed_at = initiated_at + Duration::try_seconds(<span class="number">100</span>).unwrap();
 
         <span class="kw">let </span>genesis_certificate = Certificate::new(
             <span class="string">"previous_hash"</span>.to_string(),

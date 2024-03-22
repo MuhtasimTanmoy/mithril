@@ -194,7 +194,7 @@
             protocol_version: <span class="string">"0.1.0"</span>.to_string(),
             protocol_parameters: ProtocolParameters::new(<span class="number">1000</span>, <span class="number">100</span>, <span class="number">0.123</span>),
             initiated_at,
-            sealed_at: initiated_at + Duration::seconds(<span class="number">100</span>),
+            sealed_at: initiated_at + Duration::try_seconds(<span class="number">100</span>).unwrap(),
             signers: <span class="macro">vec!</span>[
                 StakeDistributionParty {
                     party_id: <span class="string">"1"</span>.to_string(),
