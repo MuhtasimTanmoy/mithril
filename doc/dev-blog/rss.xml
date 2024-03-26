@@ -4,10 +4,47 @@
         <title>Mithril. A complete guide. Blog</title>
         <link>https://mithril.network/doc/dev-blog</link>
         <description>Mithril. A complete guide. Blog</description>
-        <lastBuildDate>Mon, 26 Feb 2024 00:00:00 GMT</lastBuildDate>
+        <lastBuildDate>Tue, 26 Mar 2024 00:00:00 GMT</lastBuildDate>
         <docs>https://validator.w3.org/feed/docs/rss2.html</docs>
         <generator>https://github.com/jpmonette/feed</generator>
         <language>en</language>
+        <item>
+            <title><![CDATA[Mithril client CLI 'snapshot' command is deprecated]]></title>
+            <link>https://mithril.network/doc/dev-blog/2024/03/26/client-cli-deprecated-command</link>
+            <guid>https://mithril.network/doc/dev-blog/2024/03/26/client-cli-deprecated-command</guid>
+            <pubDate>Tue, 26 Mar 2024 00:00:00 GMT</pubDate>
+            <description><![CDATA[The 'snapshot' command of the client CLI is deprecated]]></description>
+            <content:encoded><![CDATA[<h3 class="anchor anchorWithStickyNavbar_LWe7" id="the-snapshot-command-of-the-client-cli-is-deprecated">The 'snapshot' command of the client CLI is deprecated<a href="https://mithril.network/doc/dev-blog/2024/03/26/client-cli-deprecated-command#the-snapshot-command-of-the-client-cli-is-deprecated" class="hash-link" aria-label="Direct link to The 'snapshot' command of the client CLI is deprecated" title="Direct link to The 'snapshot' command of the client CLI is deprecated">​</a></h3>
+<p>With the release of the new distribution <a href="https://github.com/input-output-hk/mithril/releases/tag/2412.0" target="_blank" rel="noopener noreferrer">2412</a>, we have deprecated the <strong>snapshot</strong> command of the client CLI.</p>
+<p>The <strong>snapshot</strong> command has been superseded by the <strong>cardano-db snapshot</strong> command.
+In order to give time to our users to use the new command, the now legacy <strong>snapshot</strong> command is still available, but it will be removed in a near future.</p>
+<p>In order to proceed to the upgrade, install the latest stable client CLI, and replace the legacy command with the new command, e.g.:</p>
+<div class="language-bash codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_biex"><pre tabindex="0" class="prism-code language-bash codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token plain">mithril-client -vvv snapshot download latest --json</span><br></span></code></pre><div class="buttonGroup__atx"><button type="button" aria-label="Copy code to clipboard" title="Copy" class="clean-btn"><span class="copyButtonIcons_eSgA" aria-hidden="true"><svg viewBox="0 0 24 24" class="copyButtonIcon_y97N"><path fill="currentColor" d="M19,21H8V7H19M19,5H8A2,2 0 0,0 6,7V21A2,2 0 0,0 8,23H19A2,2 0 0,0 21,21V7A2,2 0 0,0 19,5M16,1H4A2,2 0 0,0 2,3V17H4V3H16V1Z"></path></svg><svg viewBox="0 0 24 24" class="copyButtonSuccessIcon_LjdS"><path fill="currentColor" d="M21,7L9,19L3.5,13.5L4.91,12.09L9,16.17L19.59,5.59L21,7Z"></path></svg></span></button></div></div></div>
+<p>Should be replaced with</p>
+<div class="language-bash codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_biex"><pre tabindex="0" class="prism-code language-bash codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token plain">mithril-client -vvv cardano-db snapshot download latest --json</span><br></span></code></pre><div class="buttonGroup__atx"><button type="button" aria-label="Copy code to clipboard" title="Copy" class="clean-btn"><span class="copyButtonIcons_eSgA" aria-hidden="true"><svg viewBox="0 0 24 24" class="copyButtonIcon_y97N"><path fill="currentColor" d="M19,21H8V7H19M19,5H8A2,2 0 0,0 6,7V21A2,2 0 0,0 8,23H19A2,2 0 0,0 21,21V7A2,2 0 0,0 19,5M16,1H4A2,2 0 0,0 2,3V17H4V3H16V1Z"></path></svg><svg viewBox="0 0 24 24" class="copyButtonSuccessIcon_LjdS"><path fill="currentColor" d="M21,7L9,19L3.5,13.5L4.91,12.09L9,16.17L19.59,5.59L21,7Z"></path></svg></span></button></div></div></div>
+<p>For any inquiries or assistance, don't hesitate to reach out to the team on the <a href="https://discord.gg/5kaErDKDRq" target="_blank" rel="noopener noreferrer">Discord channel</a>.</p>]]></content:encoded>
+            <category>mithril client</category>
+            <category>cli</category>
+            <category>deprecated</category>
+        </item>
+        <item>
+            <title><![CDATA[Mithril signer Prometheus endpoint is available]]></title>
+            <link>https://mithril.network/doc/dev-blog/2024/03/26/mithril-signer-prometheus-endpoint</link>
+            <guid>https://mithril.network/doc/dev-blog/2024/03/26/mithril-signer-prometheus-endpoint</guid>
+            <pubDate>Tue, 26 Mar 2024 00:00:00 GMT</pubDate>
+            <description><![CDATA[Mithril signer Prometheus endpoint is available]]></description>
+            <content:encoded><![CDATA[<h3 class="anchor anchorWithStickyNavbar_LWe7" id="mithril-signer-prometheus-endpoint-is-available">Mithril signer Prometheus endpoint is available<a href="https://mithril.network/doc/dev-blog/2024/03/26/mithril-signer-prometheus-endpoint#mithril-signer-prometheus-endpoint-is-available" class="hash-link" aria-label="Direct link to Mithril signer Prometheus endpoint is available" title="Direct link to Mithril signer Prometheus endpoint is available">​</a></h3>
+<p>With the release of the new distribution <a href="https://github.com/input-output-hk/mithril/releases/tag/2412.0" target="_blank" rel="noopener noreferrer">2412</a>, the Mithril signer can start an optional Prometheus endpoint to monitor basic metrics.</p>
+<p>The endpoint is not activated by default, and needs to be setup by the SPOs who wish to use it. We have added a section in the <a href="https://mithril.network/doc/manual/getting-started/run-signer-node#activate-prometheus-endpoint" target="_blank" rel="noopener noreferrer">Run a Mithril signer as an SPO</a> guide describing the setup process.</p>
+<p>Please note that the Mithril signer needs to be restarted after the configuration for the Prometheus endpoint.</p>
+<p>Additionally, the team is also working on a Grafana template to easily setup a dashboard with this Prometheus endpoint:
+<a href="https://mithril.network/doc/assets/files/grafana-dashboard-f3d048549b1d36f839bb33597824216c.png" target="_blank"><img decoding="async" loading="lazy" alt="Grafana Dashboard" src="https://mithril.network/doc/assets/images/grafana-dashboard-f3d048549b1d36f839bb33597824216c.png" width="1613" height="755" class="img_ev3q"></a></p>
+<p>For any inquiries or assistance, don't hesitate to reach out to the team on the <a href="https://discord.gg/5kaErDKDRq" target="_blank" rel="noopener noreferrer">Discord channel</a>.</p>]]></content:encoded>
+            <category>mithril signer</category>
+            <category>metrics</category>
+            <category>Prometheus</category>
+            <category>Grafana</category>
+        </item>
         <item>
             <title><![CDATA[Mithril client CLI output breaking change]]></title>
             <link>https://mithril.network/doc/dev-blog/2024/02/26/mithril-client-cli-output-breaking-change</link>
