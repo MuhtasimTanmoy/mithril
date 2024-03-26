@@ -1097,6 +1097,8 @@
 <a href="#1095" id="1095">1095</a>
 <a href="#1096" id="1096">1096</a>
 <a href="#1097" id="1097">1097</a>
+<a href="#1098" id="1098">1098</a>
+<a href="#1099" id="1099">1099</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>anyhow::Context;
 <span class="kw">use </span>async_trait::async_trait;
 <span class="kw">use </span>chrono::{DateTime, Utc};
@@ -1107,7 +1109,8 @@
 <span class="kw">use </span>mithril_common::{
     crypto_helper::ProtocolParameters,
     entities::{
-        Beacon, Epoch, SignedEntity, SignedEntityType, SignedEntityTypeDiscriminants, Snapshot,
+        CardanoDbBeacon, Epoch, SignedEntity, SignedEntityType, SignedEntityTypeDiscriminants,
+        Snapshot,
     },
     messages::{
         CardanoTransactionSnapshotListItemMessage, CardanoTransactionSnapshotMessage,
@@ -1246,7 +1249,7 @@
         <span class="attr">#[derive(Deserialize)]
         </span><span class="kw">struct </span>TmpCardanoTransaction {
             merkle_root: String,
-            beacon: Beacon,
+            beacon: CardanoDbBeacon,
             hash: String,
         }
         <span class="kw">let </span>artifact = serde_json::from_str::&lt;TmpCardanoTransaction&gt;(<span class="kw-2">&amp;</span>value.artifact)<span class="question-mark">?</span>;
@@ -1269,7 +1272,7 @@
         <span class="attr">#[derive(Deserialize)]
         </span><span class="kw">struct </span>TmpCardanoTransaction {
             merkle_root: String,
-            beacon: Beacon,
+            beacon: CardanoDbBeacon,
             hash: String,
         }
         <span class="kw">let </span>artifact = serde_json::from_str::&lt;TmpCardanoTransaction&gt;(<span class="kw-2">&amp;</span>value.artifact)<span class="question-mark">?</span>;
@@ -1733,7 +1736,7 @@ where signed_entity_id = ?*"</span>;
 </span><span class="kw">mod </span>tests {
     <span class="kw">use </span><span class="kw">crate</span>::database::provider::{apply_all_migrations_to_db, disable_foreign_key_support};
     <span class="kw">use </span>mithril_common::entities::MithrilStakeDistribution;
-    <span class="kw">use </span>mithril_common::{entities::Beacon, test_utils::fake_data};
+    <span class="kw">use </span>mithril_common::{entities::CardanoDbBeacon, test_utils::fake_data};
     <span class="kw">use </span>sqlite::Connection;
 
     <span class="kw">use super</span>::<span class="kw-2">*</span>;
@@ -2049,7 +2052,8 @@ where signed_entity_id = ?*"</span>;
             .iter()
             .filter_map(|se| {
                 (se.signed_entity_type.index()
-                    == SignedEntityType::CardanoImmutableFilesFull(Beacon::default()).index())
+                    == SignedEntityType::CardanoImmutableFilesFull(CardanoDbBeacon::default())
+                        .index())
                 .then_some(se.to_owned())
             })
             .collect();

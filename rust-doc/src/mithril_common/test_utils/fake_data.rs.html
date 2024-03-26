@@ -253,15 +253,15 @@
 <span class="kw">use </span><span class="kw">super</span>::fake_keys;
 
 <span class="doccomment">/// Fake Beacon
-</span><span class="kw">pub fn </span>beacon() -&gt; entities::Beacon {
+</span><span class="kw">pub fn </span>beacon() -&gt; entities::CardanoDbBeacon {
     <span class="kw">let </span>network = <span class="string">"testnet"</span>.to_string();
     <span class="kw">let </span>immutable_file_number = <span class="number">100</span>;
     <span class="kw">let </span>epoch = <span class="number">10</span>;
-    entities::Beacon::new(network, epoch, immutable_file_number)
+    entities::CardanoDbBeacon::new(network, epoch, immutable_file_number)
 }
 
 <span class="doccomment">/// Fake Digest
-</span><span class="kw">pub fn </span>digest(beacon: <span class="kw-2">&amp;</span>entities::Beacon) -&gt; Vec&lt;u8&gt; {
+</span><span class="kw">pub fn </span>digest(beacon: <span class="kw-2">&amp;</span>entities::CardanoDbBeacon) -&gt; Vec&lt;u8&gt; {
     <span class="macro">format!</span>(
         <span class="string">"digest-{}-{}-{}"</span>,
         beacon.network, beacon.epoch, beacon.immutable_file_number
@@ -462,7 +462,7 @@
         .map(|idx| {
             entities::CardanoTransactionsSnapshot::new(
                 <span class="macro">format!</span>(<span class="string">"merkleroot-{idx}"</span>),
-                entities::Beacon {
+                entities::CardanoDbBeacon {
                     immutable_file_number: idx,
                     ..beacon()
                 },

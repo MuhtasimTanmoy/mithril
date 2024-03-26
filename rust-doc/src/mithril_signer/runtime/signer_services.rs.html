@@ -772,7 +772,7 @@
     <span class="kw">use </span>mithril_common::{
         chain_observer::FakeObserver,
         digesters::DumbImmutableFileObserver,
-        entities::{Beacon, Epoch},
+        entities::{CardanoDbBeacon, Epoch},
         era::adapters::EraReaderAdapterType,
     };
 
@@ -814,7 +814,7 @@
         <span class="macro">assert!</span>(!stores_dir.exists());
         <span class="kw">let </span>chain_observer_builder: <span class="kw">fn</span>(<span class="kw-2">&amp;</span>Configuration) -&gt; StdResult&lt;ChainObserverService&gt; =
             |_config| {
-                <span class="prelude-val">Ok</span>(Arc::new(FakeObserver::new(<span class="prelude-val">Some</span>(Beacon {
+                <span class="prelude-val">Ok</span>(Arc::new(FakeObserver::new(<span class="prelude-val">Some</span>(CardanoDbBeacon {
                     epoch: Epoch(<span class="number">1</span>),
                     immutable_file_number: <span class="number">1</span>,
                     network: <span class="string">"devnet"</span>.to_string(),

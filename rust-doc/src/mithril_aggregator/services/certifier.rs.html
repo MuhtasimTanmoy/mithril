@@ -1001,8 +1001,8 @@
     certificate_chain::CertificateVerifier,
     crypto_helper::{ProtocolGenesisVerifier, PROTOCOL_VERSION},
     entities::{
-        Beacon, Certificate, CertificateMetadata, CertificateSignature, Epoch, ProtocolMessage,
-        SignedEntityType, SingleSignatures, StakeDistributionParty,
+        CardanoDbBeacon, Certificate, CertificateMetadata, CertificateSignature, Epoch,
+        ProtocolMessage, SignedEntityType, SingleSignatures, StakeDistributionParty,
     },
     StdResult,
 };
@@ -1380,7 +1380,7 @@
                     .get_current_immutable_beacon()
                     .<span class="kw">await
                     </span>.with_context(|| <span class="string">"Could not retrieve current beacon to create certificate"</span>)<span class="question-mark">?</span>;
-                Beacon {
+                CardanoDbBeacon {
                     epoch: <span class="kw-2">*</span>epoch,
                     ..beacon
                 }
@@ -1495,7 +1495,7 @@
     };
     <span class="kw">use </span>chrono::{DateTime, Days};
     <span class="kw">use </span>mithril_common::{
-        entities::{Beacon, ProtocolMessagePartKey},
+        entities::{CardanoDbBeacon, ProtocolMessagePartKey},
         test_utils::{fake_data, MithrilFixture, MithrilFixtureBuilder},
     };
 
@@ -1557,7 +1557,7 @@
 
     <span class="attr">#[tokio::test]
     </span><span class="kw">async fn </span>should_clean_epoch_when_inform_epoch() {
-        <span class="kw">let </span>beacon = Beacon::new(<span class="string">"devnet"</span>.to_string(), <span class="number">1</span>, <span class="number">1</span>);
+        <span class="kw">let </span>beacon = CardanoDbBeacon::new(<span class="string">"devnet"</span>.to_string(), <span class="number">1</span>, <span class="number">1</span>);
         <span class="kw">let </span>signed_entity_type = SignedEntityType::CardanoImmutableFilesFull(beacon.clone());
         <span class="kw">let </span>protocol_message = ProtocolMessage::new();
         <span class="kw">let </span>epoch = beacon.epoch;
@@ -1578,7 +1578,7 @@
 
     <span class="attr">#[tokio::test]
     </span><span class="kw">async fn </span>should_mark_open_message_expired_when_exists() {
-        <span class="kw">let </span>beacon = Beacon::new(<span class="string">"devnet"</span>.to_string(), <span class="number">3</span>, <span class="number">1</span>);
+        <span class="kw">let </span>beacon = CardanoDbBeacon::new(<span class="string">"devnet"</span>.to_string(), <span class="number">3</span>, <span class="number">1</span>);
         <span class="kw">let </span>signed_entity_type = SignedEntityType::CardanoImmutableFilesFull(beacon.clone());
         <span class="kw">let </span>protocol_message = ProtocolMessage::new();
         <span class="kw">let </span>epochs_with_signers = (<span class="number">1</span>..=<span class="number">5</span>).map(Epoch).collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;();
@@ -1610,7 +1610,7 @@
 
     <span class="attr">#[tokio::test]
     </span><span class="kw">async fn </span>should_not_mark_open_message_expired_when_does_not_expire() {
-        <span class="kw">let </span>beacon = Beacon::new(<span class="string">"devnet"</span>.to_string(), <span class="number">3</span>, <span class="number">1</span>);
+        <span class="kw">let </span>beacon = CardanoDbBeacon::new(<span class="string">"devnet"</span>.to_string(), <span class="number">3</span>, <span class="number">1</span>);
         <span class="kw">let </span>signed_entity_type = SignedEntityType::CardanoImmutableFilesFull(beacon.clone());
         <span class="kw">let </span>protocol_message = ProtocolMessage::new();
         <span class="kw">let </span>epochs_with_signers = (<span class="number">1</span>..=<span class="number">5</span>).map(Epoch).collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;();
@@ -1637,7 +1637,7 @@
 
     <span class="attr">#[tokio::test]
     </span><span class="kw">async fn </span>should_not_mark_open_message_expired_when_has_not_expired_yet() {
-        <span class="kw">let </span>beacon = Beacon::new(<span class="string">"devnet"</span>.to_string(), <span class="number">3</span>, <span class="number">1</span>);
+        <span class="kw">let </span>beacon = CardanoDbBeacon::new(<span class="string">"devnet"</span>.to_string(), <span class="number">3</span>, <span class="number">1</span>);
         <span class="kw">let </span>signed_entity_type = SignedEntityType::CardanoImmutableFilesFull(beacon.clone());
         <span class="kw">let </span>protocol_message = ProtocolMessage::new();
         <span class="kw">let </span>epochs_with_signers = (<span class="number">1</span>..=<span class="number">5</span>).map(Epoch).collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;();
@@ -1664,7 +1664,7 @@
 
     <span class="attr">#[tokio::test]
     </span><span class="kw">async fn </span>should_register_valid_single_signature() {
-        <span class="kw">let </span>beacon = Beacon::new(<span class="string">"devnet"</span>.to_string(), <span class="number">3</span>, <span class="number">1</span>);
+        <span class="kw">let </span>beacon = CardanoDbBeacon::new(<span class="string">"devnet"</span>.to_string(), <span class="number">3</span>, <span class="number">1</span>);
         <span class="kw">let </span>signed_entity_type = SignedEntityType::CardanoImmutableFilesFull(beacon.clone());
         <span class="kw">let </span>protocol_message = ProtocolMessage::new();
         <span class="kw">let </span>epochs_with_signers = (<span class="number">1</span>..=<span class="number">3</span>).map(Epoch).collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;();
@@ -1697,7 +1697,7 @@
 
     <span class="attr">#[tokio::test]
     </span><span class="kw">async fn </span>should_not_register_invalid_single_signature() {
-        <span class="kw">let </span>beacon = Beacon::new(<span class="string">"devnet"</span>.to_string(), <span class="number">3</span>, <span class="number">1</span>);
+        <span class="kw">let </span>beacon = CardanoDbBeacon::new(<span class="string">"devnet"</span>.to_string(), <span class="number">3</span>, <span class="number">1</span>);
         <span class="kw">let </span>signed_entity_type = SignedEntityType::CardanoImmutableFilesFull(beacon.clone());
         <span class="kw">let </span><span class="kw-2">mut </span>protocol_message = ProtocolMessage::new();
         <span class="kw">let </span>epochs_with_signers = (<span class="number">1</span>..=<span class="number">5</span>).map(Epoch).collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;();
@@ -1729,7 +1729,7 @@
 
     <span class="attr">#[tokio::test]
     </span><span class="kw">async fn </span>should_not_register_single_signature_for_certified_open_message() {
-        <span class="kw">let </span>beacon = Beacon::new(<span class="string">"devnet"</span>.to_string(), <span class="number">3</span>, <span class="number">1</span>);
+        <span class="kw">let </span>beacon = CardanoDbBeacon::new(<span class="string">"devnet"</span>.to_string(), <span class="number">3</span>, <span class="number">1</span>);
         <span class="kw">let </span>signed_entity_type = SignedEntityType::CardanoImmutableFilesFull(beacon.clone());
         <span class="kw">let </span>protocol_message = ProtocolMessage::new();
         <span class="kw">let </span>epochs_with_signers = (<span class="number">1</span>..=<span class="number">5</span>).map(Epoch).collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;();
@@ -1761,7 +1761,7 @@
 
     <span class="attr">#[tokio::test]
     </span><span class="kw">async fn </span>should_not_register_single_signature_for_expired_open_message() {
-        <span class="kw">let </span>beacon = Beacon::new(<span class="string">"devnet"</span>.to_string(), <span class="number">3</span>, <span class="number">1</span>);
+        <span class="kw">let </span>beacon = CardanoDbBeacon::new(<span class="string">"devnet"</span>.to_string(), <span class="number">3</span>, <span class="number">1</span>);
         <span class="kw">let </span>signed_entity_type = SignedEntityType::CardanoImmutableFilesFull(beacon.clone());
         <span class="kw">let </span>protocol_message = ProtocolMessage::new();
         <span class="kw">let </span>epochs_with_signers = (<span class="number">1</span>..=<span class="number">5</span>).map(Epoch).collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;();
@@ -1793,7 +1793,7 @@
 
     <span class="attr">#[tokio::test]
     </span><span class="kw">async fn </span>should_create_certificate_when_multi_signature_produced() {
-        <span class="kw">let </span>beacon = Beacon::new(<span class="string">"devnet"</span>.to_string(), <span class="number">3</span>, <span class="number">1</span>);
+        <span class="kw">let </span>beacon = CardanoDbBeacon::new(<span class="string">"devnet"</span>.to_string(), <span class="number">3</span>, <span class="number">1</span>);
         <span class="kw">let </span>signed_entity_type = SignedEntityType::CardanoImmutableFilesFull(beacon.clone());
         <span class="kw">let </span>protocol_message = ProtocolMessage::new();
         <span class="kw">let </span>epochs_with_signers = (<span class="number">1</span>..=<span class="number">3</span>).map(Epoch).collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;();
@@ -1806,7 +1806,7 @@
             .<span class="kw">await
             </span>.unwrap();
 
-        <span class="kw">let </span>genesis_beacon = Beacon {
+        <span class="kw">let </span>genesis_beacon = CardanoDbBeacon {
             epoch: beacon.epoch - <span class="number">1</span>,
             ..beacon.clone()
         };
@@ -1866,7 +1866,7 @@
 
     <span class="attr">#[tokio::test]
     </span><span class="kw">async fn </span>should_not_create_certificate_for_open_message_not_created() {
-        <span class="kw">let </span>beacon = Beacon::new(<span class="string">"devnet"</span>.to_string(), <span class="number">1</span>, <span class="number">1</span>);
+        <span class="kw">let </span>beacon = CardanoDbBeacon::new(<span class="string">"devnet"</span>.to_string(), <span class="number">1</span>, <span class="number">1</span>);
         <span class="kw">let </span>signed_entity_type = SignedEntityType::CardanoImmutableFilesFull(beacon.clone());
         <span class="kw">let </span>epochs_with_signers = (<span class="number">1</span>..=<span class="number">5</span>).map(Epoch).collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;();
         <span class="kw">let </span>fixture = MithrilFixtureBuilder::default().with_signers(<span class="number">5</span>).build();
@@ -1879,7 +1879,7 @@
 
     <span class="attr">#[tokio::test]
     </span><span class="kw">async fn </span>should_not_create_certificate_for_open_message_already_certified() {
-        <span class="kw">let </span>beacon = Beacon::new(<span class="string">"devnet"</span>.to_string(), <span class="number">1</span>, <span class="number">1</span>);
+        <span class="kw">let </span>beacon = CardanoDbBeacon::new(<span class="string">"devnet"</span>.to_string(), <span class="number">1</span>, <span class="number">1</span>);
         <span class="kw">let </span>signed_entity_type = SignedEntityType::CardanoImmutableFilesFull(beacon.clone());
         <span class="kw">let </span>protocol_message = ProtocolMessage::new();
         <span class="kw">let </span>epoch = beacon.epoch;
@@ -1903,7 +1903,7 @@
         mock_multi_signer
             .expect_create_multi_signature()
             .return_once(<span class="kw">move </span>|<span class="kw">_</span>| <span class="prelude-val">Ok</span>(<span class="prelude-val">None</span>));
-        <span class="kw">let </span>beacon = Beacon::new(<span class="string">"devnet"</span>.to_string(), <span class="number">1</span>, <span class="number">1</span>);
+        <span class="kw">let </span>beacon = CardanoDbBeacon::new(<span class="string">"devnet"</span>.to_string(), <span class="number">1</span>, <span class="number">1</span>);
         <span class="kw">let </span>signed_entity_type = SignedEntityType::CardanoImmutableFilesFull(beacon.clone());
         <span class="kw">let </span>protocol_message = ProtocolMessage::new();
         <span class="kw">let </span>epochs_with_signers = (<span class="number">1</span>..=<span class="number">5</span>).map(Epoch).collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;();

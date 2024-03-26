@@ -336,7 +336,7 @@
         ProtocolAggregateVerificationKey, ProtocolGenesisSignature, ProtocolGenesisSigner,
         ProtocolGenesisVerifier,
     },
-    entities::{Beacon, ProtocolParameters},
+    entities::{CardanoDbBeacon, ProtocolParameters},
     protocol::SignerBuilder,
     BeaconProvider, StdResult,
 };
@@ -366,7 +366,7 @@
 
 <span class="kw">pub struct </span>GenesisTools {
     protocol_parameters: ProtocolParameters,
-    beacon: Beacon,
+    beacon: CardanoDbBeacon,
     genesis_avk: ProtocolAggregateVerificationKey,
     genesis_verifier: Arc&lt;ProtocolGenesisVerifier&gt;,
     certificate_verifier: Arc&lt;<span class="kw">dyn </span>CertificateVerifier&gt;,
@@ -376,7 +376,7 @@
 <span class="kw">impl </span>GenesisTools {
     <span class="kw">pub fn </span>new(
         protocol_parameters: ProtocolParameters,
-        beacon: Beacon,
+        beacon: CardanoDbBeacon,
         genesis_avk: ProtocolAggregateVerificationKey,
         genesis_verifier: Arc&lt;ProtocolGenesisVerifier&gt;,
         certificate_verifier: Arc&lt;<span class="kw">dyn </span>CertificateVerifier&gt;,

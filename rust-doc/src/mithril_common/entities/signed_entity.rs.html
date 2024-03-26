@@ -81,7 +81,7 @@
 <a href="#79" id="79">79</a>
 <a href="#80" id="80">80</a>
 </pre></div><pre class="rust"><code><span class="attr">#[cfg(any(test, feature = <span class="string">"test_tools"</span>))]
-</span><span class="kw">use super</span>::{Beacon, Epoch};
+</span><span class="kw">use super</span>::{CardanoDbBeacon, Epoch};
 <span class="kw">use super</span>::{CardanoTransactionsSnapshot, MithrilStakeDistribution, SignedEntityType, Snapshot};
 <span class="kw">use </span><span class="kw">crate</span>::signable_builder::Artifact;
 <span class="attr">#[cfg(any(test, feature = <span class="string">"test_tools"</span>))]
@@ -116,7 +116,7 @@
         </span><span class="kw">pub fn </span>dummy() -&gt; <span class="self">Self </span>{
             SignedEntity {
                 signed_entity_id: <span class="string">"snapshot-id-123"</span>.to_string(),
-                signed_entity_type: SignedEntityType::CardanoImmutableFilesFull(Beacon::default()),
+                signed_entity_type: SignedEntityType::CardanoImmutableFilesFull(CardanoDbBeacon::default()),
                 certificate_id: <span class="string">"certificate-hash-123"</span>.to_string(),
                 artifact: fake_data::snapshots(<span class="number">1</span>)[<span class="number">0</span>].to_owned(),
                 created_at: DateTime::parse_from_rfc3339(<span class="string">"2023-01-19T13:43:05.618857482Z"</span>)
@@ -150,9 +150,9 @@
         </span><span class="kw">pub fn </span>dummy() -&gt; <span class="self">Self </span>{
             SignedEntity {
                 signed_entity_id: <span class="string">"snapshot-id-123"</span>.to_string(),
-                signed_entity_type: SignedEntityType::CardanoTransactions(Beacon::default()),
+                signed_entity_type: SignedEntityType::CardanoTransactions(CardanoDbBeacon::default()),
                 certificate_id: <span class="string">"certificate-hash-123"</span>.to_string(),
-                artifact: CardanoTransactionsSnapshot::new(<span class="string">"mkroot123"</span>.to_string(), Beacon::default()),
+                artifact: CardanoTransactionsSnapshot::new(<span class="string">"mkroot123"</span>.to_string(), CardanoDbBeacon::default()),
                 created_at: DateTime::parse_from_rfc3339(<span class="string">"2023-01-19T13:43:05.618857482Z"</span>)
                     .unwrap()
                     .with_timezone(<span class="kw-2">&amp;</span>Utc),

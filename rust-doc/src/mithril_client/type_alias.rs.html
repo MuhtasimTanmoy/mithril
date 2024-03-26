@@ -113,7 +113,7 @@
 
     <span class="kw">pub use </span>mithril_common::messages::VerifyCardanoTransactionsProofsError;
 
-    <span class="doccomment">/// A snapshot that allow to know up to which [point of time][common::Beacon] Mithril have certified Cardano transactions.
+    <span class="doccomment">/// A snapshot that allow to know up to which [point of time][common::CardanoDbBeacon] Mithril have certified Cardano transactions.
     ///
     </span><span class="kw">pub use </span>mithril_common::messages::CardanoTransactionSnapshotMessage <span class="kw">as </span>CardanoTransactionSnapshot;
 
@@ -125,7 +125,7 @@
 <span class="doccomment">/// `mithril-common` re-exports
 </span><span class="kw">pub mod </span>common {
     <span class="kw">pub use </span>mithril_common::entities::{
-        Beacon, CompressionAlgorithm, Epoch, ProtocolMessage, ProtocolMessagePartKey,
+        CardanoDbBeacon, CompressionAlgorithm, Epoch, ProtocolMessage, ProtocolMessagePartKey,
         ProtocolParameters,
     };
     <span class="macro">cfg_unstable! </span>{

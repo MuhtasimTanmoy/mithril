@@ -285,7 +285,7 @@
         ProtocolSignerVerificationKeySignature, ProtocolStakeDistribution,
     },
     entities::{
-        Beacon, Certificate, HexEncodedAgregateVerificationKey, PartyId, ProtocolMessage,
+        CardanoDbBeacon, Certificate, HexEncodedAgregateVerificationKey, PartyId, ProtocolMessage,
         ProtocolParameters, Signer, SignerWithStake, SingleSignatures, Stake, StakeDistribution,
         StakeDistributionParty,
     },
@@ -441,7 +441,7 @@
     }
 
     <span class="doccomment">/// Create a genesis certificate using the fixture signers for the given beacon
-    </span><span class="kw">pub fn </span>create_genesis_certificate(<span class="kw-2">&amp;</span><span class="self">self</span>, beacon: <span class="kw-2">&amp;</span>Beacon) -&gt; Certificate {
+    </span><span class="kw">pub fn </span>create_genesis_certificate(<span class="kw-2">&amp;</span><span class="self">self</span>, beacon: <span class="kw-2">&amp;</span>CardanoDbBeacon) -&gt; Certificate {
         <span class="kw">let </span>genesis_avk = <span class="self">self</span>.compute_avk();
         <span class="kw">let </span>genesis_signer = ProtocolGenesisSigner::create_deterministic_genesis_signer();
         <span class="kw">let </span>genesis_producer = CertificateGenesisProducer::new(<span class="prelude-val">Some</span>(Arc::new(genesis_signer)));

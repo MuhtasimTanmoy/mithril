@@ -174,7 +174,7 @@
 <span class="kw">use </span>mithril_common::{
     chain_observer::ChainObserver,
     digesters::ImmutableFileObserver,
-    entities::{Beacon, Epoch},
+    entities::{CardanoDbBeacon, Epoch},
     CardanoNetwork, StdResult,
 };
 <span class="kw">use </span>thiserror::Error;
@@ -192,7 +192,7 @@
     </span><span class="kw">async fn </span>get_current_epoch(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; StdResult&lt;Epoch&gt;;
 
     <span class="doccomment">/// Return the current Beacon used for CardanoImmutableFileDigest message type.
-    </span><span class="kw">async fn </span>get_current_immutable_beacon(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; StdResult&lt;Beacon&gt;;
+    </span><span class="kw">async fn </span>get_current_immutable_beacon(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; StdResult&lt;CardanoDbBeacon&gt;;
 }
 
 <span class="doccomment">/// ## MithrilTickerService
@@ -233,7 +233,7 @@
         <span class="prelude-val">Ok</span>(epoch)
     }
 
-    <span class="kw">async fn </span>get_current_immutable_beacon(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; StdResult&lt;Beacon&gt; {
+    <span class="kw">async fn </span>get_current_immutable_beacon(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; StdResult&lt;CardanoDbBeacon&gt; {
         <span class="kw">let </span>epoch = <span class="self">self</span>.get_current_epoch().<span class="kw">await</span><span class="question-mark">?</span>;
         <span class="kw">let </span>immutable_file_number = <span class="self">self
             </span>.immutable_observer
@@ -245,7 +245,7 @@
                 </span>)
             })<span class="question-mark">?</span>;
 
-        <span class="prelude-val">Ok</span>(Beacon::new(
+        <span class="prelude-val">Ok</span>(CardanoDbBeacon::new(
             <span class="self">self</span>.network.to_string(),
             <span class="kw-2">*</span>epoch,
             immutable_file_number,
@@ -291,7 +291,7 @@
         <span class="kw">let </span>beacon = ticker_service.get_current_immutable_beacon().<span class="kw">await</span>.unwrap();
 
         <span class="macro">assert_eq!</span>(
-            Beacon {
+            CardanoDbBeacon {
                 epoch: Epoch(<span class="number">10</span>),
                 immutable_file_number: <span class="number">99</span>,
                 network: <span class="string">"devnet"</span>.to_string()

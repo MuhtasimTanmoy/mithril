@@ -500,7 +500,7 @@
         cache::ImmutableFileDigestCacheProvider, ImmutableDigester, ImmutableDigesterError,
         ImmutableFile,
     },
-    entities::{Beacon, HexEncodedDigest, ImmutableFileName},
+    entities::{CardanoDbBeacon, HexEncodedDigest, ImmutableFileName},
 };
 <span class="kw">use </span>async_trait::async_trait;
 <span class="kw">use </span>sha2::{Digest, Sha256};
@@ -539,7 +539,7 @@
     <span class="kw">async fn </span>compute_digest(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         dirpath: <span class="kw-2">&amp;</span>Path,
-        beacon: <span class="kw-2">&amp;</span>Beacon,
+        beacon: <span class="kw-2">&amp;</span>CardanoDbBeacon,
     ) -&gt; <span class="prelude-ty">Result</span>&lt;String, ImmutableDigesterError&gt; {
         <span class="kw">let </span>up_to_file_number = beacon.immutable_file_number;
         <span class="kw">let </span>immutables = ImmutableFile::list_completed_in_dir(dirpath)<span class="question-mark">?
@@ -607,7 +607,7 @@
 
 <span class="kw">fn </span>compute_hash(
     logger: Logger,
-    beacon: <span class="kw-2">&amp;</span>Beacon,
+    beacon: <span class="kw-2">&amp;</span>CardanoDbBeacon,
     entries: BTreeMap&lt;ImmutableFile, <span class="prelude-ty">Option</span>&lt;HexEncodedDigest&gt;&gt;,
 ) -&gt; CacheComputationResult {
     <span class="kw">let </span><span class="kw-2">mut </span>hasher = Sha256::new();
@@ -674,7 +674,7 @@
             CardanoImmutableDigester, DummyImmutablesDbBuilder, ImmutableDigester,
             ImmutableDigesterError,
         },
-        entities::{Beacon, ImmutableFileNumber},
+        entities::{CardanoDbBeacon, ImmutableFileNumber},
     };
     <span class="kw">use </span>sha2::Sha256;
     <span class="kw">use </span>slog::Drain;
@@ -722,7 +722,7 @@
     </span><span class="kw">async fn </span>fail_if_no_file_in_folder() {
         <span class="kw">let </span>immutable_db = db_builder(<span class="string">"fail_if_no_file_in_folder"</span>).build();
         <span class="kw">let </span>digester = CardanoImmutableDigester::new(<span class="prelude-val">None</span>, create_logger());
-        <span class="kw">let </span>beacon = Beacon::new(<span class="string">"devnet"</span>.to_string(), <span class="number">1</span>, <span class="number">1</span>);
+        <span class="kw">let </span>beacon = CardanoDbBeacon::new(<span class="string">"devnet"</span>.to_string(), <span class="number">1</span>, <span class="number">1</span>);
 
         <span class="kw">let </span>result = digester
             .compute_digest(<span class="kw-2">&amp;</span>immutable_db.dir, <span class="kw-2">&amp;</span>beacon)
@@ -748,7 +748,7 @@
             .with_non_immutables(<span class="kw-2">&amp;</span>[<span class="string">"not_immutable"</span>])
             .build();
         <span class="kw">let </span>digester = CardanoImmutableDigester::new(<span class="prelude-val">None</span>, create_logger());
-        <span class="kw">let </span>beacon = Beacon::new(<span class="string">"devnet"</span>.to_string(), <span class="number">1</span>, <span class="number">1</span>);
+        <span class="kw">let </span>beacon = CardanoDbBeacon::new(<span class="string">"devnet"</span>.to_string(), <span class="number">1</span>, <span class="number">1</span>);
 
         <span class="macro">assert!</span>(digester
             .compute_digest(<span class="kw-2">&amp;</span>immutable_db.dir, <span class="kw-2">&amp;</span>beacon)
@@ -762,7 +762,7 @@
             .append_immutable_trio()
             .build();
         <span class="kw">let </span>digester = CardanoImmutableDigester::new(<span class="prelude-val">None</span>, create_logger());
-        <span class="kw">let </span>beacon = Beacon::new(<span class="string">"devnet"</span>.to_string(), <span class="number">1</span>, <span class="number">1</span>);
+        <span class="kw">let </span>beacon = CardanoDbBeacon::new(<span class="string">"devnet"</span>.to_string(), <span class="number">1</span>, <span class="number">1</span>);
 
         <span class="kw">let </span>result = digester
             .compute_digest(<span class="kw-2">&amp;</span>immutable_db.dir, <span class="kw-2">&amp;</span>beacon)
@@ -789,7 +789,7 @@
             .append_immutable_trio()
             .build();
         <span class="kw">let </span>digester = CardanoImmutableDigester::new(<span class="prelude-val">None</span>, create_logger());
-        <span class="kw">let </span>beacon = Beacon::new(<span class="string">"devnet"</span>.to_string(), <span class="number">1</span>, <span class="number">10</span>);
+        <span class="kw">let </span>beacon = CardanoDbBeacon::new(<span class="string">"devnet"</span>.to_string(), <span class="number">1</span>, <span class="number">10</span>);
 
         <span class="kw">let </span>result = digester
             .compute_digest(<span class="kw-2">&amp;</span>immutable_db.dir, <span class="kw-2">&amp;</span>beacon)
@@ -820,7 +820,7 @@
             <span class="prelude-val">Some</span>(Arc::new(MemoryImmutableFileDigestCacheProvider::default())),
             logger.clone(),
         );
-        <span class="kw">let </span>beacon = Beacon::new(<span class="string">"devnet"</span>.to_string(), <span class="number">1</span>, <span class="number">100</span>);
+        <span class="kw">let </span>beacon = CardanoDbBeacon::new(<span class="string">"devnet"</span>.to_string(), <span class="number">1</span>, <span class="number">100</span>);
 
         <span class="kw">let </span>result = digester
             .compute_digest(<span class="kw-2">&amp;</span>immutable_db.dir, <span class="kw-2">&amp;</span>beacon)
@@ -843,7 +843,7 @@
         <span class="kw">let </span>cache = Arc::new(MemoryImmutableFileDigestCacheProvider::default());
         <span class="kw">let </span>logger = create_logger();
         <span class="kw">let </span>digester = CardanoImmutableDigester::new(<span class="prelude-val">Some</span>(cache.clone()), logger.clone());
-        <span class="kw">let </span>beacon = Beacon::new(<span class="string">"devnet"</span>.to_string(), <span class="number">1</span>, <span class="number">2</span>);
+        <span class="kw">let </span>beacon = CardanoDbBeacon::new(<span class="string">"devnet"</span>.to_string(), <span class="number">1</span>, <span class="number">2</span>);
 
         digester
             .compute_digest(<span class="kw-2">&amp;</span>immutable_db.dir, <span class="kw-2">&amp;</span>beacon)
@@ -879,7 +879,7 @@
             <span class="prelude-val">Some</span>(Arc::new(MemoryImmutableFileDigestCacheProvider::default())),
             logger.clone(),
         );
-        <span class="kw">let </span>beacon = Beacon::new(<span class="string">"devnet"</span>.to_string(), <span class="number">1</span>, <span class="number">3</span>);
+        <span class="kw">let </span>beacon = CardanoDbBeacon::new(<span class="string">"devnet"</span>.to_string(), <span class="number">1</span>, <span class="number">3</span>);
 
         <span class="kw">let </span>without_cache_digest = no_cache_digester
             .compute_digest(<span class="kw-2">&amp;</span>immutable_db.dir, <span class="kw-2">&amp;</span>beacon)
@@ -917,7 +917,7 @@
         <span class="kw">let </span>cache = MemoryImmutableFileDigestCacheProvider::default();
         <span class="kw">let </span>logger = create_logger();
         <span class="kw">let </span>digester = CardanoImmutableDigester::new(<span class="prelude-val">Some</span>(Arc::new(cache)), logger.clone());
-        <span class="kw">let </span>beacon = Beacon::new(<span class="string">"devnet"</span>.to_string(), <span class="number">1</span>, <span class="number">50</span>);
+        <span class="kw">let </span>beacon = CardanoDbBeacon::new(<span class="string">"devnet"</span>.to_string(), <span class="number">1</span>, <span class="number">50</span>);
 
         <span class="kw">let </span>now = Instant::now();
         digester
@@ -959,7 +959,7 @@
         });
         <span class="kw">let </span>logger = create_logger();
         <span class="kw">let </span>digester = CardanoImmutableDigester::new(<span class="prelude-val">Some</span>(Arc::new(cache)), logger.clone());
-        <span class="kw">let </span>beacon = Beacon::new(<span class="string">"devnet"</span>.to_string(), <span class="number">1</span>, <span class="number">3</span>);
+        <span class="kw">let </span>beacon = CardanoDbBeacon::new(<span class="string">"devnet"</span>.to_string(), <span class="number">1</span>, <span class="number">3</span>);
 
         digester
             .compute_digest(<span class="kw-2">&amp;</span>immutable_db.dir, <span class="kw-2">&amp;</span>beacon)
@@ -982,7 +982,7 @@
         cache.expect_store().returning(|<span class="kw">_</span>| <span class="prelude-val">Ok</span>(()));
         <span class="kw">let </span>logger = create_logger();
         <span class="kw">let </span>digester = CardanoImmutableDigester::new(<span class="prelude-val">Some</span>(Arc::new(cache)), logger.clone());
-        <span class="kw">let </span>beacon = Beacon::new(<span class="string">"devnet"</span>.to_string(), <span class="number">1</span>, <span class="number">3</span>);
+        <span class="kw">let </span>beacon = CardanoDbBeacon::new(<span class="string">"devnet"</span>.to_string(), <span class="number">1</span>, <span class="number">3</span>);
 
         digester
             .compute_digest(<span class="kw-2">&amp;</span>immutable_db.dir, <span class="kw-2">&amp;</span>beacon)

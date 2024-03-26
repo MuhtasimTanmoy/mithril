@@ -151,18 +151,18 @@
 
 <span class="kw">use </span><span class="kw">crate</span>::StdResult;
 <span class="kw">use crate</span>::{
-    chain_observer::ChainObserver, digesters::ImmutableFileObserver, entities::Beacon,
+    chain_observer::ChainObserver, digesters::ImmutableFileObserver, entities::CardanoDbBeacon,
     CardanoNetwork,
 };
 
-<span class="doccomment">/// Provide the current [Beacon] of a cardano node.
+<span class="doccomment">/// Provide the current [CardanoDbBeacon] of a cardano node.
 </span><span class="attr">#[async_trait]
 </span><span class="kw">pub trait </span>BeaconProvider
 <span class="kw">where
     </span><span class="self">Self</span>: Sync + Send,
 {
-    <span class="doccomment">/// Get the current [Beacon] of the cardano node.
-    </span><span class="kw">async fn </span>get_current_beacon(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; StdResult&lt;Beacon&gt;;
+    <span class="doccomment">/// Get the current [CardanoDbBeacon] of the cardano node.
+    </span><span class="kw">async fn </span>get_current_beacon(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; StdResult&lt;CardanoDbBeacon&gt;;
 }
 
 <span class="doccomment">/// [BeaconProvider] related errors.
@@ -197,7 +197,7 @@
 
 <span class="attr">#[async_trait]
 </span><span class="kw">impl </span>BeaconProvider <span class="kw">for </span>BeaconProviderImpl {
-    <span class="kw">async fn </span>get_current_beacon(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; StdResult&lt;Beacon&gt; {
+    <span class="kw">async fn </span>get_current_beacon(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; StdResult&lt;CardanoDbBeacon&gt; {
         <span class="kw">let </span>epoch = <span class="self">self
             </span>.chain_observer
             .get_current_epoch()
@@ -216,7 +216,7 @@
                 </span>)
             })<span class="question-mark">?</span>;
 
-        <span class="kw">let </span>beacon = Beacon {
+        <span class="kw">let </span>beacon = CardanoDbBeacon {
             network: <span class="self">self</span>.network.to_string(),
             epoch,
             immutable_file_number,

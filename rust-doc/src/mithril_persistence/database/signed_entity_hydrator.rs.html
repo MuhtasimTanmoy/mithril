@@ -56,9 +56,13 @@
 <a href="#54" id="54">54</a>
 <a href="#55" id="55">55</a>
 <a href="#56" id="56">56</a>
+<a href="#57" id="57">57</a>
+<a href="#58" id="58">58</a>
 </pre></div><pre class="rust"><code><span class="doccomment">//! Signed Entity helpers for persistence
 
-</span><span class="kw">use </span>mithril_common::entities::{Beacon, Epoch, SignedEntityType, SignedEntityTypeDiscriminants};
+</span><span class="kw">use </span>mithril_common::entities::{
+    CardanoDbBeacon, Epoch, SignedEntityType, SignedEntityTypeDiscriminants,
+};
 
 <span class="kw">use </span><span class="kw">crate</span>::sqlite::HydrationError;
 
@@ -92,7 +96,7 @@
                 SignedEntityType::CardanoStakeDistribution(epoch)
             }
             SignedEntityTypeDiscriminants::CardanoImmutableFilesFull =&gt; {
-                <span class="kw">let </span>beacon: Beacon = serde_json::from_str(beacon_str).map_err(|e| {
+                <span class="kw">let </span>beacon: CardanoDbBeacon = serde_json::from_str(beacon_str).map_err(|e| {
                     HydrationError::InvalidData(<span class="macro">format!</span>(
                         <span class="string">"Invalid Beacon JSON in open_message.beacon: '{beacon_str}'. Error: {e}"
                     </span>))
@@ -100,7 +104,7 @@
                 SignedEntityType::CardanoImmutableFilesFull(beacon)
             }
             SignedEntityTypeDiscriminants::CardanoTransactions =&gt; {
-                <span class="kw">let </span>beacon: Beacon = serde_json::from_str(beacon_str).map_err(|e| {
+                <span class="kw">let </span>beacon: CardanoDbBeacon = serde_json::from_str(beacon_str).map_err(|e| {
                     HydrationError::InvalidData(<span class="macro">format!</span>(
                         <span class="string">"Invalid Beacon JSON in open_message.beacon: '{beacon_str}'. Error: {e}"
                     </span>))

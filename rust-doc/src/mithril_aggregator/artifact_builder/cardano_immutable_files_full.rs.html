@@ -361,8 +361,8 @@
 <span class="kw">use </span><span class="kw">super</span>::ArtifactBuilder;
 <span class="kw">use </span>mithril_common::{
     entities::{
-        Beacon, Certificate, CompressionAlgorithm, ProtocolMessage, ProtocolMessagePartKey,
-        Snapshot,
+        CardanoDbBeacon, Certificate, CompressionAlgorithm, ProtocolMessage,
+        ProtocolMessagePartKey, Snapshot,
     },
     StdResult,
 };
@@ -373,7 +373,7 @@
 </span><span class="kw">pub enum </span>CardanoImmutableFilesFullArtifactError {
     <span class="doccomment">/// Protocol message part is missing
     </span><span class="attr">#[error(<span class="string">"Missing protocol message for beacon: '{0}'."</span>)]
-    </span>MissingProtocolMessage(Beacon),
+    </span>MissingProtocolMessage(CardanoDbBeacon),
 }
 
 <span class="doccomment">/// A [CardanoImmutableFilesFullArtifact] builder
@@ -402,7 +402,7 @@
 
     <span class="kw">async fn </span>create_snapshot_archive(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
-        beacon: <span class="kw-2">&amp;</span>Beacon,
+        beacon: <span class="kw-2">&amp;</span>CardanoDbBeacon,
         protocol_message: <span class="kw-2">&amp;</span>ProtocolMessage,
     ) -&gt; StdResult&lt;OngoingSnapshot&gt; {
         <span class="macro">debug!</span>(<span class="string">"CardanoImmutableFilesFullArtifactBuilder: create snapshot archive"</span>);
@@ -483,10 +483,10 @@
 }
 
 <span class="attr">#[async_trait]
-</span><span class="kw">impl </span>ArtifactBuilder&lt;Beacon, Snapshot&gt; <span class="kw">for </span>CardanoImmutableFilesFullArtifactBuilder {
+</span><span class="kw">impl </span>ArtifactBuilder&lt;CardanoDbBeacon, Snapshot&gt; <span class="kw">for </span>CardanoImmutableFilesFullArtifactBuilder {
     <span class="kw">async fn </span>compute_artifact(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
-        beacon: Beacon,
+        beacon: CardanoDbBeacon,
         certificate: <span class="kw-2">&amp;</span>Certificate,
     ) -&gt; StdResult&lt;Snapshot&gt; {
         <span class="kw">let </span>ongoing_snapshot = <span class="self">self
@@ -592,7 +592,7 @@
 
     <span class="attr">#[tokio::test]
     </span><span class="kw">async fn </span>snapshot_archive_name_after_beacon_values() {
-        <span class="kw">let </span>beacon = Beacon::new(<span class="string">"network"</span>.to_string(), <span class="number">20</span>, <span class="number">145</span>);
+        <span class="kw">let </span>beacon = CardanoDbBeacon::new(<span class="string">"network"</span>.to_string(), <span class="number">20</span>, <span class="number">145</span>);
         <span class="kw">let </span><span class="kw-2">mut </span>message = ProtocolMessage::new();
         message.set_message_part(
             ProtocolMessagePartKey::SnapshotDigest,
@@ -641,7 +641,7 @@
                 );
 
             <span class="kw">let </span>ongoing_snapshot = cardano_immutable_files_full_artifact_builder
-                .create_snapshot_archive(<span class="kw-2">&amp;</span>Beacon::default(), <span class="kw-2">&amp;</span>message)
+                .create_snapshot_archive(<span class="kw-2">&amp;</span>CardanoDbBeacon::default(), <span class="kw-2">&amp;</span>message)
                 .<span class="kw">await
                 </span>.expect(<span class="string">"create_snapshot_archive should not fail"</span>);
             <span class="kw">let </span>file_name = ongoing_snapshot

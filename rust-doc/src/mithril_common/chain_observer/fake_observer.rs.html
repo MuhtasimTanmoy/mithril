@@ -173,10 +173,10 @@
     /// [get_current_stake_distribution]: ChainObserver::get_current_stake_distribution
     </span><span class="kw">pub </span>signers: RwLock&lt;Vec&lt;SignerWithStake&gt;&gt;,
 
-    <span class="doccomment">/// A [Beacon], used by [get_current_epoch]
+    <span class="doccomment">/// A [CardanoDbBeacon], used by [get_current_epoch]
     ///
     /// [get_current_epoch]: ChainObserver::get_current_epoch
-    </span><span class="kw">pub </span>current_beacon: RwLock&lt;<span class="prelude-ty">Option</span>&lt;Beacon&gt;&gt;,
+    </span><span class="kw">pub </span>current_beacon: RwLock&lt;<span class="prelude-ty">Option</span>&lt;CardanoDbBeacon&gt;&gt;,
 
     <span class="doccomment">/// A list of [TxDatum], used by [get_current_datums]
     ///
@@ -186,7 +186,7 @@
 
 <span class="kw">impl </span>FakeObserver {
     <span class="doccomment">/// FakeObserver factory
-    </span><span class="kw">pub fn </span>new(current_beacon: <span class="prelude-ty">Option</span>&lt;Beacon&gt;) -&gt; <span class="self">Self </span>{
+    </span><span class="kw">pub fn </span>new(current_beacon: <span class="prelude-ty">Option</span>&lt;CardanoDbBeacon&gt;) -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{
             signers: RwLock::new(<span class="macro">vec!</span>[]),
             current_beacon: RwLock::new(current_beacon),
@@ -197,7 +197,7 @@
     <span class="doccomment">/// Increase by one the epoch of the [current_beacon][`FakeObserver::current_beacon`].
     </span><span class="kw">pub async fn </span>next_epoch(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;Epoch&gt; {
         <span class="kw">let </span><span class="kw-2">mut </span>current_beacon = <span class="self">self</span>.current_beacon.write().<span class="kw">await</span>;
-        <span class="kw-2">*</span>current_beacon = current_beacon.as_ref().map(|beacon| Beacon {
+        <span class="kw-2">*</span>current_beacon = current_beacon.as_ref().map(|beacon| CardanoDbBeacon {
             epoch: beacon.epoch + <span class="number">1</span>,
             ..beacon.clone()
         });

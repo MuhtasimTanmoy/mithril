@@ -90,7 +90,7 @@
 <a href="#88" id="88">88</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>serde::{Deserialize, Serialize};
 
-<span class="kw">use </span><span class="kw">crate</span>::entities::{Beacon, CompressionAlgorithm, Epoch};
+<span class="kw">use </span><span class="kw">crate</span>::entities::{CardanoDbBeacon, CompressionAlgorithm, Epoch};
 
 <span class="doccomment">/// Message structure of a snapshot
 </span><span class="attr">#[derive(Clone, Debug, PartialEq, Eq, Default, Serialize, Deserialize)]
@@ -99,7 +99,7 @@
     </span><span class="kw">pub </span>digest: String,
 
     <span class="doccomment">/// Mithril beacon on the Cardano chain
-    </span><span class="kw">pub </span>beacon: Beacon,
+    </span><span class="kw">pub </span>beacon: CardanoDbBeacon,
 
     <span class="doccomment">/// Size of the snapshot file in Bytes
     </span><span class="kw">pub </span>size: u64,
@@ -119,7 +119,7 @@
     </span><span class="kw">pub fn </span>dummy() -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{
             digest: <span class="string">"0b9f5ad7f33cc523775c82249294eb8a1541d54f08eb3107cafc5638403ec7c6"</span>.to_string(),
-            beacon: Beacon {
+            beacon: CardanoDbBeacon {
                 network: <span class="string">"preview"</span>.to_string(),
                 epoch: Epoch(<span class="number">86</span>),
                 immutable_file_number: <span class="number">1728</span>,
@@ -139,7 +139,7 @@
     <span class="kw">fn </span>golden_message_v1() -&gt; SnapshotDownloadMessage {
         SnapshotDownloadMessage {
             digest: <span class="string">"0b9f5ad7f33cc523775c82249294eb8a1541d54f08eb3107cafc5638403ec7c6"</span>.to_string(),
-            beacon: Beacon {
+            beacon: CardanoDbBeacon {
                 network: <span class="string">"preview"</span>.to_string(),
                 epoch: Epoch(<span class="number">86</span>),
                 immutable_file_number: <span class="number">1728</span>,

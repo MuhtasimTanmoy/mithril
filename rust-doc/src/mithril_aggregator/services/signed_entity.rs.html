@@ -519,6 +519,11 @@
 <a href="#517" id="517">517</a>
 <a href="#518" id="518">518</a>
 <a href="#519" id="519">519</a>
+<a href="#520" id="520">520</a>
+<a href="#521" id="521">521</a>
+<a href="#522" id="522">522</a>
+<a href="#523" id="523">523</a>
+<a href="#524" id="524">524</a>
 </pre></div><pre class="rust"><code><span class="doccomment">//! ## SignedEntityService
 //!
 //! This service is responsible for dealing with [SignedEntity] type.
@@ -531,7 +536,7 @@
 
 <span class="kw">use </span>mithril_common::{
     entities::{
-        Beacon, CardanoTransactionsSnapshot, Certificate, Epoch, MithrilStakeDistribution,
+        CardanoDbBeacon, CardanoTransactionsSnapshot, Certificate, Epoch, MithrilStakeDistribution,
         SignedEntity, SignedEntityType, SignedEntityTypeDiscriminants, Snapshot,
     },
     signable_builder::Artifact,
@@ -593,9 +598,10 @@
     signed_entity_storer: Arc&lt;<span class="kw">dyn </span>SignedEntityStorer&gt;,
     mithril_stake_distribution_artifact_builder:
         Arc&lt;<span class="kw">dyn </span>ArtifactBuilder&lt;Epoch, MithrilStakeDistribution&gt;&gt;,
-    cardano_immutable_files_full_artifact_builder: Arc&lt;<span class="kw">dyn </span>ArtifactBuilder&lt;Beacon, Snapshot&gt;&gt;,
+    cardano_immutable_files_full_artifact_builder:
+        Arc&lt;<span class="kw">dyn </span>ArtifactBuilder&lt;CardanoDbBeacon, Snapshot&gt;&gt;,
     cardano_transactions_artifact_builder:
-        Arc&lt;<span class="kw">dyn </span>ArtifactBuilder&lt;Beacon, CardanoTransactionsSnapshot&gt;&gt;,
+        Arc&lt;<span class="kw">dyn </span>ArtifactBuilder&lt;CardanoDbBeacon, CardanoTransactionsSnapshot&gt;&gt;,
 }
 
 <span class="kw">impl </span>MithrilSignedEntityService {
@@ -605,9 +611,11 @@
         mithril_stake_distribution_artifact_builder: Arc&lt;
             <span class="kw">dyn </span>ArtifactBuilder&lt;Epoch, MithrilStakeDistribution&gt;,
         &gt;,
-        cardano_immutable_files_full_artifact_builder: Arc&lt;<span class="kw">dyn </span>ArtifactBuilder&lt;Beacon, Snapshot&gt;&gt;,
+        cardano_immutable_files_full_artifact_builder: Arc&lt;
+            <span class="kw">dyn </span>ArtifactBuilder&lt;CardanoDbBeacon, Snapshot&gt;,
+        &gt;,
         cardano_transactions_artifact_builder: Arc&lt;
-            <span class="kw">dyn </span>ArtifactBuilder&lt;Beacon, CardanoTransactionsSnapshot&gt;,
+            <span class="kw">dyn </span>ArtifactBuilder&lt;CardanoDbBeacon, CardanoTransactionsSnapshot&gt;,
         &gt;,
     ) -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{
@@ -853,9 +861,10 @@
         mock_signed_entity_storer: MockSignedEntityStorer,
         mock_mithril_stake_distribution_artifact_builder:
             MockArtifactBuilder&lt;Epoch, MithrilStakeDistribution&gt;,
-        mock_cardano_immutable_files_full_artifact_builder: MockArtifactBuilder&lt;Beacon, Snapshot&gt;,
+        mock_cardano_immutable_files_full_artifact_builder:
+            MockArtifactBuilder&lt;CardanoDbBeacon, Snapshot&gt;,
         mock_cardano_transactions_artifact_builder:
-            MockArtifactBuilder&lt;Beacon, CardanoTransactionsSnapshot&gt;,
+            MockArtifactBuilder&lt;CardanoDbBeacon, CardanoTransactionsSnapshot&gt;,
     }
 
     <span class="kw">impl </span>MockDependencyInjector {
@@ -867,11 +876,11 @@
                     MithrilStakeDistribution,
                 &gt;::new(),
                 mock_cardano_immutable_files_full_artifact_builder: MockArtifactBuilder::&lt;
-                    Beacon,
+                    CardanoDbBeacon,
                     Snapshot,
                 &gt;::new(),
                 mock_cardano_transactions_artifact_builder: MockArtifactBuilder::&lt;
-                    Beacon,
+                    CardanoDbBeacon,
                     CardanoTransactionsSnapshot,
                 &gt;::new(),
             }
@@ -937,7 +946,8 @@
         <span class="kw">let </span>artifact_builder_service = mock_container.build_artifact_builder_service();
 
         <span class="kw">let </span>certificate = fake_data::certificate(<span class="string">"hash"</span>.to_string());
-        <span class="kw">let </span>signed_entity_type = SignedEntityType::CardanoImmutableFilesFull(Beacon::default());
+        <span class="kw">let </span>signed_entity_type =
+            SignedEntityType::CardanoImmutableFilesFull(CardanoDbBeacon::default());
         <span class="kw">let </span>artifact = artifact_builder_service
             .compute_artifact(signed_entity_type.clone(), <span class="kw-2">&amp;</span>certificate)
             .<span class="kw">await
@@ -949,7 +959,7 @@
     <span class="attr">#[tokio::test]
     </span><span class="kw">async fn </span>should_store_the_artifact_when_creating_artifact_for_a_cardano_immutable_files() {
         generic_test_that_the_artifact_is_stored(
-            SignedEntityType::CardanoImmutableFilesFull(Beacon::default()),
+            SignedEntityType::CardanoImmutableFilesFull(CardanoDbBeacon::default()),
             fake_data::snapshots(<span class="number">1</span>).first().unwrap().to_owned(),
             <span class="kw-2">&amp;</span>|mock_injector| <span class="kw-2">&amp;mut </span>mock_injector.mock_cardano_immutable_files_full_artifact_builder,
         )
@@ -961,7 +971,7 @@
         <span class="kw">let </span><span class="kw-2">mut </span>mock_container = MockDependencyInjector::new();
 
         <span class="kw">let </span>expected =
-            CardanoTransactionsSnapshot::new(<span class="string">"merkle_root"</span>.to_string(), Beacon::default());
+            CardanoTransactionsSnapshot::new(<span class="string">"merkle_root"</span>.to_string(), CardanoDbBeacon::default());
 
         mock_container
             .mock_cardano_transactions_artifact_builder
@@ -970,14 +980,14 @@
             .returning(|<span class="kw">_</span>, <span class="kw">_</span>| {
                 <span class="prelude-val">Ok</span>(CardanoTransactionsSnapshot::new(
                     <span class="string">"merkle_root"</span>.to_string(),
-                    Beacon::default(),
+                    CardanoDbBeacon::default(),
                 ))
             });
 
         <span class="kw">let </span>artifact_builder_service = mock_container.build_artifact_builder_service();
 
         <span class="kw">let </span>certificate = fake_data::certificate(<span class="string">"hash"</span>.to_string());
-        <span class="kw">let </span>signed_entity_type = SignedEntityType::CardanoTransactions(Beacon::default());
+        <span class="kw">let </span>signed_entity_type = SignedEntityType::CardanoTransactions(CardanoDbBeacon::default());
         <span class="kw">let </span>artifact = artifact_builder_service
             .compute_artifact(signed_entity_type.clone(), <span class="kw-2">&amp;</span>certificate)
             .<span class="kw">await
@@ -989,8 +999,8 @@
     <span class="attr">#[tokio::test]
     </span><span class="kw">async fn </span>should_store_the_artifact_when_creating_artifact_for_cardano_transactions() {
         generic_test_that_the_artifact_is_stored(
-            SignedEntityType::CardanoTransactions(Beacon::default()),
-            CardanoTransactionsSnapshot::new(<span class="string">"merkle_root"</span>.to_string(), Beacon::default()),
+            SignedEntityType::CardanoTransactions(CardanoDbBeacon::default()),
+            CardanoTransactionsSnapshot::new(<span class="string">"merkle_root"</span>.to_string(), CardanoDbBeacon::default()),
             <span class="kw-2">&amp;</span>|mock_injector| <span class="kw-2">&amp;mut </span>mock_injector.mock_cardano_transactions_artifact_builder,
         )
         .<span class="kw">await</span>;

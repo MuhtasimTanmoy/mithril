@@ -735,7 +735,7 @@
 <span class="attr">#[cfg(test)]
 </span><span class="kw">mod </span>tests {
     <span class="kw">use </span>mithril_client::{
-        common::{Beacon, ProtocolMessagePartKey},
+        common::{CardanoDbBeacon, ProtocolMessagePartKey},
         MithrilCertificateMetadata,
     };
     <span class="kw">use </span>mithril_common::test_utils::TempDir;
@@ -755,7 +755,7 @@
         MithrilCertificate {
             hash: <span class="string">"hash"</span>.to_string(),
             previous_hash: <span class="string">"previous_hash"</span>.to_string(),
-            beacon: Beacon::new(<span class="string">"testnet"</span>.to_string(), <span class="number">10</span>, <span class="number">100</span>),
+            beacon: CardanoDbBeacon::new(<span class="string">"testnet"</span>.to_string(), <span class="number">10</span>, <span class="number">100</span>),
             metadata: MithrilCertificateMetadata::dummy(),
             protocol_message: protocol_message.clone(),
             signed_message: <span class="string">"signed_message"</span>.to_string(),

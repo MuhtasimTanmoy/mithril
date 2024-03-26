@@ -83,7 +83,7 @@
 <a href="#81" id="81">81</a>
 </pre></div><pre class="rust"><code><span class="kw">use crate</span>::{
     digesters::ImmutableFileListingError,
-    entities::{Beacon, ImmutableFileNumber},
+    entities::{CardanoDbBeacon, ImmutableFileNumber},
 };
 <span class="kw">use </span>async_trait::async_trait;
 <span class="kw">use </span>std::{
@@ -99,7 +99,7 @@
 /// mod test {
 ///     use async_trait::async_trait;
 ///     use mithril_common::digesters::{ImmutableDigester, ImmutableDigesterError};
-///     use mithril_common::entities::Beacon;
+///     use mithril_common::entities::CardanoDbBeacon;
 ///     use mockall::mock;
 ///     use std::path::Path;
 ///
@@ -111,7 +111,7 @@
 ///             async fn compute_digest(
 ///               &amp;self,
 ///               dirpath: &amp;Path,
-///               beacon: &amp;Beacon,
+///               beacon: &amp;CardanoDbBeacon,
 ///             ) -&gt; Result&lt;String, ImmutableDigesterError&gt;;
 ///         }
 ///     }
@@ -135,7 +135,7 @@
     </span><span class="kw">async fn </span>compute_digest(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         dirpath: <span class="kw-2">&amp;</span>Path,
-        beacon: <span class="kw-2">&amp;</span>Beacon,
+        beacon: <span class="kw-2">&amp;</span>CardanoDbBeacon,
     ) -&gt; <span class="prelude-ty">Result</span>&lt;String, ImmutableDigesterError&gt;;
 }
 

@@ -209,7 +209,7 @@
 </span><span class="kw">mod </span>test {
     <span class="kw">use super</span>::<span class="kw-2">*</span>;
 
-    <span class="kw">use </span>mithril_common::entities::{Beacon, SignedEntityType};
+    <span class="kw">use </span>mithril_common::entities::{CardanoDbBeacon, SignedEntityType};
     <span class="kw">use </span>mithril_common::test_utils::fake_data;
     <span class="kw">use </span>mithril_persistence::store::adapter::DumbStoreAdapter;
 
@@ -217,7 +217,7 @@
         <span class="kw">let </span><span class="kw-2">mut </span>adapter: DumbStoreAdapter&lt;String, CertificatePending&gt; = DumbStoreAdapter::new();
 
         <span class="kw">if </span>is_populated {
-            <span class="kw">let </span>beacon = Beacon::new(<span class="string">"testnet"</span>.to_string(), <span class="number">0</span>, <span class="number">0</span>);
+            <span class="kw">let </span>beacon = CardanoDbBeacon::new(<span class="string">"testnet"</span>.to_string(), <span class="number">0</span>, <span class="number">0</span>);
             <span class="kw">let </span>certificate_pending = CertificatePending::new(
                 beacon.clone(),
                 SignedEntityType::dummy(),
@@ -253,7 +253,7 @@
     <span class="attr">#[tokio::test]
     </span><span class="kw">async fn </span>save_certificate_pending_once() {
         <span class="kw">let </span>store = get_certificate_pending_store(<span class="bool-val">false</span>).<span class="kw">await</span>;
-        <span class="kw">let </span>beacon = Beacon::new(<span class="string">"testnet"</span>.to_string(), <span class="number">0</span>, <span class="number">1</span>);
+        <span class="kw">let </span>beacon = CardanoDbBeacon::new(<span class="string">"testnet"</span>.to_string(), <span class="number">0</span>, <span class="number">1</span>);
         <span class="kw">let </span>signed_entity_type = SignedEntityType::dummy();
         <span class="kw">let </span>certificate_pending = CertificatePending::new(
             beacon,
@@ -279,7 +279,7 @@
     <span class="attr">#[tokio::test]
     </span><span class="kw">async fn </span>remove_certificate_pending() {
         <span class="kw">let </span>store = get_certificate_pending_store(<span class="bool-val">true</span>).<span class="kw">await</span>;
-        <span class="kw">let </span>beacon = Beacon::new(<span class="string">"testnet"</span>.to_string(), <span class="number">0</span>, <span class="number">0</span>);
+        <span class="kw">let </span>beacon = CardanoDbBeacon::new(<span class="string">"testnet"</span>.to_string(), <span class="number">0</span>, <span class="number">0</span>);
         <span class="kw">let </span>certificate_pending = store.remove().<span class="kw">await</span>.unwrap().unwrap();
 
         <span class="macro">assert_eq!</span>(beacon, certificate_pending.beacon);

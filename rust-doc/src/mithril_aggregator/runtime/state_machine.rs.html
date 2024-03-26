@@ -812,7 +812,7 @@
 };
 
 <span class="kw">use </span>anyhow::Context;
-<span class="kw">use </span>mithril_common::entities::{Beacon, SignedEntityType};
+<span class="kw">use </span>mithril_common::entities::{CardanoDbBeacon, SignedEntityType};
 <span class="kw">use </span>slog_scope::{crit, info, trace, warn};
 <span class="kw">use </span>std::fmt::Display;
 <span class="kw">use </span>std::sync::Arc;
@@ -820,17 +820,17 @@
 
 <span class="attr">#[derive(Clone, Debug, PartialEq, Eq)]
 </span><span class="kw">pub struct </span>IdleState {
-    current_beacon: <span class="prelude-ty">Option</span>&lt;Beacon&gt;,
+    current_beacon: <span class="prelude-ty">Option</span>&lt;CardanoDbBeacon&gt;,
 }
 
 <span class="attr">#[derive(Clone, Debug, PartialEq, Eq)]
 </span><span class="kw">pub struct </span>ReadyState {
-    current_beacon: Beacon,
+    current_beacon: CardanoDbBeacon,
 }
 
 <span class="attr">#[derive(Clone, Debug, PartialEq)]
 </span><span class="kw">pub struct </span>SigningState {
-    current_beacon: Beacon,
+    current_beacon: CardanoDbBeacon,
     open_message: OpenMessage,
 }
 
@@ -988,7 +988,7 @@
                 });
             }
             AggregatorState::Ready(state) =&gt; {
-                <span class="kw">let </span>chain_beacon: Beacon =
+                <span class="kw">let </span>chain_beacon: CardanoDbBeacon =
                     <span class="self">self</span>.runner.get_beacon_from_chain().<span class="kw">await</span>.with_context(|| {
                         <span class="string">"AggregatorRuntime in the state READY can not get current beacon from chain"
                     </span>})<span class="question-mark">?</span>;
@@ -1028,7 +1028,7 @@
                 }
             }
             AggregatorState::Signing(state) =&gt; {
-                <span class="kw">let </span>chain_beacon: Beacon =
+                <span class="kw">let </span>chain_beacon: CardanoDbBeacon =
                     <span class="self">self</span>.runner.get_beacon_from_chain().<span class="kw">await</span>.with_context(|| {
                         <span class="string">"AggregatorRuntime in the state SIGNING can not get current beacon from chain"
                     </span>})<span class="question-mark">?</span>;
@@ -1080,8 +1080,8 @@
     /// the certificate chain is valid.
     </span><span class="kw">async fn </span>try_transition_from_idle_to_ready(
         <span class="kw-2">&amp;mut </span><span class="self">self</span>,
-        maybe_current_beacon: <span class="prelude-ty">Option</span>&lt;Beacon&gt;,
-        new_beacon: Beacon,
+        maybe_current_beacon: <span class="prelude-ty">Option</span>&lt;CardanoDbBeacon&gt;,
+        new_beacon: CardanoDbBeacon,
     ) -&gt; <span class="prelude-ty">Result</span>&lt;(), RuntimeError&gt; {
         <span class="macro">trace!</span>(<span class="string">"trying transition from IDLE to READY state"</span>);
 
@@ -1181,7 +1181,7 @@
     /// beacon is detected.
     </span><span class="kw">async fn </span>transition_from_ready_to_signing(
         <span class="kw-2">&amp;mut </span><span class="self">self</span>,
-        new_beacon: Beacon,
+        new_beacon: CardanoDbBeacon,
         open_message: OpenMessage,
     ) -&gt; <span class="prelude-ty">Result</span>&lt;SigningState, RuntimeError&gt; {
         <span class="macro">trace!</span>(<span class="string">"launching transition from READY to SIGNING state"</span>);
@@ -1344,7 +1344,7 @@
     </span><span class="kw">pub async fn </span>ready_new_epoch_detected() {
         <span class="kw">let </span><span class="kw-2">mut </span>runner = MockAggregatorRunner::new();
         <span class="kw">let </span>beacon = fake_data::beacon();
-        <span class="kw">let </span>new_beacon = Beacon {
+        <span class="kw">let </span>new_beacon = CardanoDbBeacon {
             epoch: beacon.epoch + <span class="number">1</span>,
             ..beacon.clone()
         };
@@ -1368,7 +1368,7 @@
     </span><span class="kw">pub async fn </span>ready_open_message_not_exist() {
         <span class="kw">let </span><span class="kw-2">mut </span>runner = MockAggregatorRunner::new();
         <span class="kw">let </span>beacon = fake_data::beacon();
-        <span class="kw">let </span>next_beacon = Beacon {
+        <span class="kw">let </span>next_beacon = CardanoDbBeacon {
             immutable_file_number: beacon.immutable_file_number + <span class="number">1</span>,
             ..beacon.clone()
         };

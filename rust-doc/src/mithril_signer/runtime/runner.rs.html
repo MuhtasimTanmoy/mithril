@@ -922,7 +922,7 @@
 
 <span class="kw">use </span>mithril_common::crypto_helper::{KESPeriod, OpCert, ProtocolOpCert, SerDeShelleyFileFormat};
 <span class="kw">use </span>mithril_common::entities::{
-    Beacon, CertificatePending, Epoch, EpochSettings, PartyId, ProtocolMessage,
+    CardanoDbBeacon, CertificatePending, Epoch, EpochSettings, PartyId, ProtocolMessage,
     ProtocolMessagePartKey, ProtocolParameters, SignedEntityType, Signer, SignerWithStake,
     SingleSignatures,
 };
@@ -943,7 +943,7 @@
     </span><span class="kw">async fn </span>get_pending_certificate(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; StdResult&lt;<span class="prelude-ty">Option</span>&lt;CertificatePending&gt;&gt;;
 
     <span class="doccomment">/// Fetch the current beacon from the Cardano node.
-    </span><span class="kw">async fn </span>get_current_beacon(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; StdResult&lt;Beacon&gt;;
+    </span><span class="kw">async fn </span>get_current_beacon(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; StdResult&lt;CardanoDbBeacon&gt;;
 
     <span class="doccomment">/// Register the signer verification key to the aggregator.
     </span><span class="kw">async fn </span>register_signer_to_aggregator(
@@ -1045,7 +1045,7 @@
             </span>.map_err(|e| e.into())
     }
 
-    <span class="kw">async fn </span>get_current_beacon(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; StdResult&lt;Beacon&gt; {
+    <span class="kw">async fn </span>get_current_beacon(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; StdResult&lt;CardanoDbBeacon&gt; {
         <span class="macro">debug!</span>(<span class="string">"RUNNER: get_current_epoch"</span>);
 
         <span class="self">self</span>.services
@@ -1415,7 +1415,7 @@
 
         <span class="attr">#[async_trait]
         </span><span class="kw">impl </span>BeaconProvider <span class="kw">for </span>FakeBeaconProvider {
-            <span class="kw">async fn </span>get_current_beacon(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; StdResult&lt;Beacon&gt;;
+            <span class="kw">async fn </span>get_current_beacon(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; StdResult&lt;CardanoDbBeacon&gt;;
         }
     }
 

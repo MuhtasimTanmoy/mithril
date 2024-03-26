@@ -58,7 +58,7 @@
 
 <span class="kw">use crate</span>::{
     digesters::{ImmutableDigester, ImmutableDigesterError},
-    entities::Beacon,
+    entities::CardanoDbBeacon,
 };
 <span class="kw">use </span>async_trait::async_trait;
 <span class="kw">use </span>tokio::sync::RwLock;
@@ -95,7 +95,7 @@
     <span class="kw">async fn </span>compute_digest(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         dirpath: <span class="kw-2">&amp;</span>Path,
-        beacon: <span class="kw-2">&amp;</span>Beacon,
+        beacon: <span class="kw-2">&amp;</span>CardanoDbBeacon,
     ) -&gt; <span class="prelude-ty">Result</span>&lt;String, ImmutableDigesterError&gt; {
         <span class="kw">if </span><span class="self">self</span>.is_success {
             <span class="prelude-val">Ok</span>(<span class="self">self</span>.digest.read().<span class="kw">await</span>.clone())

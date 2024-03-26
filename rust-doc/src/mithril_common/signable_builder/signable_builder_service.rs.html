@@ -191,12 +191,15 @@
 <a href="#189" id="189">189</a>
 <a href="#190" id="190">190</a>
 <a href="#191" id="191">191</a>
+<a href="#192" id="192">192</a>
+<a href="#193" id="193">193</a>
+<a href="#194" id="194">194</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>anyhow::Context;
 <span class="kw">use </span>async_trait::async_trait;
 <span class="kw">use </span>std::sync::Arc;
 
 <span class="kw">use crate</span>::{
-    entities::{Beacon, Epoch, ProtocolMessage, SignedEntityType},
+    entities::{CardanoDbBeacon, Epoch, ProtocolMessage, SignedEntityType},
     signable_builder::SignableBuilder,
     StdResult,
 };
@@ -218,16 +221,16 @@
 <span class="doccomment">/// Mithril Signable Builder Service
 </span><span class="kw">pub struct </span>MithrilSignableBuilderService {
     mithril_stake_distribution_builder: Arc&lt;<span class="kw">dyn </span>SignableBuilder&lt;Epoch&gt;&gt;,
-    immutable_signable_builder: Arc&lt;<span class="kw">dyn </span>SignableBuilder&lt;Beacon&gt;&gt;,
-    cardano_transactions_signable_builder: Arc&lt;<span class="kw">dyn </span>SignableBuilder&lt;Beacon&gt;&gt;,
+    immutable_signable_builder: Arc&lt;<span class="kw">dyn </span>SignableBuilder&lt;CardanoDbBeacon&gt;&gt;,
+    cardano_transactions_signable_builder: Arc&lt;<span class="kw">dyn </span>SignableBuilder&lt;CardanoDbBeacon&gt;&gt;,
 }
 
 <span class="kw">impl </span>MithrilSignableBuilderService {
     <span class="doccomment">/// MithrilSignableBuilderService factory
     </span><span class="kw">pub fn </span>new(
         mithril_stake_distribution_builder: Arc&lt;<span class="kw">dyn </span>SignableBuilder&lt;Epoch&gt;&gt;,
-        immutable_signable_builder: Arc&lt;<span class="kw">dyn </span>SignableBuilder&lt;Beacon&gt;&gt;,
-        cardano_transactions_signable_builder: Arc&lt;<span class="kw">dyn </span>SignableBuilder&lt;Beacon&gt;&gt;,
+        immutable_signable_builder: Arc&lt;<span class="kw">dyn </span>SignableBuilder&lt;CardanoDbBeacon&gt;&gt;,
+        cardano_transactions_signable_builder: Arc&lt;<span class="kw">dyn </span>SignableBuilder&lt;CardanoDbBeacon&gt;&gt;,
     ) -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{
             mithril_stake_distribution_builder,
@@ -309,8 +312,9 @@
             .return_once(<span class="kw">move </span>|<span class="kw">_</span>| <span class="prelude-val">Ok</span>(protocol_message_clone));
 
         <span class="kw">let </span>mock_cardano_immutable_files_full_signable_builder =
-            MockSignableBuilderImpl::&lt;Beacon&gt;::new();
-        <span class="kw">let </span>mock_cardano_transactions_signable_builder = MockSignableBuilderImpl::&lt;Beacon&gt;::new();
+            MockSignableBuilderImpl::&lt;CardanoDbBeacon&gt;::new();
+        <span class="kw">let </span>mock_cardano_transactions_signable_builder =
+            MockSignableBuilderImpl::&lt;CardanoDbBeacon&gt;::new();
 
         <span class="kw">let </span>signable_builder_service = MithrilSignableBuilderService::new(
             Arc::new(mock_mithril_stake_distribution_signable_builder),
@@ -333,12 +337,13 @@
             MockSignableBuilderImpl::&lt;Epoch&gt;::new();
 
         <span class="kw">let </span><span class="kw-2">mut </span>mock_cardano_immutable_files_full_signable_builder =
-            MockSignableBuilderImpl::&lt;Beacon&gt;::new();
+            MockSignableBuilderImpl::&lt;CardanoDbBeacon&gt;::new();
         mock_cardano_immutable_files_full_signable_builder
             .expect_compute_protocol_message()
             .once()
             .return_once(<span class="kw">move </span>|<span class="kw">_</span>| <span class="prelude-val">Ok</span>(protocol_message_clone));
-        <span class="kw">let </span>mock_cardano_transactions_signable_builder = MockSignableBuilderImpl::&lt;Beacon&gt;::new();
+        <span class="kw">let </span>mock_cardano_transactions_signable_builder =
+            MockSignableBuilderImpl::&lt;CardanoDbBeacon&gt;::new();
 
         <span class="kw">let </span>signable_builder_service = MithrilSignableBuilderService::new(
             Arc::new(mock_mithril_stake_distribution_signable_builder),
@@ -346,7 +351,8 @@
             Arc::new(mock_cardano_transactions_signable_builder),
         );
 
-        <span class="kw">let </span>signed_entity_type = SignedEntityType::CardanoImmutableFilesFull(Beacon::default());
+        <span class="kw">let </span>signed_entity_type =
+            SignedEntityType::CardanoImmutableFilesFull(CardanoDbBeacon::default());
         signable_builder_service
             .compute_protocol_message(signed_entity_type)
             .<span class="kw">await
@@ -361,9 +367,9 @@
             MockSignableBuilderImpl::&lt;Epoch&gt;::new();
 
         <span class="kw">let </span>mock_cardano_immutable_files_full_signable_builder =
-            MockSignableBuilderImpl::&lt;Beacon&gt;::new();
+            MockSignableBuilderImpl::&lt;CardanoDbBeacon&gt;::new();
         <span class="kw">let </span><span class="kw-2">mut </span>mock_cardano_transactions_signable_builder =
-            MockSignableBuilderImpl::&lt;Beacon&gt;::new();
+            MockSignableBuilderImpl::&lt;CardanoDbBeacon&gt;::new();
         mock_cardano_transactions_signable_builder
             .expect_compute_protocol_message()
             .once()
@@ -375,7 +381,7 @@
             Arc::new(mock_cardano_transactions_signable_builder),
         );
 
-        <span class="kw">let </span>signed_entity_type = SignedEntityType::CardanoTransactions(Beacon::default());
+        <span class="kw">let </span>signed_entity_type = SignedEntityType::CardanoTransactions(CardanoDbBeacon::default());
         signable_builder_service
             .compute_protocol_message(signed_entity_type)
             .<span class="kw">await

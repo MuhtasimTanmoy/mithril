@@ -322,7 +322,7 @@
 <span class="attr">#[cfg(any(test, feature = <span class="string">"test_tools"</span>))]
 </span><span class="kw">use </span><span class="kw">crate</span>::entities::ProtocolMessagePartKey;
 <span class="kw">use </span><span class="kw">crate</span>::entities::{
-    Beacon, Certificate, CertificateMetadata, CertificateSignature, ProtocolMessage,
+    CardanoDbBeacon, Certificate, CertificateMetadata, CertificateSignature, ProtocolMessage,
 };
 <span class="kw">use </span><span class="kw">crate</span>::messages::CertificateMetadataMessagePart;
 
@@ -346,7 +346,7 @@
 
     <span class="doccomment">/// Mithril beacon on the Cardano chain
     /// aka BEACON(p,n)
-    </span><span class="kw">pub </span>beacon: Beacon,
+    </span><span class="kw">pub </span>beacon: CardanoDbBeacon,
 
     <span class="doccomment">/// Certificate metadata
     /// aka METADATA(p,n)
@@ -390,7 +390,7 @@
             <span class="self">Self </span>{
                 hash: <span class="string">"hash"</span>.to_string(),
                 previous_hash: <span class="string">"previous_hash"</span>.to_string(),
-                beacon: Beacon::new(<span class="string">"testnet"</span>.to_string(), <span class="number">10</span>, <span class="number">100</span>),
+                beacon: CardanoDbBeacon::new(<span class="string">"testnet"</span>.to_string(), <span class="number">10</span>, <span class="number">100</span>),
                 metadata: CertificateMetadataMessagePart::dummy(),
                 protocol_message: protocol_message.clone(),
                 signed_message: <span class="string">"signed_message"</span>.to_string(),
@@ -550,7 +550,7 @@
         CertificateMessage {
             hash: <span class="string">"hash"</span>.to_string(),
             previous_hash: <span class="string">"previous_hash"</span>.to_string(),
-            beacon: Beacon::new(<span class="string">"testnet"</span>.to_string(), <span class="number">10</span>, <span class="number">100</span>),
+            beacon: CardanoDbBeacon::new(<span class="string">"testnet"</span>.to_string(), <span class="number">10</span>, <span class="number">100</span>),
             metadata: CertificateMetadataMessagePart {
                 protocol_version: <span class="string">"0.1.0"</span>.to_string(),
                 protocol_parameters: ProtocolParameters::new(<span class="number">1000</span>, <span class="number">100</span>, <span class="number">0.123</span>),

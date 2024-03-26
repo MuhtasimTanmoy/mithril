@@ -390,7 +390,7 @@
         services::MockMessageService,
     };
     <span class="kw">use </span>mithril_common::{
-        entities::{Beacon, SignedEntityType},
+        entities::{CardanoDbBeacon, SignedEntityType},
         messages::ToMessageAdapter,
         test_utils::{apispec::APISpec, fake_data},
     };
@@ -419,7 +419,7 @@
     <span class="attr">#[tokio::test]
     </span><span class="kw">async fn </span>test_cardano_transactions_get_ok() {
         <span class="kw">let </span>signed_entity_records = create_signed_entities(
-            SignedEntityType::CardanoTransactions(Beacon::default()),
+            SignedEntityType::CardanoTransactions(CardanoDbBeacon::default()),
             fake_data::cardano_transactions_snapshot(<span class="number">5</span>),
         );
         <span class="kw">let </span>message = ToCardanoTransactionListMessageAdapter::adapt(signed_entity_records);
@@ -486,7 +486,7 @@
     <span class="attr">#[tokio::test]
     </span><span class="kw">async fn </span>test_cardano_transaction_get_ok() {
         <span class="kw">let </span>signed_entity = create_signed_entities(
-            SignedEntityType::CardanoTransactions(Beacon::default()),
+            SignedEntityType::CardanoTransactions(CardanoDbBeacon::default()),
             fake_data::cardano_transactions_snapshot(<span class="number">1</span>),
         )
         .first()

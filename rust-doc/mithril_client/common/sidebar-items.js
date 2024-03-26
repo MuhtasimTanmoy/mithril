@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"enum":["CompressionAlgorithm","ProtocolMessagePartKey"],"struct":["Beacon","Epoch","ProtocolMessage","ProtocolParameters"],"type":["TransactionHash"]};
+window.SIDEBAR_ITEMS = {"enum":["CompressionAlgorithm","ProtocolMessagePartKey"],"struct":["CardanoDbBeacon","Epoch","ProtocolMessage","ProtocolParameters"],"type":["TransactionHash"]};

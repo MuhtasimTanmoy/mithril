@@ -1475,6 +1475,9 @@
 <a href="#1473" id="1473">1473</a>
 <a href="#1474" id="1474">1474</a>
 <a href="#1475" id="1475">1475</a>
+<a href="#1476" id="1476">1476</a>
+<a href="#1477" id="1477">1477</a>
+<a href="#1478" id="1478">1478</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>anyhow::anyhow;
 <span class="kw">use </span>async_trait::async_trait;
 <span class="kw">use </span>chrono::{DateTime, Utc};
@@ -1484,7 +1487,7 @@
 <span class="kw">use </span>mithril_common::{
     certificate_chain::{CertificateRetriever, CertificateRetrieverError},
     entities::{
-        Beacon, Certificate, CertificateMetadata, CertificateSignature, Epoch,
+        CardanoDbBeacon, Certificate, CertificateMetadata, CertificateSignature, Epoch,
         HexEncodedAgregateVerificationKey, HexEncodedKey, ProtocolMessage, ProtocolParameters,
         ProtocolVersion, StakeDistributionParty,
     },
@@ -1525,7 +1528,7 @@
     </span><span class="kw">pub </span>epoch: Epoch,
 
     <span class="doccomment">/// Beacon used to produce the signed message
-    </span><span class="kw">pub </span>beacon: Beacon,
+    </span><span class="kw">pub </span>beacon: CardanoDbBeacon,
 
     <span class="doccomment">/// Protocol Version (semver)
     </span><span class="kw">pub </span>protocol_version: ProtocolVersion,
@@ -1548,7 +1551,7 @@
 
 <span class="kw">impl </span>CertificateRecord {
     <span class="attr">#[cfg(test)]
-    </span><span class="kw">pub fn </span>dummy_genesis(id: <span class="kw-2">&amp;</span>str, beacon: Beacon) -&gt; <span class="self">Self </span>{
+    </span><span class="kw">pub fn </span>dummy_genesis(id: <span class="kw-2">&amp;</span>str, beacon: CardanoDbBeacon) -&gt; <span class="self">Self </span>{
         <span class="kw">let </span><span class="kw-2">mut </span>record = <span class="self">Self</span>::dummy(id, <span class="string">""</span>, beacon);
         record.parent_certificate_id = <span class="prelude-val">None</span>;
         record.signature = fake_keys::genesis_signature()[<span class="number">0</span>].to_owned();
@@ -1556,7 +1559,7 @@
     }
 
     <span class="attr">#[cfg(test)]
-    </span><span class="kw">pub fn </span>dummy(id: <span class="kw-2">&amp;</span>str, parent_id: <span class="kw-2">&amp;</span>str, beacon: Beacon) -&gt; <span class="self">Self </span>{
+    </span><span class="kw">pub fn </span>dummy(id: <span class="kw-2">&amp;</span>str, parent_id: <span class="kw-2">&amp;</span>str, beacon: CardanoDbBeacon) -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{
             certificate_id: id.to_string(),
             parent_certificate_id: <span class="prelude-val">Some</span>(parent_id.to_string()),
@@ -2346,8 +2349,10 @@ order by certificate.ROWID desc"#
     <span class="attr">#[test]
     </span><span class="kw">fn </span>converting_certificate_record_to_certificate_should_not_recompute_hash() {
         <span class="kw">let </span>expected_hash = <span class="string">"my_hash"</span>;
-        <span class="kw">let </span>record =
-            CertificateRecord::dummy_genesis(expected_hash, Beacon::new(String::new(), <span class="number">1</span>, <span class="number">1</span>));
+        <span class="kw">let </span>record = CertificateRecord::dummy_genesis(
+            expected_hash,
+            CardanoDbBeacon::new(String::new(), <span class="number">1</span>, <span class="number">1</span>),
+        );
         <span class="kw">let </span>certificate: Certificate = record.into();
 
         <span class="macro">assert_eq!</span>(expected_hash, <span class="kw-2">&amp;</span>certificate.hash);
@@ -2644,7 +2649,8 @@ protocol_message, signers, initiated_at, sealed_at) values \
     </span><span class="kw">async fn </span>get_master_certificate_one_cert_in_current_epoch_recorded_returns_that_one() {
         <span class="kw">let </span><span class="kw-2">mut </span>deps = DependenciesBuilder::new(Configuration::new_sample());
         <span class="kw">let </span>connection = deps.get_sqlite_connection().<span class="kw">await</span>.unwrap();
-        <span class="kw">let </span>certificate = CertificateRecord::dummy_genesis(<span class="string">"1"</span>, Beacon::new(String::new(), <span class="number">1</span>, <span class="number">1</span>));
+        <span class="kw">let </span>certificate =
+            CertificateRecord::dummy_genesis(<span class="string">"1"</span>, CardanoDbBeacon::new(String::new(), <span class="number">1</span>, <span class="number">1</span>));
         <span class="kw">let </span>expected_certificate: Certificate = certificate.clone().into();
         insert_certificate_records(<span class="kw-2">&amp;</span>connection, <span class="macro">vec!</span>[certificate]).<span class="kw">await</span>;
 
@@ -2664,9 +2670,9 @@ protocol_message, signers, initiated_at, sealed_at) values \
         <span class="kw">let </span><span class="kw-2">mut </span>deps = DependenciesBuilder::new(Configuration::new_sample());
         <span class="kw">let </span>connection = deps.get_sqlite_connection().<span class="kw">await</span>.unwrap();
         <span class="kw">let </span>certificates = <span class="macro">vec!</span>[
-            CertificateRecord::dummy_genesis(<span class="string">"1"</span>, Beacon::new(String::new(), <span class="number">1</span>, <span class="number">1</span>)),
-            CertificateRecord::dummy(<span class="string">"2"</span>, <span class="string">"1"</span>, Beacon::new(String::new(), <span class="number">1</span>, <span class="number">2</span>)),
-            CertificateRecord::dummy(<span class="string">"3"</span>, <span class="string">"1"</span>, Beacon::new(String::new(), <span class="number">1</span>, <span class="number">3</span>)),
+            CertificateRecord::dummy_genesis(<span class="string">"1"</span>, CardanoDbBeacon::new(String::new(), <span class="number">1</span>, <span class="number">1</span>)),
+            CertificateRecord::dummy(<span class="string">"2"</span>, <span class="string">"1"</span>, CardanoDbBeacon::new(String::new(), <span class="number">1</span>, <span class="number">2</span>)),
+            CertificateRecord::dummy(<span class="string">"3"</span>, <span class="string">"1"</span>, CardanoDbBeacon::new(String::new(), <span class="number">1</span>, <span class="number">3</span>)),
         ];
         <span class="kw">let </span>expected_certificate: Certificate = certificates.first().unwrap().clone().into();
         insert_certificate_records(<span class="kw-2">&amp;</span>connection, certificates).<span class="kw">await</span>;
@@ -2687,9 +2693,9 @@ protocol_message, signers, initiated_at, sealed_at) values \
         <span class="kw">let </span><span class="kw-2">mut </span>deps = DependenciesBuilder::new(Configuration::new_sample());
         <span class="kw">let </span>connection = deps.get_sqlite_connection().<span class="kw">await</span>.unwrap();
         <span class="kw">let </span>certificates = <span class="macro">vec!</span>[
-            CertificateRecord::dummy_genesis(<span class="string">"1"</span>, Beacon::new(String::new(), <span class="number">1</span>, <span class="number">1</span>)),
-            CertificateRecord::dummy(<span class="string">"2"</span>, <span class="string">"1"</span>, Beacon::new(String::new(), <span class="number">1</span>, <span class="number">2</span>)),
-            CertificateRecord::dummy(<span class="string">"3"</span>, <span class="string">"1"</span>, Beacon::new(String::new(), <span class="number">1</span>, <span class="number">3</span>)),
+            CertificateRecord::dummy_genesis(<span class="string">"1"</span>, CardanoDbBeacon::new(String::new(), <span class="number">1</span>, <span class="number">1</span>)),
+            CertificateRecord::dummy(<span class="string">"2"</span>, <span class="string">"1"</span>, CardanoDbBeacon::new(String::new(), <span class="number">1</span>, <span class="number">2</span>)),
+            CertificateRecord::dummy(<span class="string">"3"</span>, <span class="string">"1"</span>, CardanoDbBeacon::new(String::new(), <span class="number">1</span>, <span class="number">3</span>)),
         ];
         <span class="kw">let </span>expected_certificate: Certificate = certificates.first().unwrap().clone().into();
         insert_certificate_records(<span class="kw-2">&amp;</span>connection, certificates).<span class="kw">await</span>;
@@ -2710,10 +2716,10 @@ protocol_message, signers, initiated_at, sealed_at) values \
         <span class="kw">let </span><span class="kw-2">mut </span>deps = DependenciesBuilder::new(Configuration::new_sample());
         <span class="kw">let </span>connection = deps.get_sqlite_connection().<span class="kw">await</span>.unwrap();
         <span class="kw">let </span>certificates = <span class="macro">vec!</span>[
-            CertificateRecord::dummy_genesis(<span class="string">"1"</span>, Beacon::new(String::new(), <span class="number">1</span>, <span class="number">1</span>)),
-            CertificateRecord::dummy(<span class="string">"2"</span>, <span class="string">"1"</span>, Beacon::new(String::new(), <span class="number">1</span>, <span class="number">2</span>)),
-            CertificateRecord::dummy(<span class="string">"3"</span>, <span class="string">"1"</span>, Beacon::new(String::new(), <span class="number">1</span>, <span class="number">3</span>)),
-            CertificateRecord::dummy(<span class="string">"4"</span>, <span class="string">"1"</span>, Beacon::new(String::new(), <span class="number">2</span>, <span class="number">4</span>)),
+            CertificateRecord::dummy_genesis(<span class="string">"1"</span>, CardanoDbBeacon::new(String::new(), <span class="number">1</span>, <span class="number">1</span>)),
+            CertificateRecord::dummy(<span class="string">"2"</span>, <span class="string">"1"</span>, CardanoDbBeacon::new(String::new(), <span class="number">1</span>, <span class="number">2</span>)),
+            CertificateRecord::dummy(<span class="string">"3"</span>, <span class="string">"1"</span>, CardanoDbBeacon::new(String::new(), <span class="number">1</span>, <span class="number">3</span>)),
+            CertificateRecord::dummy(<span class="string">"4"</span>, <span class="string">"1"</span>, CardanoDbBeacon::new(String::new(), <span class="number">2</span>, <span class="number">4</span>)),
         ];
         <span class="kw">let </span>expected_certificate: Certificate = certificates.last().unwrap().clone().into();
         insert_certificate_records(<span class="kw-2">&amp;</span>connection, certificates).<span class="kw">await</span>;
@@ -2734,12 +2740,12 @@ protocol_message, signers, initiated_at, sealed_at) values \
         <span class="kw">let </span><span class="kw-2">mut </span>deps = DependenciesBuilder::new(Configuration::new_sample());
         <span class="kw">let </span>connection = deps.get_sqlite_connection().<span class="kw">await</span>.unwrap();
         <span class="kw">let </span>certificates = <span class="macro">vec!</span>[
-            CertificateRecord::dummy_genesis(<span class="string">"1"</span>, Beacon::new(String::new(), <span class="number">1</span>, <span class="number">1</span>)),
-            CertificateRecord::dummy(<span class="string">"2"</span>, <span class="string">"1"</span>, Beacon::new(String::new(), <span class="number">1</span>, <span class="number">2</span>)),
-            CertificateRecord::dummy(<span class="string">"3"</span>, <span class="string">"1"</span>, Beacon::new(String::new(), <span class="number">1</span>, <span class="number">3</span>)),
-            CertificateRecord::dummy(<span class="string">"4"</span>, <span class="string">"1"</span>, Beacon::new(String::new(), <span class="number">2</span>, <span class="number">4</span>)),
-            CertificateRecord::dummy(<span class="string">"5"</span>, <span class="string">"4"</span>, Beacon::new(String::new(), <span class="number">2</span>, <span class="number">5</span>)),
-            CertificateRecord::dummy(<span class="string">"6"</span>, <span class="string">"4"</span>, Beacon::new(String::new(), <span class="number">2</span>, <span class="number">6</span>)),
+            CertificateRecord::dummy_genesis(<span class="string">"1"</span>, CardanoDbBeacon::new(String::new(), <span class="number">1</span>, <span class="number">1</span>)),
+            CertificateRecord::dummy(<span class="string">"2"</span>, <span class="string">"1"</span>, CardanoDbBeacon::new(String::new(), <span class="number">1</span>, <span class="number">2</span>)),
+            CertificateRecord::dummy(<span class="string">"3"</span>, <span class="string">"1"</span>, CardanoDbBeacon::new(String::new(), <span class="number">1</span>, <span class="number">3</span>)),
+            CertificateRecord::dummy(<span class="string">"4"</span>, <span class="string">"1"</span>, CardanoDbBeacon::new(String::new(), <span class="number">2</span>, <span class="number">4</span>)),
+            CertificateRecord::dummy(<span class="string">"5"</span>, <span class="string">"4"</span>, CardanoDbBeacon::new(String::new(), <span class="number">2</span>, <span class="number">5</span>)),
+            CertificateRecord::dummy(<span class="string">"6"</span>, <span class="string">"4"</span>, CardanoDbBeacon::new(String::new(), <span class="number">2</span>, <span class="number">6</span>)),
         ];
         <span class="kw">let </span>expected_certificate: Certificate = certificates.get(<span class="number">3</span>).unwrap().clone().into();
         insert_certificate_records(<span class="kw-2">&amp;</span>connection, certificates).<span class="kw">await</span>;
@@ -2759,9 +2765,9 @@ protocol_message, signers, initiated_at, sealed_at) values \
         <span class="kw">let </span><span class="kw-2">mut </span>deps = DependenciesBuilder::new(Configuration::new_sample());
         <span class="kw">let </span>connection = deps.get_sqlite_connection().<span class="kw">await</span>.unwrap();
         <span class="kw">let </span>certificates = <span class="macro">vec!</span>[
-            CertificateRecord::dummy_genesis(<span class="string">"1"</span>, Beacon::new(String::new(), <span class="number">1</span>, <span class="number">1</span>)),
-            CertificateRecord::dummy(<span class="string">"2"</span>, <span class="string">"1"</span>, Beacon::new(String::new(), <span class="number">1</span>, <span class="number">2</span>)),
-            CertificateRecord::dummy(<span class="string">"3"</span>, <span class="string">"1"</span>, Beacon::new(String::new(), <span class="number">1</span>, <span class="number">3</span>)),
+            CertificateRecord::dummy_genesis(<span class="string">"1"</span>, CardanoDbBeacon::new(String::new(), <span class="number">1</span>, <span class="number">1</span>)),
+            CertificateRecord::dummy(<span class="string">"2"</span>, <span class="string">"1"</span>, CardanoDbBeacon::new(String::new(), <span class="number">1</span>, <span class="number">2</span>)),
+            CertificateRecord::dummy(<span class="string">"3"</span>, <span class="string">"1"</span>, CardanoDbBeacon::new(String::new(), <span class="number">1</span>, <span class="number">3</span>)),
         ];
         insert_certificate_records(<span class="kw-2">&amp;</span>connection, certificates).<span class="kw">await</span>;
 
@@ -2780,10 +2786,10 @@ protocol_message, signers, initiated_at, sealed_at) values \
         <span class="kw">let </span><span class="kw-2">mut </span>deps = DependenciesBuilder::new(Configuration::new_sample());
         <span class="kw">let </span>connection = deps.get_sqlite_connection().<span class="kw">await</span>.unwrap();
         <span class="kw">let </span>certificates = <span class="macro">vec!</span>[
-            CertificateRecord::dummy_genesis(<span class="string">"1"</span>, Beacon::new(String::new(), <span class="number">1</span>, <span class="number">1</span>)),
-            CertificateRecord::dummy(<span class="string">"2"</span>, <span class="string">"1"</span>, Beacon::new(String::new(), <span class="number">1</span>, <span class="number">2</span>)),
-            CertificateRecord::dummy(<span class="string">"3"</span>, <span class="string">"1"</span>, Beacon::new(String::new(), <span class="number">1</span>, <span class="number">3</span>)),
-            CertificateRecord::dummy_genesis(<span class="string">"4"</span>, Beacon::new(String::new(), <span class="number">1</span>, <span class="number">3</span>)),
+            CertificateRecord::dummy_genesis(<span class="string">"1"</span>, CardanoDbBeacon::new(String::new(), <span class="number">1</span>, <span class="number">1</span>)),
+            CertificateRecord::dummy(<span class="string">"2"</span>, <span class="string">"1"</span>, CardanoDbBeacon::new(String::new(), <span class="number">1</span>, <span class="number">2</span>)),
+            CertificateRecord::dummy(<span class="string">"3"</span>, <span class="string">"1"</span>, CardanoDbBeacon::new(String::new(), <span class="number">1</span>, <span class="number">3</span>)),
+            CertificateRecord::dummy_genesis(<span class="string">"4"</span>, CardanoDbBeacon::new(String::new(), <span class="number">1</span>, <span class="number">3</span>)),
         ];
         <span class="kw">let </span>expected_certificate: Certificate = certificates.last().unwrap().clone().into();
         insert_certificate_records(<span class="kw-2">&amp;</span>connection, certificates).<span class="kw">await</span>;
@@ -2804,12 +2810,12 @@ protocol_message, signers, initiated_at, sealed_at) values \
         <span class="kw">let </span><span class="kw-2">mut </span>deps = DependenciesBuilder::new(Configuration::new_sample());
         <span class="kw">let </span>connection = deps.get_sqlite_connection().<span class="kw">await</span>.unwrap();
         <span class="kw">let </span>certificates = <span class="macro">vec!</span>[
-            CertificateRecord::dummy_genesis(<span class="string">"1"</span>, Beacon::new(String::new(), <span class="number">1</span>, <span class="number">1</span>)),
-            CertificateRecord::dummy(<span class="string">"2"</span>, <span class="string">"1"</span>, Beacon::new(String::new(), <span class="number">1</span>, <span class="number">2</span>)),
-            CertificateRecord::dummy(<span class="string">"3"</span>, <span class="string">"1"</span>, Beacon::new(String::new(), <span class="number">1</span>, <span class="number">2</span>)),
-            CertificateRecord::dummy(<span class="string">"4"</span>, <span class="string">"1"</span>, Beacon::new(String::new(), <span class="number">2</span>, <span class="number">4</span>)),
-            CertificateRecord::dummy(<span class="string">"5"</span>, <span class="string">"1"</span>, Beacon::new(String::new(), <span class="number">2</span>, <span class="number">5</span>)),
-            CertificateRecord::dummy_genesis(<span class="string">"6"</span>, Beacon::new(String::new(), <span class="number">2</span>, <span class="number">5</span>)),
+            CertificateRecord::dummy_genesis(<span class="string">"1"</span>, CardanoDbBeacon::new(String::new(), <span class="number">1</span>, <span class="number">1</span>)),
+            CertificateRecord::dummy(<span class="string">"2"</span>, <span class="string">"1"</span>, CardanoDbBeacon::new(String::new(), <span class="number">1</span>, <span class="number">2</span>)),
+            CertificateRecord::dummy(<span class="string">"3"</span>, <span class="string">"1"</span>, CardanoDbBeacon::new(String::new(), <span class="number">1</span>, <span class="number">2</span>)),
+            CertificateRecord::dummy(<span class="string">"4"</span>, <span class="string">"1"</span>, CardanoDbBeacon::new(String::new(), <span class="number">2</span>, <span class="number">4</span>)),
+            CertificateRecord::dummy(<span class="string">"5"</span>, <span class="string">"1"</span>, CardanoDbBeacon::new(String::new(), <span class="number">2</span>, <span class="number">5</span>)),
+            CertificateRecord::dummy_genesis(<span class="string">"6"</span>, CardanoDbBeacon::new(String::new(), <span class="number">2</span>, <span class="number">5</span>)),
         ];
         <span class="kw">let </span>expected_certificate: Certificate = certificates.last().unwrap().clone().into();
         insert_certificate_records(<span class="kw-2">&amp;</span>connection, certificates).<span class="kw">await</span>;
@@ -2830,10 +2836,10 @@ protocol_message, signers, initiated_at, sealed_at) values \
         <span class="kw">let </span><span class="kw-2">mut </span>deps = DependenciesBuilder::new(Configuration::new_sample());
         <span class="kw">let </span>connection = deps.get_sqlite_connection().<span class="kw">await</span>.unwrap();
         <span class="kw">let </span>certificates = <span class="macro">vec!</span>[
-            CertificateRecord::dummy_genesis(<span class="string">"1"</span>, Beacon::new(String::new(), <span class="number">1</span>, <span class="number">1</span>)),
-            CertificateRecord::dummy(<span class="string">"2"</span>, <span class="string">"1"</span>, Beacon::new(String::new(), <span class="number">1</span>, <span class="number">2</span>)),
-            CertificateRecord::dummy(<span class="string">"3"</span>, <span class="string">"1"</span>, Beacon::new(String::new(), <span class="number">1</span>, <span class="number">3</span>)),
-            CertificateRecord::dummy_genesis(<span class="string">"4"</span>, Beacon::new(String::new(), <span class="number">2</span>, <span class="number">3</span>)),
+            CertificateRecord::dummy_genesis(<span class="string">"1"</span>, CardanoDbBeacon::new(String::new(), <span class="number">1</span>, <span class="number">1</span>)),
+            CertificateRecord::dummy(<span class="string">"2"</span>, <span class="string">"1"</span>, CardanoDbBeacon::new(String::new(), <span class="number">1</span>, <span class="number">2</span>)),
+            CertificateRecord::dummy(<span class="string">"3"</span>, <span class="string">"1"</span>, CardanoDbBeacon::new(String::new(), <span class="number">1</span>, <span class="number">3</span>)),
+            CertificateRecord::dummy_genesis(<span class="string">"4"</span>, CardanoDbBeacon::new(String::new(), <span class="number">2</span>, <span class="number">3</span>)),
         ];
         <span class="kw">let </span>expected_certificate: Certificate = certificates.last().unwrap().clone().into();
         insert_certificate_records(<span class="kw-2">&amp;</span>connection, certificates).<span class="kw">await</span>;
@@ -2923,9 +2929,9 @@ protocol_message, signers, initiated_at, sealed_at) values \
         <span class="kw">let </span>connection = deps.get_sqlite_connection().<span class="kw">await</span>.unwrap();
         <span class="kw">let </span>repository = CertificateRepository::new(connection.clone());
         <span class="kw">let </span>records = <span class="macro">vec!</span>[
-            CertificateRecord::dummy_genesis(<span class="string">"1"</span>, Beacon::new(String::new(), <span class="number">1</span>, <span class="number">1</span>)),
-            CertificateRecord::dummy(<span class="string">"2"</span>, <span class="string">"1"</span>, Beacon::new(String::new(), <span class="number">1</span>, <span class="number">2</span>)),
-            CertificateRecord::dummy(<span class="string">"3"</span>, <span class="string">"1"</span>, Beacon::new(String::new(), <span class="number">1</span>, <span class="number">3</span>)),
+            CertificateRecord::dummy_genesis(<span class="string">"1"</span>, CardanoDbBeacon::new(String::new(), <span class="number">1</span>, <span class="number">1</span>)),
+            CertificateRecord::dummy(<span class="string">"2"</span>, <span class="string">"1"</span>, CardanoDbBeacon::new(String::new(), <span class="number">1</span>, <span class="number">2</span>)),
+            CertificateRecord::dummy(<span class="string">"3"</span>, <span class="string">"1"</span>, CardanoDbBeacon::new(String::new(), <span class="number">1</span>, <span class="number">3</span>)),
         ];
         insert_certificate_records(<span class="kw-2">&amp;</span>connection, records.clone()).<span class="kw">await</span>;
         <span class="kw">let </span>certificates: Vec&lt;Certificate&gt; = records.into_iter().map(|c| c.into()).collect();

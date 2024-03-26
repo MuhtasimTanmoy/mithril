@@ -575,7 +575,7 @@
 <span class="kw">use </span>std::str::FromStr;
 
 <span class="kw">use </span>mithril_common::entities::{
-    Beacon, CompressionAlgorithm, HexEncodedGenesisVerificationKey, ProtocolParameters,
+    CardanoDbBeacon, CompressionAlgorithm, HexEncodedGenesisVerificationKey, ProtocolParameters,
     SignedEntityType, SignedEntityTypeDiscriminants,
 };
 <span class="kw">use </span>mithril_common::{CardanoNetwork, StdResult};
@@ -851,7 +851,7 @@
     /// The signed entity types are discarded if they are not declared in the [SignedEntityType] enum.
     </span><span class="kw">pub fn </span>list_allowed_signed_entity_types(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
-        beacon: <span class="kw-2">&amp;</span>Beacon,
+        beacon: <span class="kw-2">&amp;</span>CardanoDbBeacon,
     ) -&gt; StdResult&lt;Vec&lt;SignedEntityType&gt;&gt; {
         <span class="kw">let </span>allowed_discriminants = <span class="self">self</span>.list_allowed_signed_entity_types_discriminants()<span class="question-mark">?</span>;
         <span class="kw">let </span>signed_entity_types = allowed_discriminants

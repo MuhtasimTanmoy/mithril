@@ -96,13 +96,17 @@
 <a href="#94" id="94">94</a>
 <a href="#95" id="95">95</a>
 <a href="#96" id="96">96</a>
+<a href="#97" id="97">97</a>
+<a href="#98" id="98">98</a>
+<a href="#99" id="99">99</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>async_trait::async_trait;
 
 <span class="kw">use </span><span class="kw">super</span>::ArtifactBuilder;
 <span class="kw">use </span>anyhow::{anyhow, Context};
 <span class="kw">use </span>mithril_common::{
     entities::{
-        Beacon, CardanoTransactionsSnapshot, Certificate, ProtocolMessagePartKey, SignedEntityType,
+        CardanoDbBeacon, CardanoTransactionsSnapshot, Certificate, ProtocolMessagePartKey,
+        SignedEntityType,
     },
     StdResult,
 };
@@ -118,10 +122,12 @@
 }
 
 <span class="attr">#[async_trait]
-</span><span class="kw">impl </span>ArtifactBuilder&lt;Beacon, CardanoTransactionsSnapshot&gt; <span class="kw">for </span>CardanoTransactionsArtifactBuilder {
+</span><span class="kw">impl </span>ArtifactBuilder&lt;CardanoDbBeacon, CardanoTransactionsSnapshot&gt;
+    <span class="kw">for </span>CardanoTransactionsArtifactBuilder
+{
     <span class="kw">async fn </span>compute_artifact(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
-        beacon: Beacon,
+        beacon: CardanoDbBeacon,
         certificate: <span class="kw-2">&amp;</span>Certificate,
     ) -&gt; StdResult&lt;CardanoTransactionsSnapshot&gt; {
         <span class="kw">let </span>merkle_root = certificate
@@ -187,7 +193,7 @@
 
         <span class="kw">let </span>cardano_transaction_artifact_builder = CardanoTransactionsArtifactBuilder::new();
         cardano_transaction_artifact_builder
-            .compute_artifact(Beacon::default(), <span class="kw-2">&amp;</span>certificate)
+            .compute_artifact(CardanoDbBeacon::default(), <span class="kw-2">&amp;</span>certificate)
             .<span class="kw">await
             </span>.expect_err(<span class="string">"The artifact building must fail since there is no CardanoTransactionsMerkleRoot part in its message."</span>);
     }

@@ -135,13 +135,16 @@
 <a href="#133" id="133">133</a>
 <a href="#134" id="134">134</a>
 <a href="#135" id="135">135</a>
+<a href="#136" id="136">136</a>
+<a href="#137" id="137">137</a>
+<a href="#138" id="138">138</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span><span class="kw">crate</span>::StdResult;
 <span class="kw">use </span>anyhow::anyhow;
 <span class="kw">use </span>serde::{Deserialize, Serialize};
 <span class="kw">use </span>std::time::Duration;
 <span class="kw">use </span>strum::{AsRefStr, Display, EnumDiscriminants, EnumString};
 
-<span class="kw">use super</span>::{Beacon, Epoch};
+<span class="kw">use super</span>::{CardanoDbBeacon, Epoch};
 
 <span class="doccomment">/// Database representation of the SignedEntityType::MithrilStakeDistribution value
 </span><span class="kw">const </span>ENTITY_TYPE_MITHRIL_STAKE_DISTRIBUTION: usize = <span class="number">0</span>;
@@ -172,10 +175,10 @@
     </span>CardanoStakeDistribution(Epoch),
 
     <span class="doccomment">/// Full Cardano Immutable Files
-    </span>CardanoImmutableFilesFull(Beacon),
+    </span>CardanoImmutableFilesFull(CardanoDbBeacon),
 
     <span class="doccomment">/// Cardano Transactions
-    </span>CardanoTransactions(Beacon),
+    </span>CardanoTransactions(CardanoDbBeacon),
 }
 
 <span class="kw">impl </span>SignedEntityType {
@@ -227,7 +230,10 @@
     }
 
     <span class="doccomment">/// Create a SignedEntityType from beacon and SignedEntityTypeDiscriminants
-    </span><span class="kw">pub fn </span>from_beacon(discriminant: <span class="kw-2">&amp;</span>SignedEntityTypeDiscriminants, beacon: <span class="kw-2">&amp;</span>Beacon) -&gt; <span class="self">Self </span>{
+    </span><span class="kw">pub fn </span>from_beacon(
+        discriminant: <span class="kw-2">&amp;</span>SignedEntityTypeDiscriminants,
+        beacon: <span class="kw-2">&amp;</span>CardanoDbBeacon,
+    ) -&gt; <span class="self">Self </span>{
         <span class="kw">match </span>discriminant {
             SignedEntityTypeDiscriminants::MithrilStakeDistribution =&gt; {
                 <span class="self">Self</span>::MithrilStakeDistribution(beacon.epoch)

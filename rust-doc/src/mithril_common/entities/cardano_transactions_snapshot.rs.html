@@ -73,7 +73,7 @@
 <span class="kw">use </span>serde::{Deserialize, Serialize};
 <span class="kw">use </span>sha2::{Digest, Sha256};
 
-<span class="kw">use </span><span class="kw">super</span>::Beacon;
+<span class="kw">use </span><span class="kw">super</span>::CardanoDbBeacon;
 
 <span class="doccomment">/// Snapshot of a set of Cardano transactions
 </span><span class="attr">#[derive(Clone, Debug, PartialEq, Eq, Default, Serialize, Deserialize)]
@@ -85,12 +85,12 @@
     </span><span class="kw">pub </span>merkle_root: String,
 
     <span class="doccomment">/// Beacon of the Cardano transactions set
-    </span><span class="kw">pub </span>beacon: Beacon,
+    </span><span class="kw">pub </span>beacon: CardanoDbBeacon,
 }
 
 <span class="kw">impl </span>CardanoTransactionsSnapshot {
     <span class="doccomment">/// Creates a new [CardanoTransactionsSnapshot]
-    </span><span class="kw">pub fn </span>new(merkle_root: String, beacon: Beacon) -&gt; <span class="self">Self </span>{
+    </span><span class="kw">pub fn </span>new(merkle_root: String, beacon: CardanoDbBeacon) -&gt; <span class="self">Self </span>{
         <span class="kw">let </span><span class="kw-2">mut </span>cardano_transactions_snapshot = <span class="self">Self </span>{
             merkle_root,
             beacon,
@@ -127,13 +127,13 @@
 
         <span class="macro">assert_eq!</span>(
             hash_expected,
-            CardanoTransactionsSnapshot::new(<span class="string">"mk-root-123"</span>.to_string(), Beacon::default())
+            CardanoTransactionsSnapshot::new(<span class="string">"mk-root-123"</span>.to_string(), CardanoDbBeacon::default())
                 .compute_hash()
         );
 
         <span class="macro">assert_ne!</span>(
             hash_expected,
-            CardanoTransactionsSnapshot::new(<span class="string">"mk-root-456"</span>.to_string(), Beacon::default())
+            CardanoTransactionsSnapshot::new(<span class="string">"mk-root-456"</span>.to_string(), CardanoDbBeacon::default())
                 .compute_hash()
         );
     }

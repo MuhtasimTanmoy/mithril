@@ -292,6 +292,9 @@
 <a href="#290" id="290">290</a>
 <a href="#291" id="291">291</a>
 <a href="#292" id="292">292</a>
+<a href="#293" id="293">293</a>
+<a href="#294" id="294">294</a>
+<a href="#295" id="295">295</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>std::{
     collections::HashMap,
     path::{Path, PathBuf},
@@ -306,7 +309,7 @@
     cardano_transaction_parser::TransactionParser,
     crypto_helper::{MKMap, MKMapNode, MKTree, MKTreeNode},
     entities::{
-        Beacon, BlockRange, CardanoTransaction, ProtocolMessage, ProtocolMessagePartKey,
+        BlockRange, CardanoDbBeacon, CardanoTransaction, ProtocolMessage, ProtocolMessagePartKey,
         TransactionHash,
     },
     signable_builder::SignableBuilder,
@@ -392,9 +395,12 @@
 }
 
 <span class="attr">#[async_trait]
-</span><span class="kw">impl </span>SignableBuilder&lt;Beacon&gt; <span class="kw">for </span>CardanoTransactionsSignableBuilder {
+</span><span class="kw">impl </span>SignableBuilder&lt;CardanoDbBeacon&gt; <span class="kw">for </span>CardanoTransactionsSignableBuilder {
     <span class="comment">// TODO: return a protocol message computed from the transactions when it's ready to be implemented
-    </span><span class="kw">async fn </span>compute_protocol_message(<span class="kw-2">&amp;</span><span class="self">self</span>, beacon: Beacon) -&gt; StdResult&lt;ProtocolMessage&gt; {
+    </span><span class="kw">async fn </span>compute_protocol_message(
+        <span class="kw-2">&amp;</span><span class="self">self</span>,
+        beacon: CardanoDbBeacon,
+    ) -&gt; StdResult&lt;ProtocolMessage&gt; {
         <span class="macro">debug!</span>(
             <span class="self">self</span>.logger,
             <span class="string">"Compute protocol message for CardanoTransactions at beacon: {beacon}"
@@ -516,9 +522,9 @@
     <span class="attr">#[tokio::test]
     </span><span class="kw">async fn </span>test_compute_signable() {
         <span class="comment">// Arrange
-        </span><span class="kw">let </span>beacon = Beacon {
+        </span><span class="kw">let </span>beacon = CardanoDbBeacon {
             immutable_file_number: <span class="number">14</span>,
-            ..Beacon::default()
+            ..CardanoDbBeacon::default()
         };
         <span class="kw">let </span>transactions = <span class="macro">vec!</span>[
             CardanoTransaction::new(<span class="string">"tx-hash-123"</span>, <span class="number">1</span>, <span class="number">11</span>),
@@ -562,7 +568,7 @@
 
     <span class="attr">#[tokio::test]
     </span><span class="kw">async fn </span>test_compute_signable_with_no_transaction_return_error() {
-        <span class="kw">let </span>beacon = Beacon::default();
+        <span class="kw">let </span>beacon = CardanoDbBeacon::default();
         <span class="kw">let </span>transactions = <span class="macro">vec!</span>[];
         <span class="kw">let </span>transaction_parser = Arc::new(DumbTransactionParser::new(transactions.clone()));
         <span class="kw">let </span><span class="kw-2">mut </span>mock_transaction_store = MockTransactionStore::new();

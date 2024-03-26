@@ -1723,7 +1723,7 @@ order by open_message.created_at desc, open_message.rowid desc
 
 <span class="attr">#[cfg(test)]
 </span><span class="kw">mod </span>tests {
-    <span class="kw">use </span>mithril_common::entities::Beacon;
+    <span class="kw">use </span>mithril_common::entities::CardanoDbBeacon;
     <span class="kw">use </span>mithril_persistence::sqlite::SourceAlias;
     <span class="kw">use </span>sqlite::Connection;
 
@@ -1866,7 +1866,7 @@ else json_group_array( \
     </span><span class="kw">fn </span>provider_message_type_condition() {
         <span class="kw">let </span>connection = Connection::open_thread_safe(<span class="string">":memory:"</span>).unwrap();
         <span class="kw">let </span>provider = OpenMessageProvider::new(<span class="kw-2">&amp;</span>connection);
-        <span class="kw">let </span>beacon = Beacon {
+        <span class="kw">let </span>beacon = CardanoDbBeacon {
             network: <span class="string">"whatever"</span>.to_string(),
             epoch: Epoch(<span class="number">4</span>),
             immutable_file_number: <span class="number">400</span>,
@@ -1927,7 +1927,7 @@ else json_group_array( \
         <span class="kw">let </span>(expr, params) = provider
             .get_insert_condition(
                 epoch,
-                <span class="kw-2">&amp;</span>SignedEntityType::CardanoImmutableFilesFull(Beacon::new(
+                <span class="kw-2">&amp;</span>SignedEntityType::CardanoImmutableFilesFull(CardanoDbBeacon::new(
                     <span class="string">"testnet"</span>.to_string(),
                     <span class="number">2</span>,
                     <span class="number">4</span>,
@@ -2008,7 +2008,7 @@ else json_group_array( \
     </span><span class="kw">async fn </span>repository_get_open_message() {
         <span class="kw">let </span>connection = get_connection().<span class="kw">await</span>;
         <span class="kw">let </span>repository = OpenMessageRepository::new(connection.clone());
-        <span class="kw">let </span>beacon = Beacon::new(<span class="string">"devnet"</span>.to_string(), <span class="number">1</span>, <span class="number">1</span>);
+        <span class="kw">let </span>beacon = CardanoDbBeacon::new(<span class="string">"devnet"</span>.to_string(), <span class="number">1</span>, <span class="number">1</span>);
 
         <span class="kw">for </span>signed_entity_type <span class="kw">in </span>[
             SignedEntityType::MithrilStakeDistribution(beacon.epoch),
@@ -2035,7 +2035,7 @@ else json_group_array( \
         <span class="kw">let </span>open_message = repository
             .create_open_message(
                 epoch,
-                <span class="kw-2">&amp;</span>SignedEntityType::CardanoImmutableFilesFull(Beacon::default()),
+                <span class="kw-2">&amp;</span>SignedEntityType::CardanoImmutableFilesFull(CardanoDbBeacon::default()),
                 <span class="kw-2">&amp;</span>ProtocolMessage::new(),
             )
             .<span class="kw">await
@@ -2043,7 +2043,7 @@ else json_group_array( \
 
         <span class="macro">assert_eq!</span>(Epoch(<span class="number">1</span>), open_message.epoch);
         <span class="macro">assert_eq!</span>(
-            SignedEntityType::CardanoImmutableFilesFull(Beacon::default()),
+            SignedEntityType::CardanoImmutableFilesFull(CardanoDbBeacon::default()),
             open_message.signed_entity_type
         );
 
@@ -2076,7 +2076,7 @@ else json_group_array( \
         <span class="kw">let </span>open_message = repository
             .create_open_message(
                 epoch,
-                <span class="kw-2">&amp;</span>SignedEntityType::CardanoImmutableFilesFull(Beacon::default()),
+                <span class="kw-2">&amp;</span>SignedEntityType::CardanoImmutableFilesFull(CardanoDbBeacon::default()),
                 <span class="kw-2">&amp;</span>ProtocolMessage::new(),
             )
             .<span class="kw">await
@@ -2096,9 +2096,9 @@ else json_group_array( \
     </span><span class="kw">async fn </span>repository_clean_open_message() {
         <span class="kw">let </span>connection = get_connection().<span class="kw">await</span>;
         <span class="kw">let </span>repository = OpenMessageRepository::new(connection.clone());
-        <span class="kw">let </span>beacon = Beacon {
+        <span class="kw">let </span>beacon = CardanoDbBeacon {
             epoch: Epoch(<span class="number">1</span>),
-            ..Beacon::default()
+            ..CardanoDbBeacon::default()
         };
         <span class="kw">let _ </span>= repository
             .create_open_message(
@@ -2111,7 +2111,7 @@ else json_group_array( \
         <span class="kw">let _ </span>= repository
             .create_open_message(
                 beacon.epoch,
-                <span class="kw-2">&amp;</span>SignedEntityType::CardanoImmutableFilesFull(Beacon {
+                <span class="kw-2">&amp;</span>SignedEntityType::CardanoImmutableFilesFull(CardanoDbBeacon {
                     epoch: Epoch(<span class="number">2</span>),
                     ..beacon
                 }),

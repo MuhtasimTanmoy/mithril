@@ -228,6 +228,7 @@
 <a href="#226" id="226">226</a>
 <a href="#227" id="227">227</a>
 <a href="#228" id="228">228</a>
+<a href="#229" id="229">229</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>std::{collections::HashMap, sync::Arc};
 
 <span class="kw">use </span>anyhow::Context;
@@ -236,7 +237,8 @@
 <span class="kw">use </span>mithril_common::{
     crypto_helper::{MKMap, MKMapNode, MKTree, MKTreeNode},
     entities::{
-        Beacon, BlockRange, CardanoTransaction, CardanoTransactionsSetProof, TransactionHash,
+        BlockRange, CardanoDbBeacon, CardanoTransaction, CardanoTransactionsSetProof,
+        TransactionHash,
     },
     StdResult,
 };
@@ -251,7 +253,7 @@
     <span class="doccomment">/// Compute the cryptographic proofs for the given transactions
     </span><span class="kw">async fn </span>compute_transactions_proofs(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
-        up_to: <span class="kw-2">&amp;</span>Beacon,
+        up_to: <span class="kw-2">&amp;</span>CardanoDbBeacon,
         transaction_hashes: <span class="kw-2">&amp;</span>[TransactionHash],
     ) -&gt; StdResult&lt;Vec&lt;CardanoTransactionsSetProof&gt;&gt;;
 }
@@ -261,7 +263,7 @@
 #[async_trait]
 </span><span class="kw">pub trait </span>TransactionsRetriever: Sync + Send {
     <span class="doccomment">/// Get transactions up to given beacon using chronological order
-    </span><span class="kw">async fn </span>get_up_to(<span class="kw-2">&amp;</span><span class="self">self</span>, beacon: <span class="kw-2">&amp;</span>Beacon) -&gt; StdResult&lt;Vec&lt;CardanoTransaction&gt;&gt;;
+    </span><span class="kw">async fn </span>get_up_to(<span class="kw-2">&amp;</span><span class="self">self</span>, beacon: <span class="kw-2">&amp;</span>CardanoDbBeacon) -&gt; StdResult&lt;Vec&lt;CardanoTransaction&gt;&gt;;
 }
 
 <span class="doccomment">/// Mithril prover
@@ -312,7 +314,7 @@
 </span><span class="kw">impl </span>ProverService <span class="kw">for </span>MithrilProverService {
     <span class="kw">async fn </span>compute_transactions_proofs(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
-        up_to: <span class="kw-2">&amp;</span>Beacon,
+        up_to: <span class="kw-2">&amp;</span>CardanoDbBeacon,
         transaction_hashes: <span class="kw-2">&amp;</span>[TransactionHash],
     ) -&gt; StdResult&lt;Vec&lt;CardanoTransactionsSetProof&gt;&gt; {
         <span class="kw">let </span>transactions = <span class="self">self</span>.transaction_retriever.get_up_to(up_to).<span class="kw">await</span><span class="question-mark">?</span>;

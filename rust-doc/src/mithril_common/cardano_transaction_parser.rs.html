@@ -339,10 +339,26 @@
 <a href="#337" id="337">337</a>
 <a href="#338" id="338">338</a>
 <a href="#339" id="339">339</a>
+<a href="#340" id="340">340</a>
+<a href="#341" id="341">341</a>
+<a href="#342" id="342">342</a>
+<a href="#343" id="343">343</a>
+<a href="#344" id="344">344</a>
+<a href="#345" id="345">345</a>
+<a href="#346" id="346">346</a>
+<a href="#347" id="347">347</a>
+<a href="#348" id="348">348</a>
+<a href="#349" id="349">349</a>
+<a href="#350" id="350">350</a>
+<a href="#351" id="351">351</a>
+<a href="#352" id="352">352</a>
+<a href="#353" id="353">353</a>
 </pre></div><pre class="rust"><code><span class="doccomment">//! The module used for parsing Cardano transactions
 </span><span class="kw">use crate</span>::{
     digesters::ImmutableFile,
-    entities::{Beacon, BlockNumber, CardanoTransaction, ImmutableFileNumber, TransactionHash},
+    entities::{
+        BlockNumber, CardanoDbBeacon, CardanoTransaction, ImmutableFileNumber, TransactionHash,
+    },
     StdResult,
 };
 <span class="kw">use </span>anyhow::{anyhow, Context};
@@ -361,7 +377,7 @@
 ///     use anyhow::anyhow;
 ///     use async_trait::async_trait;
 ///     use mithril_common::cardano_transaction_parser::TransactionParser;
-///     use mithril_common::entities::{Beacon, CardanoTransaction};
+///     use mithril_common::entities::{CardanoDbBeacon, CardanoTransaction};
 ///     use mithril_common::StdResult;
 ///     use mockall::mock;
 ///     use std::path::Path;
@@ -374,7 +390,7 @@
 ///             async fn parse(
 ///               &amp;self,
 ///               dirpath: &amp;Path,
-///               beacon: &amp;Beacon,
+///               beacon: &amp;CardanoDbBeacon,
 ///             ) -&gt; StdResult&lt;Vec&lt;CardanoTransaction&gt;&gt;;
 ///         }
 ///     }
@@ -391,7 +407,11 @@
 </span><span class="attr">#[async_trait]
 </span><span class="kw">pub trait </span>TransactionParser: Sync + Send {
     <span class="doccomment">/// Parse the transactions
-    </span><span class="kw">async fn </span>parse(<span class="kw-2">&amp;</span><span class="self">self</span>, dirpath: <span class="kw-2">&amp;</span>Path, beacon: <span class="kw-2">&amp;</span>Beacon) -&gt; StdResult&lt;Vec&lt;CardanoTransaction&gt;&gt;;
+    </span><span class="kw">async fn </span>parse(
+        <span class="kw-2">&amp;</span><span class="self">self</span>,
+        dirpath: <span class="kw-2">&amp;</span>Path,
+        beacon: <span class="kw-2">&amp;</span>CardanoDbBeacon,
+    ) -&gt; StdResult&lt;Vec&lt;CardanoTransaction&gt;&gt;;
 }
 
 <span class="doccomment">/// Dumb transaction parser
@@ -416,7 +436,11 @@
 
 <span class="attr">#[async_trait]
 </span><span class="kw">impl </span>TransactionParser <span class="kw">for </span>DumbTransactionParser {
-    <span class="kw">async fn </span>parse(<span class="kw-2">&amp;</span><span class="self">self</span>, _dirpath: <span class="kw-2">&amp;</span>Path, _beacon: <span class="kw-2">&amp;</span>Beacon) -&gt; StdResult&lt;Vec&lt;CardanoTransaction&gt;&gt; {
+    <span class="kw">async fn </span>parse(
+        <span class="kw-2">&amp;</span><span class="self">self</span>,
+        _dirpath: <span class="kw-2">&amp;</span>Path,
+        _beacon: <span class="kw-2">&amp;</span>CardanoDbBeacon,
+    ) -&gt; StdResult&lt;Vec&lt;CardanoTransaction&gt;&gt; {
         <span class="prelude-val">Ok</span>(<span class="self">self</span>.transactions.read().<span class="kw">await</span>.clone())
     }
 }
@@ -525,7 +549,11 @@
 
 <span class="attr">#[async_trait]
 </span><span class="kw">impl </span>TransactionParser <span class="kw">for </span>CardanoTransactionParser {
-    <span class="kw">async fn </span>parse(<span class="kw-2">&amp;</span><span class="self">self</span>, dirpath: <span class="kw-2">&amp;</span>Path, beacon: <span class="kw-2">&amp;</span>Beacon) -&gt; StdResult&lt;Vec&lt;CardanoTransaction&gt;&gt; {
+    <span class="kw">async fn </span>parse(
+        <span class="kw-2">&amp;</span><span class="self">self</span>,
+        dirpath: <span class="kw-2">&amp;</span>Path,
+        beacon: <span class="kw-2">&amp;</span>CardanoDbBeacon,
+    ) -&gt; StdResult&lt;Vec&lt;CardanoTransaction&gt;&gt; {
         <span class="kw">let </span>up_to_file_number = beacon.immutable_file_number;
         <span class="kw">let </span>immutable_chunks = ImmutableFile::list_completed_in_dir(dirpath)<span class="question-mark">?
             </span>.into_iter()
@@ -597,9 +625,9 @@
         <span class="kw">let </span>db_path = Path::new(<span class="string">"../mithril-test-lab/test_data/immutable/"</span>);
         <span class="macro">assert!</span>(get_number_of_immutable_chunk_in_dir(db_path) &gt;= <span class="number">3</span>);
 
-        <span class="kw">let </span>beacon = Beacon {
+        <span class="kw">let </span>beacon = CardanoDbBeacon {
             immutable_file_number: <span class="number">2</span>,
-            ..Beacon::default()
+            ..CardanoDbBeacon::default()
         };
         <span class="kw">let </span>tx_count: usize = immutable_files.iter().map(|(<span class="kw">_</span>, count)| <span class="kw-2">*</span>count).sum();
         <span class="kw">let </span>cardano_transaction_parser =
@@ -616,9 +644,9 @@
     <span class="attr">#[tokio::test]
     </span><span class="kw">async fn </span>test_parse_should_error_with_unparsable_block_format() {
         <span class="kw">let </span>db_path = Path::new(<span class="string">"../mithril-test-lab/test_data/parsing_error/immutable/"</span>);
-        <span class="kw">let </span>beacon = Beacon {
+        <span class="kw">let </span>beacon = CardanoDbBeacon {
             immutable_file_number: <span class="number">4831</span>,
-            ..Beacon::default()
+            ..CardanoDbBeacon::default()
         };
         <span class="kw">let </span>cardano_transaction_parser =
             CardanoTransactionParser::new(Logger::root(slog::Discard, <span class="macro">slog::o!</span>()), <span class="bool-val">false</span>);
@@ -636,9 +664,9 @@
         );
         <span class="kw">let </span>filepath = temp_dir.join(<span class="string">"test.log"</span>);
         <span class="kw">let </span>db_path = Path::new(<span class="string">"../mithril-test-lab/test_data/parsing_error/immutable/"</span>);
-        <span class="kw">let </span>beacon = Beacon {
+        <span class="kw">let </span>beacon = CardanoDbBeacon {
             immutable_file_number: <span class="number">4831</span>,
-            ..Beacon::default()
+            ..CardanoDbBeacon::default()
         };
         <span class="comment">// We create a block to drop the logger and force a flush before we read the log file.
         </span>{
@@ -662,9 +690,9 @@
         <span class="kw">let </span>db_path = Path::new(<span class="string">"../mithril-test-lab/test_data/immutable/"</span>);
         <span class="macro">assert!</span>(get_number_of_immutable_chunk_in_dir(db_path) &gt;= <span class="number">2</span>);
 
-        <span class="kw">let </span>beacon = Beacon {
+        <span class="kw">let </span>beacon = CardanoDbBeacon {
             immutable_file_number: <span class="number">1</span>,
-            ..Beacon::default()
+            ..CardanoDbBeacon::default()
         };
         <span class="kw">let </span>tx_count: usize = immutable_files.iter().map(|(<span class="kw">_</span>, count)| <span class="kw-2">*</span>count).sum();
         <span class="kw">let </span>cardano_transaction_parser =

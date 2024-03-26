@@ -47,8 +47,8 @@
 <a href="#45" id="45">45</a>
 </pre></div><pre class="rust"><code><span class="doccomment">//! The entities used by, and exchanged between, the aggregator, signers and client.
 
-</span><span class="kw">mod </span>beacon;
-<span class="kw">mod </span>block_range;
+</span><span class="kw">mod </span>block_range;
+<span class="kw">mod </span>cardano_db_beacon;
 <span class="kw">mod </span>cardano_network;
 <span class="kw">mod </span>cardano_transaction;
 <span class="kw">mod </span>cardano_transactions_set_proof;
@@ -69,8 +69,8 @@
 <span class="kw">mod </span>snapshot;
 <span class="kw">mod </span>type_alias;
 
-<span class="kw">pub use </span>beacon::{Beacon, BeaconComparison, BeaconComparisonError};
 <span class="kw">pub use </span>block_range::{BlockNumber, BlockRange, BlockRangeLength};
+<span class="kw">pub use </span>cardano_db_beacon::{BeaconComparison, BeaconComparisonError, CardanoDbBeacon};
 <span class="kw">pub use </span>cardano_network::CardanoNetwork;
 <span class="kw">pub use </span>cardano_transaction::{CardanoTransaction, TransactionHash};
 <span class="kw">pub use </span>cardano_transactions_set_proof::CardanoTransactionsSetProof;

@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `mithril-common/src/entities/beacon.rs`."><title>beacon.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-5bc39a1768837dd0.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="mithril_common" data-themes="" data-resource-suffix="" data-rustdoc-version="1.77.0 (aedd173a2 2024-03-17)" data-channel="1.77.0" data-search-js="search-dd67cee4cfa65049.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../../static.files/storage-4c98445ec4002617.js"></script><script defer src="../../../static.files/src-script-e66d777a5a92e9b2.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-48f368f3872407c8.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-04d5337699b92874.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="src-sidebar-title">
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `mithril-common/src/entities/cardano_db_beacon.rs`."><title>cardano_db_beacon.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-5bc39a1768837dd0.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="mithril_common" data-themes="" data-resource-suffix="" data-rustdoc-version="1.77.0 (aedd173a2 2024-03-17)" data-channel="1.77.0" data-search-js="search-dd67cee4cfa65049.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../../static.files/storage-4c98445ec4002617.js"></script><script defer src="../../../static.files/src-script-e66d777a5a92e9b2.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-48f368f3872407c8.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-04d5337699b92874.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="src-sidebar-title">
             <h2>Files</h2></div></nav><div class="sidebar-resizer"></div>
     <main><nav class="sub"><form class="search-form"><span></span><div id="sidebar-button" tabindex="-1"><a href="../../../mithril_common/all.html" title="show sidebar"></a></div><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../../../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
@@ -374,6 +374,11 @@
 <a href="#372" id="372">372</a>
 <a href="#373" id="373">373</a>
 <a href="#374" id="374">374</a>
+<a href="#375" id="375">375</a>
+<a href="#376" id="376">376</a>
+<a href="#377" id="377">377</a>
+<a href="#378" id="378">378</a>
+<a href="#379" id="379">379</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span><span class="kw">crate</span>::entities::{Epoch, ImmutableFileNumber};
 <span class="kw">use </span><span class="kw">crate</span>::signable_builder::Beacon <span class="kw">as </span>Beaconable;
 <span class="kw">use </span>serde::{Deserialize, Serialize};
@@ -382,9 +387,10 @@
 <span class="kw">use </span>std::fmt::{Display, Formatter};
 <span class="kw">use </span>thiserror::Error;
 
-<span class="doccomment">/// Beacon represents a point in the Cardano chain at which a Mithril certificate should be produced
+<span class="doccomment">/// A point in the Cardano chain at which a Mithril certificate of the Cardano Database should be
+/// produced.
 </span><span class="attr">#[derive(Clone, Debug, PartialEq, Eq, Default, Serialize, Deserialize, Hash)]
-</span><span class="kw">pub struct </span>Beacon {
+</span><span class="kw">pub struct </span>CardanoDbBeacon {
     <span class="doccomment">/// Cardano network
     </span><span class="kw">pub </span>network: String,
 
@@ -395,7 +401,7 @@
     </span><span class="kw">pub </span>immutable_file_number: ImmutableFileNumber,
 }
 
-<span class="kw">impl </span>Beaconable <span class="kw">for </span>Beacon {}
+<span class="kw">impl </span>Beaconable <span class="kw">for </span>CardanoDbBeacon {}
 
 <span class="doccomment">/// A BeaconComparison is the result of the comparison between a beacon and an oldest beacon.
 </span><span class="attr">#[derive(Copy, Clone, Debug, PartialEq, Eq)]
@@ -430,7 +436,7 @@
     }
 }
 
-<span class="doccomment">/// [Beacon::compare_to_older] related errors.
+<span class="doccomment">/// [CardanoDbBeacon::compare_to_older] related errors.
 </span><span class="attr">#[derive(Error, Debug, PartialEq, Eq)]
 </span><span class="kw">pub enum </span>BeaconComparisonError {
     <span class="doccomment">/// Error raised when a comparison between beacons from different networks is made.
@@ -442,10 +448,10 @@
     </span><span class="attr">#[error(
         <span class="string">"compare failed: the 'oldest' have both a newest epoch and immutable file number than the newest beacon: newest [{0:?}] / oldest [{1:?}]"
     </span>)]
-    </span>BeaconOlderThanPreviousBeacon(Beacon, Beacon),
+    </span>BeaconOlderThanPreviousBeacon(CardanoDbBeacon, CardanoDbBeacon),
 }
 
-<span class="kw">impl </span>PartialOrd <span class="kw">for </span>Beacon {
+<span class="kw">impl </span>PartialOrd <span class="kw">for </span>CardanoDbBeacon {
     <span class="kw">fn </span>partial_cmp(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;Ordering&gt; {
         <span class="kw">match </span><span class="self">self</span>.network.partial_cmp(<span class="kw-2">&amp;</span>other.network) {
             <span class="prelude-val">Some</span>(Ordering::Equal) =&gt; {}
@@ -460,7 +466,7 @@
     }
 }
 
-<span class="kw">impl </span>Display <span class="kw">for </span>Beacon {
+<span class="kw">impl </span>Display <span class="kw">for </span>CardanoDbBeacon {
     <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>Formatter&lt;<span class="lifetime">'_</span>&gt;) -&gt; std::fmt::Result {
         <span class="macro">write!</span>(
             f,
@@ -470,17 +476,21 @@
     }
 }
 
-<span class="kw">impl </span>Beacon {
-    <span class="doccomment">/// Beacon factory
-    </span><span class="kw">pub fn </span>new(network: String, epoch: u64, immutable_file_number: ImmutableFileNumber) -&gt; Beacon {
-        Beacon {
-            network,
+<span class="kw">impl </span>CardanoDbBeacon {
+    <span class="doccomment">/// CardanoDbBeacon factory
+    </span><span class="kw">pub fn </span>new&lt;T: Into&lt;String&gt;&gt;(
+        network: T,
+        epoch: u64,
+        immutable_file_number: ImmutableFileNumber,
+    ) -&gt; CardanoDbBeacon {
+        CardanoDbBeacon {
+            network: network.into(),
             epoch: Epoch(epoch),
             immutable_file_number,
         }
     }
 
-    <span class="doccomment">/// Computes the hash of a Beacon
+    <span class="doccomment">/// Computes the hash of a CardanoDbBeacon
     </span><span class="kw">pub fn </span>compute_hash(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; String {
         <span class="kw">let </span><span class="kw-2">mut </span>hasher = Sha256::new();
         hasher.update(<span class="self">self</span>.network.as_bytes());
@@ -495,7 +505,7 @@
     /// the current beacon have data older than the other beacon.
     </span><span class="kw">pub fn </span>compare_to_older(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
-        other: <span class="kw-2">&amp;</span>Beacon,
+        other: <span class="kw-2">&amp;</span>CardanoDbBeacon,
     ) -&gt; <span class="prelude-ty">Result</span>&lt;BeaconComparison, BeaconComparisonError&gt; {
         <span class="kw">if </span><span class="self">self</span>.network != other.network {
             <span class="kw">return </span><span class="prelude-val">Err</span>(BeaconComparisonError::NetworkNotMatch(
@@ -535,12 +545,12 @@
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>test_beacon_partial_ord_different_network() {
-        <span class="kw">let </span>beacon1: Beacon = Beacon {
+        <span class="kw">let </span>beacon1: CardanoDbBeacon = CardanoDbBeacon {
             network: <span class="string">"A"</span>.to_string(),
             epoch: Epoch(<span class="number">0</span>),
             immutable_file_number: <span class="number">0</span>,
         };
-        <span class="kw">let </span>beacon2: Beacon = Beacon {
+        <span class="kw">let </span>beacon2: CardanoDbBeacon = CardanoDbBeacon {
             network: <span class="string">"B"</span>.to_string(),
             epoch: Epoch(<span class="number">0</span>),
             immutable_file_number: <span class="number">0</span>,
@@ -551,7 +561,7 @@
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>test_beacon_partial_ord_equal() {
-        <span class="kw">let </span>beacon1: Beacon = Beacon {
+        <span class="kw">let </span>beacon1: CardanoDbBeacon = CardanoDbBeacon {
             network: <span class="string">"A"</span>.to_string(),
             epoch: Epoch(<span class="number">0</span>),
             immutable_file_number: <span class="number">0</span>,
@@ -562,12 +572,12 @@
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>test_beacon_partial_ord_same_epoch_less() {
-        <span class="kw">let </span>beacon1: Beacon = Beacon {
+        <span class="kw">let </span>beacon1: CardanoDbBeacon = CardanoDbBeacon {
             network: <span class="string">"A"</span>.to_string(),
             epoch: Epoch(<span class="number">0</span>),
             immutable_file_number: <span class="number">0</span>,
         };
-        <span class="kw">let </span>beacon2: Beacon = Beacon {
+        <span class="kw">let </span>beacon2: CardanoDbBeacon = CardanoDbBeacon {
             network: <span class="string">"A"</span>.to_string(),
             epoch: Epoch(<span class="number">0</span>),
             immutable_file_number: <span class="number">1</span>,
@@ -578,12 +588,12 @@
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>test_beacon_partial_ord_same_epoch_greater() {
-        <span class="kw">let </span>beacon1: Beacon = Beacon {
+        <span class="kw">let </span>beacon1: CardanoDbBeacon = CardanoDbBeacon {
             network: <span class="string">"A"</span>.to_string(),
             epoch: Epoch(<span class="number">0</span>),
             immutable_file_number: <span class="number">1</span>,
         };
-        <span class="kw">let </span>beacon2: Beacon = Beacon {
+        <span class="kw">let </span>beacon2: CardanoDbBeacon = CardanoDbBeacon {
             network: <span class="string">"A"</span>.to_string(),
             epoch: Epoch(<span class="number">0</span>),
             immutable_file_number: <span class="number">0</span>,
@@ -594,12 +604,12 @@
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>test_beacon_partial_ord_cmp_epochs_less() {
-        <span class="kw">let </span>beacon1: Beacon = Beacon {
+        <span class="kw">let </span>beacon1: CardanoDbBeacon = CardanoDbBeacon {
             network: <span class="string">"A"</span>.to_string(),
             epoch: Epoch(<span class="number">0</span>),
             immutable_file_number: <span class="number">99</span>,
         };
-        <span class="kw">let </span>beacon2: Beacon = Beacon {
+        <span class="kw">let </span>beacon2: CardanoDbBeacon = CardanoDbBeacon {
             network: <span class="string">"A"</span>.to_string(),
             epoch: Epoch(<span class="number">1</span>),
             immutable_file_number: <span class="number">99</span>,
@@ -610,8 +620,8 @@
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>test_beacon_compare_to_older_different_network() {
-        <span class="kw">let </span>beacon1: Beacon = Beacon::new(<span class="string">"A"</span>.to_string(), <span class="number">0</span>, <span class="number">0</span>);
-        <span class="kw">let </span>beacon2: Beacon = Beacon::new(<span class="string">"B"</span>.to_string(), <span class="number">0</span>, <span class="number">0</span>);
+        <span class="kw">let </span>beacon1: CardanoDbBeacon = CardanoDbBeacon::new(<span class="string">"A"</span>.to_string(), <span class="number">0</span>, <span class="number">0</span>);
+        <span class="kw">let </span>beacon2: CardanoDbBeacon = CardanoDbBeacon::new(<span class="string">"B"</span>.to_string(), <span class="number">0</span>, <span class="number">0</span>);
 
         <span class="macro">assert_eq!</span>(
             BeaconComparisonError::NetworkNotMatch(<span class="string">"A"</span>.to_string(), <span class="string">"B"</span>.to_string()),
@@ -622,8 +632,8 @@
     <span class="attr">#[test]
     </span><span class="kw">fn </span>test_beacon_compare_to_older_lower_epoch_greater_immutable() {
         <span class="comment">// put this case in the doc
-        </span><span class="kw">let </span>previous_beacon: Beacon = Beacon::new(<span class="string">"A"</span>.to_string(), <span class="number">1</span>, <span class="number">0</span>);
-        <span class="kw">let </span>current_beacon: Beacon = Beacon::new(<span class="string">"A"</span>.to_string(), <span class="number">0</span>, <span class="number">1</span>);
+        </span><span class="kw">let </span>previous_beacon: CardanoDbBeacon = CardanoDbBeacon::new(<span class="string">"A"</span>.to_string(), <span class="number">1</span>, <span class="number">0</span>);
+        <span class="kw">let </span>current_beacon: CardanoDbBeacon = CardanoDbBeacon::new(<span class="string">"A"</span>.to_string(), <span class="number">0</span>, <span class="number">1</span>);
 
         <span class="macro">assert_eq!</span>(
             BeaconComparisonError::BeaconOlderThanPreviousBeacon(
@@ -638,7 +648,7 @@
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>test_beacon_compare_to_older_equal() {
-        <span class="kw">let </span>beacon: Beacon = Beacon::new(<span class="string">"A"</span>.to_string(), <span class="number">0</span>, <span class="number">0</span>);
+        <span class="kw">let </span>beacon: CardanoDbBeacon = CardanoDbBeacon::new(<span class="string">"A"</span>.to_string(), <span class="number">0</span>, <span class="number">0</span>);
 
         <span class="macro">assert_eq!</span>(
             <span class="prelude-val">Ok</span>(BeaconComparison::Equal),
@@ -648,8 +658,8 @@
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>test_beacon_compare_to_older_same_epoch_less_immutable() {
-        <span class="kw">let </span>previous_beacon: Beacon = Beacon::new(<span class="string">"A"</span>.to_string(), <span class="number">0</span>, <span class="number">1</span>);
-        <span class="kw">let </span>current_beacon: Beacon = Beacon::new(<span class="string">"A"</span>.to_string(), <span class="number">0</span>, <span class="number">0</span>);
+        <span class="kw">let </span>previous_beacon: CardanoDbBeacon = CardanoDbBeacon::new(<span class="string">"A"</span>.to_string(), <span class="number">0</span>, <span class="number">1</span>);
+        <span class="kw">let </span>current_beacon: CardanoDbBeacon = CardanoDbBeacon::new(<span class="string">"A"</span>.to_string(), <span class="number">0</span>, <span class="number">0</span>);
 
         <span class="macro">assert_eq!</span>(
             BeaconComparisonError::BeaconOlderThanPreviousBeacon(
@@ -664,8 +674,8 @@
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>test_beacon_compare_to_older_same_epoch_greater_immutable() {
-        <span class="kw">let </span>previous_beacon: Beacon = Beacon::new(<span class="string">"A"</span>.to_string(), <span class="number">0</span>, <span class="number">0</span>);
-        <span class="kw">let </span>current_beacon: Beacon = Beacon::new(<span class="string">"A"</span>.to_string(), <span class="number">0</span>, <span class="number">1</span>);
+        <span class="kw">let </span>previous_beacon: CardanoDbBeacon = CardanoDbBeacon::new(<span class="string">"A"</span>.to_string(), <span class="number">0</span>, <span class="number">0</span>);
+        <span class="kw">let </span>current_beacon: CardanoDbBeacon = CardanoDbBeacon::new(<span class="string">"A"</span>.to_string(), <span class="number">0</span>, <span class="number">1</span>);
 
         <span class="macro">assert_eq!</span>(
             <span class="prelude-val">Ok</span>(BeaconComparison::GreaterImmutableFileNumber),
@@ -675,8 +685,8 @@
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>test_beacon_compare_to_older_epochs_greater() {
-        <span class="kw">let </span>previous_beacon: Beacon = Beacon::new(<span class="string">"A"</span>.to_string(), <span class="number">0</span>, <span class="number">99</span>);
-        <span class="kw">let </span>current_beacon: Beacon = Beacon::new(<span class="string">"A"</span>.to_string(), <span class="number">1</span>, <span class="number">99</span>);
+        <span class="kw">let </span>previous_beacon: CardanoDbBeacon = CardanoDbBeacon::new(<span class="string">"A"</span>.to_string(), <span class="number">0</span>, <span class="number">99</span>);
+        <span class="kw">let </span>current_beacon: CardanoDbBeacon = CardanoDbBeacon::new(<span class="string">"A"</span>.to_string(), <span class="number">1</span>, <span class="number">99</span>);
 
         <span class="macro">assert_eq!</span>(
             <span class="prelude-val">Ok</span>(BeaconComparison::GreaterEpoch),
@@ -686,8 +696,8 @@
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>test_beacon_compare_to_older_epochs_less() {
-        <span class="kw">let </span>previous_beacon: Beacon = Beacon::new(<span class="string">"A"</span>.to_string(), <span class="number">1</span>, <span class="number">99</span>);
-        <span class="kw">let </span>current_beacon: Beacon = Beacon::new(<span class="string">"A"</span>.to_string(), <span class="number">0</span>, <span class="number">99</span>);
+        <span class="kw">let </span>previous_beacon: CardanoDbBeacon = CardanoDbBeacon::new(<span class="string">"A"</span>.to_string(), <span class="number">1</span>, <span class="number">99</span>);
+        <span class="kw">let </span>current_beacon: CardanoDbBeacon = CardanoDbBeacon::new(<span class="string">"A"</span>.to_string(), <span class="number">0</span>, <span class="number">99</span>);
 
         <span class="macro">assert_eq!</span>(
             BeaconComparisonError::BeaconOlderThanPreviousBeacon(
@@ -732,19 +742,19 @@
 
         <span class="macro">assert_eq!</span>(
             hash_expected,
-            Beacon::new(<span class="string">"testnet"</span>.to_string(), <span class="number">10</span>, <span class="number">100</span>).compute_hash()
+            CardanoDbBeacon::new(<span class="string">"testnet"</span>.to_string(), <span class="number">10</span>, <span class="number">100</span>).compute_hash()
         );
         <span class="macro">assert_ne!</span>(
             hash_expected,
-            Beacon::new(<span class="string">"mainnet"</span>.to_string(), <span class="number">10</span>, <span class="number">100</span>).compute_hash()
+            CardanoDbBeacon::new(<span class="string">"mainnet"</span>.to_string(), <span class="number">10</span>, <span class="number">100</span>).compute_hash()
         );
         <span class="macro">assert_ne!</span>(
             hash_expected,
-            Beacon::new(<span class="string">"testnet"</span>.to_string(), <span class="number">20</span>, <span class="number">100</span>).compute_hash()
+            CardanoDbBeacon::new(<span class="string">"testnet"</span>.to_string(), <span class="number">20</span>, <span class="number">100</span>).compute_hash()
         );
         <span class="macro">assert_ne!</span>(
             hash_expected,
-            Beacon::new(<span class="string">"testnet"</span>.to_string(), <span class="number">10</span>, <span class="number">200</span>).compute_hash()
+            CardanoDbBeacon::new(<span class="string">"testnet"</span>.to_string(), <span class="number">10</span>, <span class="number">200</span>).compute_hash()
         );
     }
 }

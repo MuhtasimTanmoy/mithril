@@ -1168,8 +1168,8 @@
 <span class="kw">use </span>std::{path::Path, path::PathBuf, sync::Arc};
 
 <span class="kw">use </span>mithril_common::entities::{
-    Beacon, Certificate, CertificatePending, Epoch, ProtocolMessage, ProtocolMessagePartKey,
-    SignedEntityType, Signer,
+    CardanoDbBeacon, Certificate, CertificatePending, Epoch, ProtocolMessage,
+    ProtocolMessagePartKey, SignedEntityType, Signer,
 };
 <span class="kw">use </span>mithril_common::{CardanoNetwork, StdResult};
 <span class="kw">use </span>mithril_persistence::store::StakeStorer;
@@ -1209,7 +1209,7 @@
 </span><span class="attr">#[async_trait]
 </span><span class="kw">pub trait </span>AggregatorRunnerTrait: Sync + Send {
     <span class="doccomment">/// Return the current beacon from the chain
-    </span><span class="kw">async fn </span>get_beacon_from_chain(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; StdResult&lt;Beacon&gt;;
+    </span><span class="kw">async fn </span>get_beacon_from_chain(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; StdResult&lt;CardanoDbBeacon&gt;;
 
     <span class="doccomment">/// Retrieves the current open message for a given signed entity type.
     </span><span class="kw">async fn </span>get_current_open_message_for_signed_entity_type(
@@ -1220,17 +1220,17 @@
     <span class="doccomment">/// Retrieves the current non certified open message.
     </span><span class="kw">async fn </span>get_current_non_certified_open_message(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
-        current_beacon: <span class="kw-2">&amp;</span>Beacon,
+        current_beacon: <span class="kw-2">&amp;</span>CardanoDbBeacon,
     ) -&gt; StdResult&lt;<span class="prelude-ty">Option</span>&lt;OpenMessage&gt;&gt;;
 
     <span class="doccomment">/// Check if a certificate chain is valid.
-    </span><span class="kw">async fn </span>is_certificate_chain_valid(<span class="kw-2">&amp;</span><span class="self">self</span>, beacon: <span class="kw-2">&amp;</span>Beacon) -&gt; StdResult&lt;()&gt;;
+    </span><span class="kw">async fn </span>is_certificate_chain_valid(<span class="kw-2">&amp;</span><span class="self">self</span>, beacon: <span class="kw-2">&amp;</span>CardanoDbBeacon) -&gt; StdResult&lt;()&gt;;
 
     <span class="doccomment">/// Read the stake distribution from the blockchain and store it.
-    </span><span class="kw">async fn </span>update_stake_distribution(<span class="kw-2">&amp;</span><span class="self">self</span>, new_beacon: <span class="kw-2">&amp;</span>Beacon) -&gt; StdResult&lt;()&gt;;
+    </span><span class="kw">async fn </span>update_stake_distribution(<span class="kw-2">&amp;</span><span class="self">self</span>, new_beacon: <span class="kw-2">&amp;</span>CardanoDbBeacon) -&gt; StdResult&lt;()&gt;;
 
     <span class="doccomment">/// Open the signer registration round of an epoch.
-    </span><span class="kw">async fn </span>open_signer_registration_round(<span class="kw-2">&amp;</span><span class="self">self</span>, new_beacon: <span class="kw-2">&amp;</span>Beacon) -&gt; StdResult&lt;()&gt;;
+    </span><span class="kw">async fn </span>open_signer_registration_round(<span class="kw-2">&amp;</span><span class="self">self</span>, new_beacon: <span class="kw-2">&amp;</span>CardanoDbBeacon) -&gt; StdResult&lt;()&gt;;
 
     <span class="doccomment">/// Close the signer registration round of an epoch.
     </span><span class="kw">async fn </span>close_signer_registration_round(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; StdResult&lt;()&gt;;
@@ -1253,7 +1253,7 @@
     <span class="doccomment">/// Create a new pending certificate.
     </span><span class="kw">async fn </span>create_new_pending_certificate(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
-        beacon: Beacon,
+        beacon: CardanoDbBeacon,
         signed_entity_type: <span class="kw-2">&amp;</span>SignedEntityType,
     ) -&gt; StdResult&lt;CertificatePending&gt;;
 
@@ -1280,7 +1280,7 @@
     ) -&gt; StdResult&lt;()&gt;;
 
     <span class="doccomment">/// Update the EraChecker with EraReader information.
-    </span><span class="kw">async fn </span>update_era_checker(<span class="kw-2">&amp;</span><span class="self">self</span>, beacon: <span class="kw-2">&amp;</span>Beacon) -&gt; StdResult&lt;()&gt;;
+    </span><span class="kw">async fn </span>update_era_checker(<span class="kw-2">&amp;</span><span class="self">self</span>, beacon: <span class="kw-2">&amp;</span>CardanoDbBeacon) -&gt; StdResult&lt;()&gt;;
 
     <span class="doccomment">/// Ask services to update themselves for the new epoch
     </span><span class="kw">async fn </span>inform_new_epoch(<span class="kw-2">&amp;</span><span class="self">self</span>, epoch: Epoch) -&gt; StdResult&lt;()&gt;;
@@ -1313,7 +1313,7 @@
 #[async_trait]
 </span><span class="kw">impl </span>AggregatorRunnerTrait <span class="kw">for </span>AggregatorRunner {
     <span class="doccomment">/// Return the current beacon from the chain
-    </span><span class="kw">async fn </span>get_beacon_from_chain(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; StdResult&lt;Beacon&gt; {
+    </span><span class="kw">async fn </span>get_beacon_from_chain(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; StdResult&lt;CardanoDbBeacon&gt; {
         <span class="macro">debug!</span>(<span class="string">"RUNNER: get beacon from chain"</span>);
         <span class="kw">let </span>beacon = <span class="self">self
             </span>.dependencies
@@ -1342,7 +1342,7 @@
 
     <span class="kw">async fn </span>get_current_non_certified_open_message(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
-        current_beacon: <span class="kw-2">&amp;</span>Beacon,
+        current_beacon: <span class="kw-2">&amp;</span>CardanoDbBeacon,
     ) -&gt; StdResult&lt;<span class="prelude-ty">Option</span>&lt;OpenMessage&gt;&gt; {
         <span class="macro">debug!</span>(<span class="string">"RUNNER: get_current_non_certified_open_message"</span>; <span class="string">"beacon" </span>=&gt; #<span class="question-mark">?</span>current_beacon);
         <span class="kw">let </span>signed_entity_types = <span class="self">self
@@ -1376,7 +1376,7 @@
         <span class="prelude-val">Ok</span>(<span class="prelude-val">None</span>)
     }
 
-    <span class="kw">async fn </span>is_certificate_chain_valid(<span class="kw-2">&amp;</span><span class="self">self</span>, beacon: <span class="kw-2">&amp;</span>Beacon) -&gt; StdResult&lt;()&gt; {
+    <span class="kw">async fn </span>is_certificate_chain_valid(<span class="kw-2">&amp;</span><span class="self">self</span>, beacon: <span class="kw-2">&amp;</span>CardanoDbBeacon) -&gt; StdResult&lt;()&gt; {
         <span class="macro">debug!</span>(<span class="string">"RUNNER: is_certificate_chain_valid"</span>);
         <span class="self">self</span>.dependencies
             .certifier_service
@@ -1386,7 +1386,7 @@
         <span class="prelude-val">Ok</span>(())
     }
 
-    <span class="kw">async fn </span>update_stake_distribution(<span class="kw-2">&amp;</span><span class="self">self</span>, new_beacon: <span class="kw-2">&amp;</span>Beacon) -&gt; StdResult&lt;()&gt; {
+    <span class="kw">async fn </span>update_stake_distribution(<span class="kw-2">&amp;</span><span class="self">self</span>, new_beacon: <span class="kw-2">&amp;</span>CardanoDbBeacon) -&gt; StdResult&lt;()&gt; {
         <span class="macro">debug!</span>(<span class="string">"RUNNER: update stake distribution"</span>; <span class="string">"beacon" </span>=&gt; #<span class="question-mark">?</span>new_beacon);
         <span class="self">self</span>.dependencies
             .stake_distribution_service
@@ -1395,7 +1395,7 @@
             </span>.with_context(|| <span class="macro">format!</span>(<span class="string">"AggregatorRunner could not update stake distribution for beacon: '{new_beacon}'"</span>))
     }
 
-    <span class="kw">async fn </span>open_signer_registration_round(<span class="kw-2">&amp;</span><span class="self">self</span>, new_beacon: <span class="kw-2">&amp;</span>Beacon) -&gt; StdResult&lt;()&gt; {
+    <span class="kw">async fn </span>open_signer_registration_round(<span class="kw-2">&amp;</span><span class="self">self</span>, new_beacon: <span class="kw-2">&amp;</span>CardanoDbBeacon) -&gt; StdResult&lt;()&gt; {
         <span class="macro">debug!</span>(<span class="string">"RUNNER: open signer registration round"</span>; <span class="string">"beacon" </span>=&gt; #<span class="question-mark">?</span>new_beacon);
         <span class="kw">let </span>registration_epoch = new_beacon.epoch.offset_to_recording_epoch();
 
@@ -1477,7 +1477,7 @@
 
     <span class="kw">async fn </span>create_new_pending_certificate(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
-        beacon: Beacon,
+        beacon: CardanoDbBeacon,
         signed_entity_type: <span class="kw-2">&amp;</span>SignedEntityType,
     ) -&gt; StdResult&lt;CertificatePending&gt; {
         <span class="macro">debug!</span>(<span class="string">"RUNNER: create new pending certificate"</span>);
@@ -1571,7 +1571,7 @@
         <span class="prelude-val">Ok</span>(())
     }
 
-    <span class="kw">async fn </span>update_era_checker(<span class="kw-2">&amp;</span><span class="self">self</span>, beacon: <span class="kw-2">&amp;</span>Beacon) -&gt; StdResult&lt;()&gt; {
+    <span class="kw">async fn </span>update_era_checker(<span class="kw-2">&amp;</span><span class="self">self</span>, beacon: <span class="kw-2">&amp;</span>CardanoDbBeacon) -&gt; StdResult&lt;()&gt; {
         <span class="kw">let </span>token = <span class="self">self
             </span>.dependencies
             .era_reader
@@ -1659,7 +1659,7 @@
         chain_observer::FakeObserver,
         digesters::DumbImmutableFileObserver,
         entities::{
-            Beacon, CertificatePending, ProtocolMessage, SignedEntityType, Signer,
+            CardanoDbBeacon, CertificatePending, ProtocolMessage, SignedEntityType, Signer,
             StakeDistribution,
         },
         signable_builder::SignableBuilderService,
@@ -1708,7 +1708,7 @@
 
     <span class="attr">#[tokio::test]
     </span><span class="kw">async fn </span>test_get_beacon_from_chain() {
-        <span class="kw">let </span>expected_beacon = Beacon::new(<span class="string">"private"</span>.to_string(), <span class="number">2</span>, <span class="number">17</span>);
+        <span class="kw">let </span>expected_beacon = CardanoDbBeacon::new(<span class="string">"private"</span>.to_string(), <span class="number">2</span>, <span class="number">17</span>);
         <span class="kw">let </span><span class="kw-2">mut </span>dependencies = initialize_dependencies().<span class="kw">await</span>;
         <span class="kw">let </span>immutable_file_observer = Arc::new(DumbImmutableFileObserver::default());
         immutable_file_observer

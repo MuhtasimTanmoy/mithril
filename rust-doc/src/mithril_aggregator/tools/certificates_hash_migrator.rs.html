@@ -814,7 +814,7 @@
     <span class="kw">use </span>anyhow::Context;
     <span class="kw">use </span>mithril_common::{
         entities::{
-            Beacon, Certificate, Epoch, ImmutableFileNumber,
+            CardanoDbBeacon, Certificate, Epoch, ImmutableFileNumber,
             SignedEntityType::{
                 CardanoImmutableFilesFull, CardanoStakeDistribution, CardanoTransactions,
                 MithrilStakeDistribution,
@@ -850,7 +850,7 @@
     ) -&gt; Certificate {
         <span class="kw">let </span>certificate = CertificateRecord::dummy_genesis(
             certificate_hash,
-            Beacon::new(<span class="string">"testnet"</span>.to_string(), epoch, immutable_file_number),
+            CardanoDbBeacon::new(<span class="string">"testnet"</span>.to_string(), epoch, immutable_file_number),
         );
 
         certificate.into()
@@ -865,7 +865,7 @@
         <span class="kw">let </span>certificate = CertificateRecord::dummy(
             certificate_hash,
             previous_hash,
-            Beacon::new(<span class="string">"testnet"</span>.to_string(), epoch, immutable_file_number),
+            CardanoDbBeacon::new(<span class="string">"testnet"</span>.to_string(), epoch, immutable_file_number),
         );
 
         certificate.into()

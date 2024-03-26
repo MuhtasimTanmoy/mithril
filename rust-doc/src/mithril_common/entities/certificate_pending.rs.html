@@ -77,7 +77,7 @@
 <a href="#75" id="75">75</a>
 <a href="#76" id="76">76</a>
 <a href="#77" id="77">77</a>
-</pre></div><pre class="rust"><code><span class="kw">use </span><span class="kw">crate</span>::entities::{Beacon, PartyId, ProtocolParameters, Signer};
+</pre></div><pre class="rust"><code><span class="kw">use </span><span class="kw">crate</span>::entities::{CardanoDbBeacon, PartyId, ProtocolParameters, Signer};
 <span class="kw">use </span>serde::{Deserialize, Serialize};
 
 <span class="kw">use </span><span class="kw">super</span>::SignedEntityType;
@@ -86,7 +86,7 @@
 </span><span class="attr">#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 </span><span class="kw">pub struct </span>CertificatePending {
     <span class="doccomment">/// Current Beacon
-    </span><span class="kw">pub </span>beacon: Beacon,
+    </span><span class="kw">pub </span>beacon: CardanoDbBeacon,
 
     <span class="doccomment">/// Signed entity type
     </span><span class="attr">#[serde(rename = <span class="string">"entity_type"</span>)]
@@ -110,7 +110,7 @@
 <span class="kw">impl </span>CertificatePending {
     <span class="doccomment">/// CertificatePending factory
     </span><span class="kw">pub fn </span>new(
-        beacon: Beacon,
+        beacon: CardanoDbBeacon,
         signed_entity_type: SignedEntityType,
         protocol_parameters: ProtocolParameters,
         next_protocol_parameters: ProtocolParameters,

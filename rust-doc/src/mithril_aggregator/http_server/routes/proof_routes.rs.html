@@ -288,6 +288,8 @@
 <a href="#286" id="286">286</a>
 <a href="#287" id="287">287</a>
 <a href="#288" id="288">288</a>
+<a href="#289" id="289">289</a>
+<a href="#290" id="290">290</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>serde::{Deserialize, Serialize};
 <span class="kw">use </span>std::sync::Arc;
 <span class="kw">use </span>warp::Filter;
@@ -406,12 +408,14 @@
     <span class="kw">use super</span>::<span class="kw-2">*</span>;
     <span class="kw">use </span>std::vec;
 
-    <span class="kw">use </span>mithril_common::{entities::Beacon, test_utils::apispec::APISpec};
+    <span class="kw">use </span>mithril_common::{
+        entities::{
+            CardanoDbBeacon, CardanoTransactionsSetProof, CardanoTransactionsSnapshot, SignedEntity,
+        },
+        test_utils::apispec::APISpec,
+    };
 
     <span class="kw">use </span>anyhow::anyhow;
-    <span class="kw">use </span>mithril_common::entities::{
-        CardanoTransactionsSetProof, CardanoTransactionsSnapshot, SignedEntity,
-    };
     <span class="kw">use </span>serde_json::Value::Null;
     <span class="kw">use </span>warp::{
         http::{Method, StatusCode},
@@ -447,9 +451,9 @@
 
         <span class="kw">let </span>cardano_transactions_snapshot = {
             <span class="kw">let </span>merkle_root = String::new();
-            <span class="kw">let </span>beacon = Beacon {
+            <span class="kw">let </span>beacon = CardanoDbBeacon {
                 immutable_file_number: <span class="number">2309</span>,
-                ..Beacon::default()
+                ..CardanoDbBeacon::default()
             };
             CardanoTransactionsSnapshot::new(merkle_root, beacon)
         };

@@ -216,7 +216,7 @@
 <span class="kw">use </span>std::fmt::{Debug, Formatter};
 
 <span class="kw">use </span><span class="kw">crate</span>::entities::{
-    Beacon, ProtocolMessage, ProtocolMessagePartKey, ProtocolParameters, ProtocolVersion,
+    CardanoDbBeacon, ProtocolMessage, ProtocolMessagePartKey, ProtocolParameters, ProtocolVersion,
 };
 
 <span class="doccomment">/// Message structure of a certificate list
@@ -267,7 +267,7 @@
 
     <span class="doccomment">/// Mithril beacon on the Cardano chain
     /// aka BEACON(p,n)
-    </span><span class="kw">pub </span>beacon: Beacon,
+    </span><span class="kw">pub </span>beacon: CardanoDbBeacon,
 
     <span class="doccomment">/// Certificate metadata
     /// aka METADATA(p,n)
@@ -302,7 +302,7 @@
         <span class="self">Self </span>{
             hash: <span class="string">"hash"</span>.to_string(),
             previous_hash: <span class="string">"previous_hash"</span>.to_string(),
-            beacon: Beacon::new(<span class="string">"testnet"</span>.to_string(), <span class="number">10</span>, <span class="number">100</span>),
+            beacon: CardanoDbBeacon::new(<span class="string">"testnet"</span>.to_string(), <span class="number">10</span>, <span class="number">100</span>),
             metadata: CertificateListItemMessageMetadata {
                 protocol_version: <span class="string">"0.1.0"</span>.to_string(),
                 protocol_parameters: ProtocolParameters::new(<span class="number">1000</span>, <span class="number">100</span>, <span class="number">0.123</span>),
@@ -365,7 +365,7 @@
         <span class="macro">vec!</span>[CertificateListItemMessage {
             hash: <span class="string">"hash"</span>.to_string(),
             previous_hash: <span class="string">"previous_hash"</span>.to_string(),
-            beacon: Beacon::new(<span class="string">"testnet"</span>.to_string(), <span class="number">10</span>, <span class="number">100</span>),
+            beacon: CardanoDbBeacon::new(<span class="string">"testnet"</span>.to_string(), <span class="number">10</span>, <span class="number">100</span>),
             metadata: CertificateListItemMessageMetadata {
                 protocol_version: <span class="string">"0.1.0"</span>.to_string(),
                 protocol_parameters: ProtocolParameters::new(<span class="number">1000</span>, <span class="number">100</span>, <span class="number">0.123</span>),

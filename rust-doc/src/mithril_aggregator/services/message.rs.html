@@ -716,7 +716,7 @@
 
     <span class="kw">use </span>mithril_common::{
         entities::{
-            Beacon, CardanoTransactionsSnapshot, MithrilStakeDistribution, SignedEntity,
+            CardanoDbBeacon, CardanoTransactionsSnapshot, MithrilStakeDistribution, SignedEntity,
             SignedEntityType, Snapshot,
         },
         messages::ToMessageAdapter,
@@ -756,9 +756,9 @@
         </span><span class="kw">let </span>configuration = Configuration::new_sample();
         <span class="kw">let </span><span class="kw-2">mut </span>dep_builder = DependenciesBuilder::new(configuration);
         <span class="kw">let </span>service = dep_builder.get_message_service().<span class="kw">await</span>.unwrap();
-        <span class="kw">let </span>beacon = Beacon::new(<span class="string">"devnet"</span>.to_string(), <span class="number">3</span>, <span class="number">1</span>);
+        <span class="kw">let </span>beacon = CardanoDbBeacon::new(<span class="string">"devnet"</span>.to_string(), <span class="number">3</span>, <span class="number">1</span>);
         <span class="kw">let </span>fixture = MithrilFixtureBuilder::default().with_signers(<span class="number">3</span>).build();
-        <span class="kw">let </span>genesis_beacon = Beacon {
+        <span class="kw">let </span>genesis_beacon = CardanoDbBeacon {
             epoch: beacon.epoch - <span class="number">1</span>,
             ..beacon.clone()
         };
@@ -785,9 +785,9 @@
         <span class="kw">let </span>configuration = Configuration::new_sample();
         <span class="kw">let </span><span class="kw-2">mut </span>dep_builder = DependenciesBuilder::new(configuration);
         <span class="kw">let </span>service = dep_builder.get_message_service().<span class="kw">await</span>.unwrap();
-        <span class="kw">let </span>beacon = Beacon::new(<span class="string">"devnet"</span>.to_string(), <span class="number">3</span>, <span class="number">1</span>);
+        <span class="kw">let </span>beacon = CardanoDbBeacon::new(<span class="string">"devnet"</span>.to_string(), <span class="number">3</span>, <span class="number">1</span>);
         <span class="kw">let </span>fixture = MithrilFixtureBuilder::default().with_signers(<span class="number">3</span>).build();
-        <span class="kw">let </span>genesis_beacon = Beacon {
+        <span class="kw">let </span>genesis_beacon = CardanoDbBeacon {
             epoch: beacon.epoch - <span class="number">1</span>,
             ..beacon.clone()
         };

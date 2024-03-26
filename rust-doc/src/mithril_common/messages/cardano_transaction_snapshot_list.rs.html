@@ -89,7 +89,7 @@
 </pre></div><pre class="rust"><code><span class="kw">use </span>chrono::{DateTime, Utc};
 <span class="kw">use </span>serde::{Deserialize, Serialize};
 
-<span class="kw">use </span><span class="kw">crate</span>::entities::Beacon;
+<span class="kw">use </span><span class="kw">crate</span>::entities::CardanoDbBeacon;
 <span class="attr">#[cfg(any(test, feature = <span class="string">"test_tools"</span>))]
 </span><span class="kw">use </span><span class="kw">crate</span>::test_utils::fake_data;
 
@@ -103,7 +103,7 @@
     </span><span class="kw">pub </span>merkle_root: String,
 
     <span class="doccomment">/// Beacon of the Cardano transactions snapshot
-    </span><span class="kw">pub </span>beacon: Beacon,
+    </span><span class="kw">pub </span>beacon: CardanoDbBeacon,
 
     <span class="doccomment">/// Hash of the Cardano Transactions snapshot
     </span><span class="kw">pub </span>hash: String,

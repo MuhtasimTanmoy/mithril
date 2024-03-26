@@ -145,14 +145,14 @@
 <a href="#143" id="143">143</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>serde::{Deserialize, Serialize};
 
-<span class="kw">use </span><span class="kw">crate</span>::entities::{Beacon, ProtocolParameters, SignedEntityType};
+<span class="kw">use </span><span class="kw">crate</span>::entities::{CardanoDbBeacon, ProtocolParameters, SignedEntityType};
 <span class="kw">use </span><span class="kw">crate</span>::messages::SignerMessagePart;
 
 <span class="doccomment">/// Structure to transport [crate::entities::CertificatePending] data.
 </span><span class="attr">#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 </span><span class="kw">pub struct </span>CertificatePendingMessage {
     <span class="doccomment">/// Current Beacon
-    </span><span class="kw">pub </span>beacon: Beacon,
+    </span><span class="kw">pub </span>beacon: CardanoDbBeacon,
 
     <span class="doccomment">/// Signed entity type
     </span><span class="attr">#[serde(rename = <span class="string">"entity_type"</span>)]
@@ -178,7 +178,7 @@
         <span class="doccomment">/// Provide a dummy instance for test.
         </span><span class="kw">pub fn </span>dummy() -&gt; <span class="self">Self </span>{
             <span class="self">Self </span>{
-                beacon: Beacon::default(),
+                beacon: CardanoDbBeacon::default(),
                 signed_entity_type: SignedEntityType::dummy(),
                 protocol_parameters: ProtocolParameters {
                     k: <span class="number">5</span>,
@@ -204,7 +204,7 @@
     <span class="kw">use super</span>::<span class="kw-2">*</span>;
 
     <span class="kw">fn </span>golden_message() -&gt; CertificatePendingMessage {
-        <span class="kw">let </span>beacon = Beacon {
+        <span class="kw">let </span>beacon = CardanoDbBeacon {
             network: <span class="string">"preview"</span>.to_string(),
             epoch: Epoch(<span class="number">86</span>),
             immutable_file_number: <span class="number">1728</span>,

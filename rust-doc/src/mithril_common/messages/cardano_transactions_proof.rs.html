@@ -718,7 +718,7 @@
     <span class="attr">#[cfg(feature = <span class="string">"fs"</span>)]
     </span><span class="kw">mod </span>fs_only {
         <span class="kw">use </span><span class="kw">crate</span>::cardano_transaction_parser::DumbTransactionParser;
-        <span class="kw">use </span><span class="kw">crate</span>::entities::{Beacon, CardanoTransaction};
+        <span class="kw">use </span><span class="kw">crate</span>::entities::{CardanoDbBeacon, CardanoTransaction};
         <span class="kw">use </span><span class="kw">crate</span>::signable_builder::{
             CardanoTransactionsSignableBuilder, MockTransactionStore, SignableBuilder,
         };
@@ -793,9 +793,9 @@
                 Logger::root(slog::Discard, <span class="macro">slog::o!</span>()),
             );
             cardano_transaction_signable_builder
-                .compute_protocol_message(Beacon {
+                .compute_protocol_message(CardanoDbBeacon {
                     immutable_file_number,
-                    ..Beacon::default()
+                    ..CardanoDbBeacon::default()
                 })
                 .<span class="kw">await
                 </span>.unwrap()

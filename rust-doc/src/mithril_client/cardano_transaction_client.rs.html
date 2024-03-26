@@ -448,7 +448,7 @@
 <span class="attr">#[cfg(test)]
 </span><span class="kw">mod </span>tests {
     <span class="kw">use </span><span class="kw">crate</span>::aggregator_client::{AggregatorClientError, MockAggregatorHTTPClient};
-    <span class="kw">use </span><span class="kw">crate</span>::common::Beacon;
+    <span class="kw">use </span><span class="kw">crate</span>::common::CardanoDbBeacon;
     <span class="kw">use crate</span>::{
         CardanoTransactionSnapshot, CardanoTransactionSnapshotListItem, CardanoTransactionsProofs,
         CardanoTransactionsSetProof,
@@ -463,7 +463,7 @@
         <span class="macro">vec!</span>[
             CardanoTransactionSnapshotListItem {
                 merkle_root: <span class="string">"mk-123"</span>.to_string(),
-                beacon: Beacon::new(<span class="string">"network"</span>.to_string(), <span class="number">1</span>, <span class="number">1</span>),
+                beacon: CardanoDbBeacon::new(<span class="string">"network"</span>.to_string(), <span class="number">1</span>, <span class="number">1</span>),
                 hash: <span class="string">"hash-123"</span>.to_string(),
                 certificate_hash: <span class="string">"cert-hash-123"</span>.to_string(),
                 created_at: DateTime::parse_from_rfc3339(<span class="string">"2023-01-19T13:43:05.618857482Z"</span>)
@@ -472,7 +472,7 @@
             },
             CardanoTransactionSnapshotListItem {
                 merkle_root: <span class="string">"mk-456"</span>.to_string(),
-                beacon: Beacon::new(<span class="string">"network"</span>.to_string(), <span class="number">1</span>, <span class="number">2</span>),
+                beacon: CardanoDbBeacon::new(<span class="string">"network"</span>.to_string(), <span class="number">1</span>, <span class="number">2</span>),
                 hash: <span class="string">"hash-456"</span>.to_string(),
                 certificate_hash: <span class="string">"cert-hash-456"</span>.to_string(),
                 created_at: DateTime::parse_from_rfc3339(<span class="string">"2023-01-19T13:43:05.618857482Z"</span>)
@@ -502,7 +502,7 @@
         <span class="kw">let </span><span class="kw-2">mut </span>http_client = MockAggregatorHTTPClient::new();
         <span class="kw">let </span>message = CardanoTransactionSnapshot {
             merkle_root: <span class="string">"mk-123"</span>.to_string(),
-            beacon: Beacon::new(<span class="string">"network"</span>.to_string(), <span class="number">1</span>, <span class="number">1</span>),
+            beacon: CardanoDbBeacon::new(<span class="string">"network"</span>.to_string(), <span class="number">1</span>, <span class="number">1</span>),
             hash: <span class="string">"hash-123"</span>.to_string(),
             certificate_hash: <span class="string">"cert-hash-123"</span>.to_string(),
             created_at: DateTime::parse_from_rfc3339(<span class="string">"2023-01-19T13:43:05.618857482Z"</span>)

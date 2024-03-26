@@ -360,7 +360,7 @@
 </pre></div><pre class="rust"><code><span class="kw">use </span><span class="kw">crate</span>::crypto_helper::{
     ProtocolAggregateVerificationKey, ProtocolGenesisSignature, ProtocolMultiSignature,
 };
-<span class="kw">use </span><span class="kw">crate</span>::entities::{Beacon, CertificateMetadata, ProtocolMessage};
+<span class="kw">use </span><span class="kw">crate</span>::entities::{CardanoDbBeacon, CertificateMetadata, ProtocolMessage};
 <span class="kw">use </span>std::cmp::Ordering;
 <span class="kw">use </span>std::fmt::{Debug, Formatter};
 
@@ -394,7 +394,7 @@
 
     <span class="doccomment">/// Mithril beacon on the Cardano chain
     /// aka BEACON(p,n)
-    </span><span class="kw">pub </span>beacon: Beacon,
+    </span><span class="kw">pub </span>beacon: CardanoDbBeacon,
 
     <span class="doccomment">/// Certificate metadata
     /// aka METADATA(p,n)
@@ -421,7 +421,7 @@
     <span class="doccomment">/// Certificate factory
     </span><span class="kw">pub fn </span>new(
         previous_hash: String,
-        beacon: Beacon,
+        beacon: CardanoDbBeacon,
         metadata: CertificateMetadata,
         protocol_message: ProtocolMessage,
         aggregate_verification_key: ProtocolAggregateVerificationKey,
@@ -582,7 +582,7 @@
 
         <span class="kw">let </span>certificate = Certificate::new(
             <span class="string">"previous_hash"</span>.to_string(),
-            Beacon::new(<span class="string">"testnet"</span>.to_string(), <span class="number">10</span>, <span class="number">100</span>),
+            CardanoDbBeacon::new(<span class="string">"testnet"</span>.to_string(), <span class="number">10</span>, <span class="number">100</span>),
             CertificateMetadata::new(
                 <span class="string">"0.1.0"</span>.to_string(),
                 ProtocolParameters::new(<span class="number">1000</span>, <span class="number">100</span>, <span class="number">0.123</span>),
@@ -613,7 +613,7 @@
         <span class="macro">assert_ne!</span>(
             HASH_EXPECTED,
             Certificate {
-                beacon: Beacon::new(<span class="string">"testnet-modified"</span>.to_string(), <span class="number">10</span>, <span class="number">100</span>),
+                beacon: CardanoDbBeacon::new(<span class="string">"testnet-modified"</span>.to_string(), <span class="number">10</span>, <span class="number">100</span>),
                 ..certificate.clone()
             }
             .compute_hash(),
@@ -683,7 +683,7 @@
 
         <span class="kw">let </span>genesis_certificate = Certificate::new(
             <span class="string">"previous_hash"</span>.to_string(),
-            Beacon::new(<span class="string">"testnet"</span>.to_string(), <span class="number">10</span>, <span class="number">100</span>),
+            CardanoDbBeacon::new(<span class="string">"testnet"</span>.to_string(), <span class="number">10</span>, <span class="number">100</span>),
             CertificateMetadata::new(
                 <span class="string">"0.1.0"</span>.to_string(),
                 ProtocolParameters::new(<span class="number">1000</span>, <span class="number">100</span>, <span class="number">0.123</span>),

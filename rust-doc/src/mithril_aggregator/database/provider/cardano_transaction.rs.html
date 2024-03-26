@@ -638,8 +638,15 @@
 <a href="#636" id="636">636</a>
 <a href="#637" id="637">637</a>
 <a href="#638" id="638">638</a>
+<a href="#639" id="639">639</a>
+<a href="#640" id="640">640</a>
+<a href="#641" id="641">641</a>
+<a href="#642" id="642">642</a>
+<a href="#643" id="643">643</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>mithril_common::{
-    entities::{Beacon, BlockNumber, CardanoTransaction, ImmutableFileNumber, TransactionHash},
+    entities::{
+        BlockNumber, CardanoDbBeacon, CardanoTransaction, ImmutableFileNumber, TransactionHash,
+    },
     signable_builder::TransactionStore,
     StdResult,
 };
@@ -743,7 +750,10 @@
         )
     }
 
-    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>get_transaction_up_to_beacon_condition(<span class="kw-2">&amp;</span><span class="self">self</span>, beacon: <span class="kw-2">&amp;</span>Beacon) -&gt; WhereCondition {
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>get_transaction_up_to_beacon_condition(
+        <span class="kw-2">&amp;</span><span class="self">self</span>,
+        beacon: <span class="kw-2">&amp;</span>CardanoDbBeacon,
+    ) -&gt; WhereCondition {
         WhereCondition::new(
             <span class="string">"immutable_file_number &lt;= ?*"</span>,
             <span class="macro">vec!</span>[Value::Integer(beacon.immutable_file_number <span class="kw">as </span>i64)],
@@ -856,7 +866,7 @@
     /// chronological order.
     </span><span class="kw">pub async fn </span>get_transactions_up_to(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
-        beacon: <span class="kw-2">&amp;</span>Beacon,
+        beacon: <span class="kw-2">&amp;</span>CardanoDbBeacon,
     ) -&gt; StdResult&lt;Vec&lt;CardanoTransactionRecord&gt;&gt; {
         <span class="kw">let </span>provider = CardanoTransactionProvider::new(<span class="kw-2">&amp;</span><span class="self">self</span>.connection);
         <span class="kw">let </span>filters = provider.get_transaction_up_to_beacon_condition(beacon);
@@ -923,7 +933,7 @@
 
 <span class="attr">#[async_trait]
 </span><span class="kw">impl </span>TransactionsRetriever <span class="kw">for </span>CardanoTransactionRepository {
-    <span class="kw">async fn </span>get_up_to(<span class="kw-2">&amp;</span><span class="self">self</span>, beacon: <span class="kw-2">&amp;</span>Beacon) -&gt; StdResult&lt;Vec&lt;CardanoTransaction&gt;&gt; {
+    <span class="kw">async fn </span>get_up_to(<span class="kw-2">&amp;</span><span class="self">self</span>, beacon: <span class="kw-2">&amp;</span>CardanoDbBeacon) -&gt; StdResult&lt;Vec&lt;CardanoTransaction&gt;&gt; {
         <span class="self">self</span>.get_transactions_up_to(beacon).<span class="kw">await</span>.map(|v| {
             v.into_iter()
                 .map(|record| record.into())
@@ -985,9 +995,9 @@
         <span class="kw">let </span>connection = Connection::open_thread_safe(<span class="string">":memory:"</span>).unwrap();
         <span class="kw">let </span>provider = CardanoTransactionProvider::new(<span class="kw-2">&amp;</span>connection);
         <span class="kw">let </span>(expr, params) = provider
-            .get_transaction_up_to_beacon_condition(<span class="kw-2">&amp;</span>Beacon {
+            .get_transaction_up_to_beacon_condition(<span class="kw-2">&amp;</span>CardanoDbBeacon {
                 immutable_file_number: <span class="number">2309</span>,
-                ..Beacon::default()
+                ..CardanoDbBeacon::default()
             })
             .expand();
 
@@ -1186,14 +1196,14 @@
             </span>.unwrap();
 
         <span class="kw">let </span>transaction_result = repository
-            .get_up_to(<span class="kw-2">&amp;</span>Beacon::new(<span class="string">""</span>.to_string(), <span class="number">1</span>, <span class="number">34</span>))
+            .get_up_to(<span class="kw-2">&amp;</span>CardanoDbBeacon::new(<span class="string">""</span>.to_string(), <span class="number">1</span>, <span class="number">34</span>))
             .<span class="kw">await
             </span>.unwrap();
 
         <span class="macro">assert_eq!</span>(cardano_transactions[<span class="number">0</span>..=<span class="number">14</span>].to_vec(), transaction_result);
 
         <span class="kw">let </span>transaction_result = repository
-            .get_up_to(<span class="kw-2">&amp;</span>Beacon::new(<span class="string">""</span>.to_string(), <span class="number">1</span>, <span class="number">300</span>))
+            .get_up_to(<span class="kw-2">&amp;</span>CardanoDbBeacon::new(<span class="string">""</span>.to_string(), <span class="number">1</span>, <span class="number">300</span>))
             .<span class="kw">await
             </span>.unwrap();
 
@@ -1203,7 +1213,7 @@
         );
 
         <span class="kw">let </span>transaction_result = repository
-            .get_up_to(<span class="kw-2">&amp;</span>Beacon::new(<span class="string">""</span>.to_string(), <span class="number">1</span>, <span class="number">19</span>))
+            .get_up_to(<span class="kw-2">&amp;</span>CardanoDbBeacon::new(<span class="string">""</span>.to_string(), <span class="number">1</span>, <span class="number">19</span>))
             .<span class="kw">await
             </span>.unwrap();
 
